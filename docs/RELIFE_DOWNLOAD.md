@@ -1,6 +1,6 @@
 # ReLIFE high-quality English CBZ: private Windows pilot
 
-**Current status:** Ready-to-run local integration with existing `mangadex-downloader==3.1.4` and a **synthetically tested** integrity audit. **No real ReLIFE chapter download has been demonstrated from this project.** Source availability and the legality/permission of locally retaining the particular scanlation must be assessed first. This does not enable a download on public GitHub Actions, do any DRM or regional bypass, or upload content to Hugging Face.
+**Current status:** Ready-to-run local integration with existing `mangadex-downloader==3.1.4` and a **synthetically tested** integrity audit. **The live MangaDex API confirmed 240 English chapter feed entries on 19 November 2026 (metadata only); no real chapter image download has been demonstrated from this project.** Source availability and the legality/permission of locally retaining the particular scanlation must be assessed first. This does not enable a download on public GitHub Actions, do any DRM or regional bypass, or upload content to Hugging Face.
 
 ## Confirmed targets and quality
 
@@ -19,7 +19,7 @@ py -3.12 -m pip install mangadex-downloader==3.1.4
 .\Download-ReLIFE.cmd pilot "C:\Manga\ReLIFE"
 ```
 
-The launcher asks you to confirm that you've reviewed MangaDex and the relevant scanlation groups' terms for this private use. It then runs a **fixed-title**, English, original-upload-image request with bounded HTTP retries and a two-second delay. The output is stored only on your laptop and is never committed or uploaded by this workflow. The CLI uses separate CBZs for chapters, not lossy PDFs.
+The launcher asks you to confirm that you've reviewed MangaDex and the relevant scanlation groups' terms for this private use. It then runs a **fixed-title**, English, original-upload-image request with bounded HTTP retries and a two-second delay, invoking the installed Python module directly (no Windows `PATH` configuration required). The output is stored only on your laptop and is never committed or uploaded by this workflow. The CLI uses separate CBZs for chapters, not lossy PDFs.
 
 On success, inspect `C:\Manga\relife_quality_audit.json`: it includes each CBZ file's SHA-256, page size/hash, page dimensions and exact count. Full integrity verification does **not** mean an uploader provided the entire series. It does not compare all scans with a publisher master.
 
