@@ -13,12 +13,12 @@ import shutil
 import tempfile
 import time
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from html.parser import HTMLParser
+from http.client import HTTPSConnection
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import urljoin, urlsplit
-from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 from .importer import ImportFailure, import_local, verify_export
 
@@ -105,22 +105,24 @@ def plan_episode_26(html: bytes) -> tuple[LicensedPage, ...]:
     return tuple(LicensedPage(number, pages[number]) for number in sorted(pages))
 
 
-class _NoRedirect(HTTPRedirectHandler):
-    def redirect_request(self, req, fp, code, msg, headers, newurl):
-        raise ImportFailure("Unexpected site redirect; refusing to follow it")
-
-
 def _fetch(url: str, maximum: int) -> bytes:
-    """Bounded GET for one constant official page or its strictly scoped image URLs."""
-    if url != SOURCE_PAGE and _official_page_url(url) is None:
+    """Bounded HTTPS GET directly to the one verified origin, with no redirects."""
+    approved = _official_page_url(url)
+    if url != SOURCE_PAGE and (approved is None or approved[1] != url):
         raise ImportFailure("Unapproved web content URL")
-    request = Request(url, headers={"User-Agent": "Taiyou-Manga-Retriever/0.1 (CC-BY-4.0)"})
-    with build_opener(_NoRedirect).open(request, timeout=REQUEST_TIMEOUT) as response:
+    host = "www.peppercarrot.com"
+    connection = HTTPSConnection(host, timeout=REQUEST_TIMEOUT)
+    try:
+        connection.request(
+            "GET", urlsplit(url).path, headers={"User-Agent": "Taiyou-Manga-Retriever/0.1 (CC-BY-4.0)"}
+        )
+        response = connection.getresponse()
         if response.status != 200:
-            raise ImportFailure("Source server returned unexpected status")
-        if response.headers.get("Content-Length"):
+            raise HTTPError(url, response.status, "Unexpected source status or redirect", response.headers, None)
+        length = response.headers.get("Content-Length")
+        if length is not None:
             try:
-                if int(response.headers["Content-Length"]) > maximum:
+                if int(length) > maximum:
                     raise ImportFailure("Remote file exceeds byte limit")
             except ValueError as error:
                 raise ImportFailure("Invalid source length header") from error
@@ -128,6 +130,8 @@ def _fetch(url: str, maximum: int) -> bytes:
         if not 0 < len(content) <= maximum:
             raise ImportFailure("Remote content empty or exceeds byte limit")
         return content
+    finally:
+        connection.close()
 
 
 def fetch_with_retries(url: str, maximum: int, *, fetch=None, sleep=time.sleep) -> bytes:
@@ -142,7 +146,7 @@ def fetch_with_retries(url: str, maximum: int, *, fetch=None, sleep=time.sleep) 
         except HTTPError as error:
             if error.code not in TRANSIENT_STATUS or attempt == 2:
                 raise ImportFailure(f"Source HTTP {error.code}, no further retry") from error
-        except URLError as error:
+        except (URLError, OSError) as error:
             if attempt == 2:
                 raise ImportFailure("Source network failure after bounded retries") from error
         sleep(2**attempt)
@@ -176,7 +180,7 @@ def download_episode_26(output: Path, registry: Path, *, fetch=None, sleep=time.
                 "Art/scenario: David Revoy; English contributors and all episode credits: "
                 f"{SOURCE_PAGE}; CC BY 4.0: {LICENCE_URL}; original pages unmodified"
             ),
-            "recordedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "recordedAt": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
         }
         rights_path = work / "rights.json"
         rights_path.write_text(json.dumps(rights, indent=2) + "\n", encoding="utf-8")

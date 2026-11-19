@@ -15,10 +15,10 @@ from manga_retriever.importer import ImportFailure, verify_export
 from manga_retriever.peppercarrot import (
     LICENCE_URL,
     SOURCE_PAGE,
-    _official_page_url,
     download_episode_26,
     fetch_with_retries,
     plan_episode_26,
+    _official_page_url,
 )
 
 
