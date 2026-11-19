@@ -26,3 +26,6 @@ dist/
 
 # Private, partial downloads must never enter a public repo.
 *.checkpoint/
+
+/receipts/
+/manga_batch_status.json

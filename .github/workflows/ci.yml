@@ -58,3 +58,31 @@ jobs:
         run: |
           python -m manga_retriever peppercarrot --episode 26 --output ./smoke-episode26 --registry ./.manga-retriever/ids.json
           python -m manga_retriever verify --export ./smoke-episode26
+
+  batch-recovery-smoke:
+    # Deterministic PR gate. External websites are not dependable CI fixtures.
+    if: ${{ github.event_name == 'pull_request' && github.head_ref == 'feature/m5-allowlisted-bulk-registry' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install package and Pillow dependency
+        run: python -m pip install -e .
+      - name: Exercise approved planning and offline registry tests
+        run: |
+          python -m manga_retriever.batch prepare --selection peppercarrot:26
+          python -m unittest tests.test_batch -v
+      - name: Verify incomplete batch is reported, not marked successful
+        run: |
+          mkdir -p receipts
+          python -m manga_retriever.batch consolidate \
+            --expected-json '[{"key":"peppercarrot:26","slug":"peppercarrot-26"}]' \
+            --receipts receipts --registry downloaded_manga.json \
+            --markdown DOWNLOADED_MANGA.md --status manga_batch_status.json
+          python -c "import json; from pathlib import Path; assert json.loads(Path('manga_batch_status.json').read_text())['missing'] == ['peppercarrot:26']"
+          if python -m manga_retriever.batch check-status --status manga_batch_status.json; then
+            echo 'Incomplete batch incorrectly reported success' >&2
+            exit 1
+          fi

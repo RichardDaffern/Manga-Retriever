@@ -7,3 +7,7 @@ Input and output symlinks are rejected where checked. Local file race and filesy
 Future network adapters must use explicit HTTPS host allowlists, DNS/rebinding and redirect validation, auth isolation, request/memory budgets, capped exponential backoff and documented publisher permission. Do not enable CI publication of copyrighted pages.
 
 The Pepper&Carrot pilot accepts only the approved official Episode 26 source and six precise HTTPS high-resolution image paths on `www.peppercarrot.com`, with no credentials, arbitrary URLs or redirects. It rejects missing licence links, unrecognised hosts/paths, missing pages, corrupt images and incomplete exports. Retries are limited to selected transient HTTP codes and network failures.
+
+## M5 safe bulk permissions
+
+Bulk jobs take only allowlisted `source:episode` IDs. They cannot request arbitrary hosts/URLs or import personal data into public Actions. The manual workflow grants read-only repository access to download workers, with `contents:write` confined to the serial metadata finaliser. The finaliser records verified short-lived artefact URLs but never commits media. Registry writes use strict receipt validation and bounded retries against fresh `origin/main` to avoid silently overwriting concurrent records. The operational scope is the already verified CC BY 4.0 Episode 26 alone.

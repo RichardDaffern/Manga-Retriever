@@ -1,0 +1,156 @@
+name: Bulk Manga Download
+on:
+  workflow_dispatch:
+    inputs:
+      selection:
+        description: 'Comma-separated allowlisted source IDs (currently peppercarrot:26 only)'
+        required: true
+        default: 'peppercarrot:26'
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: manga-bulk-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      jobs: ${{ steps.selection.outputs.jobs }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Check explicit rights allowlist and bounded batch size
+        id: selection
+        env:
+          SELECTION: ${{ inputs.selection }}
+        run: python -m manga_retriever.batch prepare --selection "$SELECTION"
+
+  download:
+    needs: prepare
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        item: ${{ fromJSON(needs.prepare.outputs.jobs) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install
+        run: python -m pip install -e .
+      - name: Download authorised pages and create verified CBZs
+        env:
+          ITEM_KEY: ${{ matrix.item.key }}
+          ITEM_SLUG: ${{ matrix.item.slug }}
+        run: |
+          python -m manga_retriever.batch download \
+            --key "$ITEM_KEY" \
+            --output "downloads/$ITEM_SLUG" \
+            --ids ".manga-retriever/ids.json"
+          python -m manga_retriever verify --export "downloads/$ITEM_SLUG"
+      - name: Publish short-lived licensed manga
+        id: publish
+        uses: actions/upload-artifact@v7
+        with:
+          name: licensed-manga-${{ github.run_id }}-${{ matrix.item.slug }}
+          path: downloads/${{ matrix.item.slug }}/
+          retention-days: 7
+          if-no-files-found: error
+          compression-level: 0
+      - name: Create verified metadata-only artefact receipt
+        env:
+          ITEM_KEY: ${{ matrix.item.key }}
+          ITEM_SLUG: ${{ matrix.item.slug }}
+          ARTIFACT_ID: ${{ steps.publish.outputs.artifact-id }}
+          ARTIFACT_URL: ${{ steps.publish.outputs.artifact-url }}
+        run: |
+          python -m manga_retriever.batch receipt \
+            --key "$ITEM_KEY" \
+            --export "downloads/$ITEM_SLUG" \
+            --run-id "$GITHUB_RUN_ID" \
+            --artifact-id "$ARTIFACT_ID" \
+            --artifact-url "$ARTIFACT_URL" \
+            --output "receipts/record-$ITEM_SLUG.json"
+      - name: Publish small receipt for safe aggregation
+        uses: actions/upload-artifact@v7
+        with:
+          name: manga-receipt-${{ github.run_id }}-${{ matrix.item.slug }}
+          path: receipts/
+          retention-days: 7
+          if-no-files-found: error
+
+  finalise:
+    if: always() && needs.prepare.result == 'success'
+    needs: [prepare, download]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Create receipt directory
+        run: mkdir -p receipts
+      - name: Collect completed item receipts even after partial failures
+        uses: actions/download-artifact@v8
+        continue-on-error: true
+        with:
+          pattern: manga-receipt-${{ github.run_id }}-*
+          path: receipts
+          merge-multiple: false
+      - name: Reconcile independently completed jobs and write retry report
+        env:
+          JOBS: ${{ needs.prepare.outputs.jobs }}
+        run: |
+          python -m manga_retriever.batch consolidate \
+            --expected-json "$JOBS" \
+            --receipts receipts \
+            --registry downloaded_manga.json \
+            --markdown DOWNLOADED_MANGA.md \
+            --status manga_batch_status.json
+      - name: Commit only safe registry metadata with push retry
+        if: github.ref == 'refs/heads/main'
+        env:
+          JOBS: ${{ needs.prepare.outputs.jobs }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            python -m manga_retriever.batch consolidate \
+              --expected-json "$JOBS" --receipts receipts \
+              --registry downloaded_manga.json --markdown DOWNLOADED_MANGA.md \
+              --status manga_batch_status.json
+            git add downloaded_manga.json DOWNLOADED_MANGA.md
+            if git diff --cached --quiet; then
+              echo 'Registry already includes all verified receipts.'
+              exit 0
+            fi
+            git commit -m "chore: register verified licensed manga artefacts (run $GITHUB_RUN_ID)"
+            if git push origin HEAD:main; then exit 0; fi
+            echo "Registry moved concurrently; reloading for retry $attempt"
+            sleep "$attempt"
+          done
+          echo 'Registry could not be updated safely.' >&2
+          exit 1
+      - name: Upload missing-job recovery report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: manga-batch-status-${{ github.run_id }}
+          path: manga_batch_status.json
+          retention-days: 7
+          if-no-files-found: warn
+      - name: Fail job if any approved item did not finish
+        run: python -m manga_retriever.batch check-status --status manga_batch_status.json

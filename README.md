@@ -57,3 +57,13 @@ Manga Retriever produces validated local packages. [Manga Storage Controller](ht
 ## M4: verified page-level resume
 
 The authorised Pepper&Carrot episode now checkpoints each successfully downloaded image at `.<output-folder>.checkpoint/` alongside the requested export. On a transient or permanent later-page error, no incomplete CBZ is published. Repeat the **same** command and registry to revalidate and reuse the completed page bytes, fetching only missing or corrupt pages. The official source page and licence are rechecked on every attempt. The checkpoint is removed after a fully verified export is published. **Do not delete or commit the checkpoint while recovering; it contains actual licensed pages.** This is chapter-level only for the sole approved Episode 26; arbitrary manga acquisition remains disabled.
+
+## M5: allowlisted bulk download and metadata registry
+
+Use [**Bulk Manga Download**](.github/workflows/bulk-manga.yml) under GitHub Actions, with selection `peppercarrot:26`. The planner accepts a comma/newline-separated list of **explicitly approved source keys**, rejects unknown URLs, deduplicates requests, and schedules separate capped download jobs (up to 3 in parallel once additional sources are approved). **Only one licensed webcomic episode is approved today; this is a bulk-ready framework, not a catalogue of multiple manga sources.**
+
+Each job verifies complete CBZ/media bytes and posts a short-lived licensed export for 7 days. Successful jobs emit a small validated artefact receipt. A final job aggregates receipts even if another job fails, commits **metadata only** into [downloaded_manga.json](downloaded_manga.json) and [DOWNLOADED_MANGA.md](DOWNLOADED_MANGA.md), and uploads a missing-item status for reruns. It uses a fresh main-branch read and bounded optimistic push retries to avoid registry lost updates. Artefact history does not guarantee availability after deletion or expiry. The repository never retains downloaded pages, CBZs, private rights documents or personal progress.
+
+Local batch planning: `python -m manga_retriever.batch prepare --selection peppercarrot:26`. Future source adapters require separate explicit licensing review and tests before their identifiers may join the production allowlist.
+
+**Live-source verification:** The public Pepper&Carrot website can be temporarily unreachable from GitHub runners. A full live download was verified during M3. M5 synthetic CI verifies the batch planning, receipt and recovery code without making external site health a release gate. To verify live availability, manually run an approved download Action and inspect its complete source-verified artefact.
