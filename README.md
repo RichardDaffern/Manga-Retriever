@@ -37,7 +37,7 @@ py -3.12 -m unittest discover -s tests -v
 py -3.12 -m compileall -q manga_retriever tests
 ```
 
-Current GitHub Actions CI only runs synthetic image tests and a dependency/security check. No live-site test is claimed. See `docs/SOURCE_RESEARCH.md`, `docs/STORAGE_INTEGRATION.md` and `docs/ROADMAP.md`.
+GitHub Actions CI runs 17 synthetic tests and a dependency/security check. No live-site test is claimed. See `docs/SOURCE_RESEARCH.md`, `docs/STORAGE_INTEGRATION.md` and `docs/ROADMAP.md`.
 
 ## Responsibilities
 

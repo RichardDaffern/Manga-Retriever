@@ -395,53 +395,138 @@ def import_local(source: Path, output: Path, state: Path, *, rights_path: Path |
                 shutil.rmtree(stage)
 
 
-def verify_export(export: Path) -> dict:
-    """Rehash every original image and verify CBZ bytes against the controller candidate."""
-    root = export / "controller_candidate"
-    if export.is_symlink() or root.is_symlink() or any(p.is_symlink() for p in root.rglob("*")):
+def _verify_export(export: Path) -> dict:
+    """Validate the entire export, including expected file inventory and original bytes."""
+    if not export.is_dir() or export.is_symlink():
+        raise ImportFailure("Export directory is unavailable or linked")
+    if any(path.is_symlink() for path in export.rglob("*")):
         raise ImportFailure("Symbolic links in export are prohibited")
+    root = export / "controller_candidate"
+    if not root.is_dir():
+        raise ImportFailure("Controller candidate is missing")
+
     catalogue = json.loads((root / "catalogue.json").read_text(encoding="utf-8"))
     inventory = json.loads((root / "inventory.json").read_text(encoding="utf-8"))
-    if inventory.get("controllerCandidateVersion") != 1 or inventory.get("mediaKind") != "manga":
-        raise ImportFailure("Incompatible controller candidate version")
-    paths: set[str] = set()
+    summary = json.loads((export / "download_manifest.json").read_text(encoding="utf-8"))
+    if (not isinstance(inventory, dict) or inventory.get("controllerCandidateVersion") != 1
+            or inventory.get("mediaKind") != "manga"):
+        raise ImportFailure("Incompatible Controller candidate version")
+    if (not isinstance(catalogue, list) or not catalogue or len(catalogue) > MAX_CHAPTERS
+            or not isinstance(summary, dict) or summary.get("schemaVersion") != 1
+            or summary.get("sourceType") != "authorised-local-import"):
+        raise ImportFailure("Unsupported catalogue or export summary")
+
+    expected: set[Path] = {
+        root / "catalogue.json", root / "inventory.json", export / "download_manifest.json"
+    }
+    series_ids: set[str] = set()
     chapter_ids: set[str] = set()
+    paths: set[str] = set()
     pages_count = 0
     for entry in catalogue:
-        for chapter in entry["chapters"]:
-            cid = chapter["id"]
-            if cid in chapter_ids:
-                raise ImportFailure("Duplicate chapter ID")
+        if not isinstance(entry, dict) or entry.get("kind") != "manga":
+            raise ImportFailure("Malformed manga catalogue entry")
+        sid = entry.get("id")
+        if not isinstance(sid, str) or not re.fullmatch(r"mng_[A-Za-z0-9_-]{8,64}", sid):
+            raise ImportFailure("Invalid series identifier")
+        if sid in series_ids:
+            raise ImportFailure("Duplicate series identifier")
+        series_ids.add(sid)
+        chapters = entry.get("chapters")
+        if (not isinstance(chapters, list) or not chapters or len(chapters) > MAX_CHAPTERS
+                or entry.get("direction") not in ("ltr", "rtl", "vertical")):
+            raise ImportFailure("Invalid series chapters or reading direction")
+        for index, chapter in enumerate(chapters):
+            if not isinstance(chapter, dict):
+                raise ImportFailure("Invalid chapter entry")
+            cid = chapter.get("id")
+            if (not isinstance(cid, str) or not re.fullmatch(r"ch_[A-Za-z0-9_-]{8,64}", cid)
+                    or cid in chapter_ids or chapter.get("sequence") != index):
+                raise ImportFailure("Invalid, duplicate or unordered chapter identifier")
             chapter_ids.add(cid)
-            manifest = json.loads((root / "manifests" / (cid + ".json")).read_text(encoding="utf-8"))
+            manifest_path = root / "manifests" / (cid + ".json")
+            expected.add(manifest_path)
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            if not isinstance(manifest, dict):
+                raise ImportFailure("Malformed chapter manifest")
+            pages = manifest.get("pages")
             if (manifest.get("chapterId") != cid or manifest.get("schemaVersion") != 1
-                    or manifest.get("mediaKind") != "manga"
-                    or chapter["pageCount"] != len(manifest["pages"])):
+                    or manifest.get("mediaKind") != "manga" or not isinstance(pages, list)
+                    or not 1 <= len(pages) <= MAX_PAGES or chapter.get("pageCount") != len(pages)):
                 raise ImportFailure("Chapter manifest invalid or incomplete")
             cbz_path = export / "chapters" / (cid + ".cbz")
+            if not cbz_path.is_file() or cbz_path.stat().st_size > MAX_CHAPTER:
+                raise ImportFailure("Missing or oversized chapter CBZ")
+            expected.add(cbz_path)
+            chapter_total = 0
             with zipfile.ZipFile(cbz_path) as cbz:
-                cbz_members = cbz.namelist()
-                if len(cbz_members) != len(manifest["pages"]):
+                members = cbz.infolist()
+                if len(members) != len(pages):
                     raise ImportFailure("CBZ page count mismatch")
-                for i, page in enumerate(manifest["pages"]):
-                    asset_path = page["assetPath"]
-                    if not re.fullmatch(r"manga/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+\.(png|jpg|jpeg|webp|avif)", asset_path):
-                        raise ImportFailure("Unsafe asset path in candidate")
-                    if not asset_path.startswith(f'manga/{entry["id"]}/{cid}/') or asset_path in paths:
-                        raise ImportFailure("Wrong series ownership or duplicate asset")
+                for offset, page in enumerate(pages):
+                    if not isinstance(page, dict):
+                        raise ImportFailure("Invalid page manifest record")
+                    asset_path = page.get("assetPath")
+                    page_id = page.get("id")
+                    if (not isinstance(asset_path, str) or not re.fullmatch(
+                            r"manga/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+\.(png|jpg|jpeg|webp|avif)",
+                            asset_path)):
+                        raise ImportFailure("Unsafe asset path")
+                    if (not isinstance(page_id, str)
+                            or not re.fullmatch(r"pg_[A-Za-z0-9_-]{8,64}", page_id)
+                            or not asset_path.startswith(f"manga/{sid}/{cid}/{page_id}.")
+                            or asset_path in paths):
+                        raise ImportFailure("Page identity, ownership or path conflict")
                     paths.add(asset_path)
-                    data = (root / "assets" / asset_path).read_bytes()
+                    target = root / "assets" / asset_path
+                    if not target.is_file() or target.stat().st_size > MAX_IMAGE:
+                        raise ImportFailure("Missing or oversized page asset")
+                    expected.add(target)
+                    data = target.read_bytes()
                     checked = _validate_image(data, asset_path)
-                    if any(checked[k] != page[k] for k in ("mimeType", "sha256", "width", "height", "byteSize")):
-                        raise ImportFailure("Image corruption or manifest inconsistency")
-                    with cbz.open(cbz_members[i]) as reader:
-                        if reader.read(MAX_IMAGE + 1) != data:
-                            raise ImportFailure("CBZ and candidate image bytes differ")
+                    if (any(checked[key] != page.get(key) for key in
+                            ("mimeType", "sha256", "width", "height", "byteSize"))
+                            or page_id != _page_id(cid, checked["sha256"])):
+                        raise ImportFailure("Page image/identity checksum inconsistency")
+                    expected_name = f"{offset + 1:04d}{Path(asset_path).suffix}"
+                    member = members[offset]
+                    if (member.filename != expected_name or member.is_dir()
+                            or member.file_size != checked["byteSize"]):
+                        raise ImportFailure("CBZ page filename, order or size mismatch")
+                    with cbz.open(member) as handle:
+                        if handle.read(MAX_IMAGE + 1) != data:
+                            raise ImportFailure("CBZ and candidate original image bytes differ")
+                    chapter_total += len(data)
+                    if chapter_total > MAX_CHAPTER:
+                        raise ImportFailure("Chapter media exceeds quota")
                     pages_count += 1
-    actual = {p.relative_to(root / "assets").as_posix() for p in (root / "assets").rglob("*") if p.is_file()}
-    if actual != paths:
-        raise ImportFailure("Unreferenced or missing images in candidate")
+                    if pages_count > MAX_CHAPTERS * MAX_PAGES:
+                        raise ImportFailure("Aggregate page quota exceeded")
     if (inventory.get("series"), inventory.get("chapters"), inventory.get("pages")) != (
-            len(catalogue), len(chapter_ids), pages_count):
-        raise ImportFailure("Inventory totals differ from manifest contents")
-    return {"series": len(catalogue), "chapters": len(chapter_ids), "pages": pages_count}
+            len(series_ids), len(chapter_ids), pages_count):
+        raise ImportFailure("Inventory counts differ from verified media")
+    if (summary.get("series"), summary.get("chapters"), summary.get("pages")) != (
+            len(series_ids), len(chapter_ids), pages_count):
+        raise ImportFailure("Download summary counts differ from verified media")
+    rights_path = root / "rights.json"
+    if rights_path.exists():
+        _read_rights(rights_path)
+        expected.add(rights_path)
+    if (inventory.get("rightsVerified") is not rights_path.exists()
+            or summary.get("rightsDeclared") is not rights_path.exists()):
+        raise ImportFailure("Source rights declaration status inconsistent")
+    actual = {path for path in export.rglob("*") if path.is_file()}
+    if expected != actual:
+        raise ImportFailure("Unexpected, orphaned or missing export files")
+    return {"series": len(series_ids), "chapters": len(chapter_ids), "pages": pages_count}
+
+
+def verify_export(export: Path) -> dict:
+    """Fail closed with actionable errors for malformed user-supplied archives or JSON."""
+    try:
+        return _verify_export(export)
+    except ImportFailure:
+        raise
+    except (zipfile.BadZipFile, KeyError, TypeError, AttributeError, IndexError,
+            OSError, ValueError) as error:
+        raise ImportFailure("Malformed, corrupted or unreadable export") from error

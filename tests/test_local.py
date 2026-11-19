@@ -126,5 +126,66 @@ class LocalImportTests(unittest.TestCase):
         self.assertIn("Missing numbered page(s) in Original/Chapter 2", inventory["warnings"])
 
 
+    def test_missing_cbz_is_not_complete(self) -> None:
+        self._chapter()
+        import_local(self.source, self.output, self.registry)
+        next((self.output / "chapters").glob("*.cbz")).unlink()
+        with self.assertRaises(ImportFailure):
+            verify_export(self.output)
+
+    def test_malformed_cbz_reports_import_failure(self) -> None:
+        self._chapter()
+        import_local(self.source, self.output, self.registry)
+        next((self.output / "chapters").glob("*.cbz")).write_bytes(b"not a zip")
+        with self.assertRaises(ImportFailure):
+            verify_export(self.output)
+
+    def test_unexpected_cbz_member_is_rejected(self) -> None:
+        self._chapter()
+        import_local(self.source, self.output, self.registry)
+        cbz = next((self.output / "chapters").glob("*.cbz"))
+        with zipfile.ZipFile(cbz, "a") as archive:
+            archive.writestr("unlisted.png", png((1, 0, 1)))
+        with self.assertRaises(ImportFailure):
+            verify_export(self.output)
+
+    def test_tampered_page_identity_is_rejected(self) -> None:
+        self._chapter()
+        import_local(self.source, self.output, self.registry)
+        path = next((self.output / "controller_candidate" / "manifests").glob("*.json"))
+        manifest = json.loads(path.read_text())
+        manifest["pages"][0]["id"] = "pg_modifiedfake00000000"
+        path.write_text(json.dumps(manifest))
+        with self.assertRaises(ImportFailure):
+            verify_export(self.output)
+
+    def test_orphaned_file_is_rejected(self) -> None:
+        self._chapter()
+        import_local(self.source, self.output, self.registry)
+        (self.output / "controller_candidate" / "assets" / "stray.txt").write_text("orphan")
+        with self.assertRaises(ImportFailure):
+            verify_export(self.output)
+
+    def test_mutated_rights_status_is_rejected(self) -> None:
+        self._chapter()
+        import_local(self.source, self.output, self.registry)
+        path = self.output / "controller_candidate" / "inventory.json"
+        inventory = json.loads(path.read_text())
+        inventory["rightsVerified"] = True
+        path.write_text(json.dumps(inventory))
+        with self.assertRaises(ImportFailure):
+            verify_export(self.output)
+
+    def test_reordered_chapters_are_rejected(self) -> None:
+        self._chapter()
+        import_local(self.source, self.output, self.registry)
+        path = self.output / "controller_candidate" / "catalogue.json"
+        catalogue = json.loads(path.read_text())
+        catalogue[0]["chapters"][0]["sequence"] = 9
+        path.write_text(json.dumps(catalogue))
+        with self.assertRaises(ImportFailure):
+            verify_export(self.output)
+
+
 if __name__ == "__main__":
     unittest.main()
