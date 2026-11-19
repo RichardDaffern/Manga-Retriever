@@ -27,7 +27,7 @@ Results are from [Actions run 44549436127](https://github.com/RichardDaffern/Man
 | Kimi no Iru Machi | 0 | None | Not available | **Unavailable in MangaDex English feed** |
 | Last Game | 77 | **56/56**, plus 21 decimal extras | 41 page paths | **Promising** |
 | Love Hina | 2 | Only chapters 1–2 | **0 hosted page paths** in sample | **Not a useful complete hosted source** |
-| Lovely Complex | Two catalogue editions (standard / digital colour) | Edition-specific follow-up pending | Edition-specific follow-up pending | **Needs edition comparison** |
+| Lovely Complex | Standard: **71**; digital-coloured: **0** | Standard **66/66** numbered and 2 unique decimal extras | **0 hosted image paths** for sampled chapter 1 in standard; none in digital | **Main chapter metadata complete, but hosted downloads unproven** |
 | Mado kara Madoka-chan | 0 | None | Not available | **Unavailable in MangaDex English feed** |
 | Nisekoi | 5 | Only 5 integer chapter labels, reaching number 229 | **0 hosted page paths** in sample | **Not a useful complete hosted source** |
 | Onizuka-chan and Sawarida-kun | 76 | **49/49**, plus 24 unique decimal extras | 4 page paths | **Promising**, source sample is short four-panel pages |
@@ -35,3 +35,12 @@ Results are from [Actions run 44549436127](https://github.com/RichardDaffern/Man
 A page-path manifest means only that MangaDex lists high-quality image paths for that sampled chapter; **none of these jobs downloaded or archived artwork**. Integer chapter counts are an approximation of completeness, not proof that all publishers' extras or releases are covered.
 
 For sources with no English feed, external licensed publisher editions may still be available, but this audit makes no download-permission claims.
+
+### Lovely Complex edition check
+
+The follow-up [live edition probe](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44550113059) checked both exact-title matches rather than picking one silently:
+
+- [Standard Lovely★Complex](https://mangadex.org/title/7a1c6e41-6c2d-401e-90fe-baccb637a63e): 71 English feed entries, all 66 numbered main chapters listed. The sampled chapter 1 manifest contains **zero hosted original-image paths**. These records may redirect to external readers; no manga pages were fetched.
+- [Lovely★Complex Digital Colored Comics](https://mangadex.org/title/7b273ab1-42cb-4004-8ffd-1c6f580cc107): zero English feed entries. An English full-colour edition is not available through this source listing.
+
+**Source suitability ranking for follow-up:** Last Game and Onizuka-chan and Sawarida-kun have strong English numbered coverage and nonzero sample hosted-page manifests. Kainushi wa Akuma is mixed. Lovely Complex, Love Hina and Nisekoi have poor hosted-page evidence despite some English metadata; Kimi no Iru Machi and Mado kara Madoka-chan have no English MangaDex feed entries. Do not start automated media downloads without reviewing source permissions.
