@@ -31,6 +31,30 @@ NUMBER = re.compile(r"(?:0|[1-9][0-9]*)(?:\.[0-9]+)?\Z")
 MAX_SAMPLE_CHAPTERS = 3
 
 
+# A separately indexed public reader's chapter-label snapshot, 20 November 2026.
+# It is a research comparison, not a permission grant or authoritative edition.
+KAINUSHI_EXTERNAL_LABELS = (
+    "1 1.1 1.2 2 3 3.1 3.2 4 4.1 4.2 5 5.1 5.2 6 6.1 6.2 7 7.1 7.2 8 8.1 8.2 9 9.1 9.2 9.5 10.1 10.2 11.1 "
+    "11.2 11.3 12.1 12.2 13.1 13.2 14.1 14.2 15.1 15.2 16 16.1 16.2 17 18 18.1 18.2 19 20 21 21.5 22 23 "
+    "23.5 24 25 25.5"
+).split()
+
+
+def external_label_difference(available_labels: list[str], reference: list[str]) -> dict:
+    """Compare raw chapter labels without treating 1.1 and 1 as the same release."""
+    provided = set(available_labels)
+    indexed = set(reference)
+    key = lambda s: (Decimal(s), s)
+    return {
+        "externalLabelCount": len(indexed),
+        "mangaDexLabelCount": len(provided),
+        "labelsMissingFromMangaDex": sorted(indexed - provided, key=key),
+        "labelsAbsentFromExternalIndex": sorted(provided - indexed, key=key),
+        "source": "https://onisaga.com/manga/kainushi-wa-akuma",
+        "caveat": "Snapshot of an independent reader index, not authenticated against original volumes",
+    }
+
+
 def labels_from_feed(entries: list[dict]) -> dict:
     """Count all raw chapter labels; never reinterpret decimals as integer chapters."""
     labelled: dict[str, list[dict]] = defaultdict(list)
@@ -123,11 +147,13 @@ def evaluate(title_key: str, client: MangaDexMetadata) -> dict:
     expected = config["expectedMain"]
     numbers = {int(v) for v in groups["labels"] if v.isdecimal() and int(v) > 0}
     missing_expected = [n for n in range(1, expected + 1) if n not in numbers] if expected else None
+    external = external_label_difference(groups["labels"], KAINUSHI_EXTERNAL_LABELS) if title_key == "kainushi-wa-akuma" else None
     return {
         "title": config["name"],
         "status": "feed-reviewed",
         "mangaDexId": identifier,
         "titleUrl": "https://mangadex.org/title/" + identifier,
+        "externalChapterLabelComparison": external,
         "englishFeedEntries": total,
         "uniqueRawLabels": len(groups["labels"]),
         "integerChapterCount": groups["integerChapterCount"],

@@ -5,6 +5,8 @@ import unittest
 
 from scripts.love_kainushi_readiness import (
     TITLES,
+    KAINUSHI_EXTERNAL_LABELS,
+    external_label_difference,
     evaluate,
     labels_from_feed,
     representative_chapters,
@@ -67,6 +69,13 @@ class MangaReadinessTests(unittest.TestCase):
         self.assertEqual(len(result["missingExpectedMainNumbers"]), 103)
         self.assertFalse(result["publicMediaArtefactAuthorised"])
         self.assertEqual(len(result["sampleImageManifests"]), 3)
+
+    def test_kainushi_56_external_labels_11_missing_in_manifest(self):
+        self.assertEqual(len(KAINUSHI_EXTERNAL_LABELS), 56)
+        differences = external_label_difference(["1", "1.2", "2"], KAINUSHI_EXTERNAL_LABELS)
+        self.assertIn("1.1", differences["labelsMissingFromMangaDex"])
+        self.assertIn("25.5", differences["labelsMissingFromMangaDex"])
+        self.assertEqual(differences["labelsAbsentFromExternalIndex"], [])
 
     def test_kainushi_exact_match_must_be_unambiguous(self):
         class Client:
