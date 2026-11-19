@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib.util
 import json
 import os
-import shutil
 import stat
 import subprocess
 import sys
@@ -158,7 +158,7 @@ def planned_command(output: Path, start: int, end: int) -> list[str]:
         raise ReLIFEError("Chapter selection must be between 1 and 222")
     _safe_output(output)
     return [
-        "mangadex-dl", TITLE_URL,
+        sys.executable, "-m", "mangadex_downloader", TITLE_URL,
         "--language", "en", "--save-as", "cbz", "--path", str(output),
         "--start-chapter", str(start), "--end-chapter", str(end),
         "--order", "oldest", "--http-retries", "3", "--delay-requests", "2",
@@ -166,12 +166,12 @@ def planned_command(output: Path, start: int, end: int) -> list[str]:
 
 
 def download(output: Path, start: int, end: int, *, acknowledge_rights: bool,
-             run=subprocess.run, executable_exists=shutil.which) -> None:
+             run=subprocess.run, module_exists=importlib.util.find_spec) -> None:
     """Run user-installed local client; content and caches stay on their computer."""
     if not acknowledge_rights:
         raise ReLIFEError("Confirm authorised personal use and source terms with --acknowledge-rights")
     argv = planned_command(output, start, end)
-    if executable_exists("mangadex-dl") is None:
+    if module_exists("mangadex_downloader") is None:
         raise ReLIFEError("Install the maintained client first: py -3.12 -m pip install mangadex-downloader==3.1.4")
     output.mkdir(parents=True, exist_ok=True)
     # No shell, no credentials, no proxies, no bypass flags, and never writes to GitHub Actions.

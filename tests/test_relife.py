@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import io
 import json
+import sys
 import tempfile
 import unittest
 import zipfile
@@ -48,8 +49,8 @@ class ReLifeTests(unittest.TestCase):
 
     def test_original_quality_command_and_fixed_title(self) -> None:
         argv = planned_command(self.folder, 1, EXPECTED_NUMBERED_CHAPTERS)
-        self.assertEqual(argv[0], "mangadex-dl")
-        self.assertIn("6e3553b9-ddb5-4d37-b7a3-99998044774e", argv[1])
+        self.assertEqual(argv[:3], [sys.executable, "-m", "mangadex_downloader"])
+        self.assertIn("6e3553b9-ddb5-4d37-b7a3-99998044774e", argv[3])
         self.assertIn("--language", argv)
         self.assertIn("en", argv)
         self.assertIn("cbz", argv)
@@ -69,14 +70,14 @@ class ReLifeTests(unittest.TestCase):
     def test_missing_downloader_actionable(self) -> None:
         with self.assertRaisesRegex(ReLIFEError, "Install"):
             download(self.folder, 1, 2, acknowledge_rights=True,
-                     executable_exists=lambda _: None)
+                     module_exists=lambda _: None)
 
     def test_constructs_arg_list_not_shell(self) -> None:
         proc = Mock(return_value=SimpleNamespace(returncode=0))
         download(self.folder, 1, 2, acknowledge_rights=True, run=proc,
-                 executable_exists=lambda _: "/usr/local/bin/mangadex-dl")
+                 module_exists=lambda _: "/usr/local/bin/mangadex-dl")
         args, kwargs = proc.call_args
-        self.assertEqual(args[0][0], "mangadex-dl")
+        self.assertEqual(args[0][:3], [sys.executable, "-m", "mangadex_downloader"])
         self.assertFalse(kwargs["check"])
         self.assertNotIn("shell", kwargs)
 
@@ -84,7 +85,7 @@ class ReLifeTests(unittest.TestCase):
         with self.assertRaisesRegex(ReLIFEError, "partial files"):
             download(self.folder, 1, 2, acknowledge_rights=True,
                      run=lambda *_a, **_k: SimpleNamespace(returncode=2),
-                     executable_exists=lambda _: "/fake/client")
+                     module_exists=lambda _: "/fake/client")
 
     def test_verified_full_quality_audit_contains_checksums(self) -> None:
         self.cbz()
