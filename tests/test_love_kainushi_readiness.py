@@ -4,10 +4,10 @@ from __future__ import annotations
 import unittest
 
 from scripts.love_kainushi_readiness import (
-    TITLES,
     KAINUSHI_EXTERNAL_LABELS,
-    external_label_difference,
+    TITLES,
     evaluate,
+    external_label_difference,
     labels_from_feed,
     representative_chapters,
     summarise_manifest,
