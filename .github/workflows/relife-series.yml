@@ -1,0 +1,91 @@
+name: ReLIFE Complete Numbered Series Download
+
+on:
+  push:
+    branches:
+      - feature/relife-full-series-actions
+    paths:
+      - .github/workflows/relife-series.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: relife-full-series-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  download:
+    name: ReLIFE English ${{ matrix.start }}-${{ matrix.end }} original quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        include:
+          - {start: 1, end: 20}
+          - {start: 21, end: 40}
+          - {start: 41, end: 60}
+          - {start: 61, end: 80}
+          - {start: 81, end: 100}
+          - {start: 101, end: 120}
+          - {start: 121, end: 140}
+          - {start: 141, end: 160}
+          - {start: 161, end: 180}
+          - {start: 181, end: 200}
+          - {start: 201, end: 220}
+          - {start: 221, end: 222}
+    env:
+      CHAPTER_START: ${{ matrix.start }}
+      CHAPTER_END: ${{ matrix.end }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install pinned downloader and CBZ auditor
+        run: |
+          python -m pip install -e .
+          python -m pip install 'mangadex-downloader==3.1.4'
+      - name: Download ReLIFE English at highest MangaDex uploaded quality
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          from manga_retriever.relife import download
+          download(Path('downloads/ReLIFE'), int(os.environ['CHAPTER_START']), int(os.environ['CHAPTER_END']), acknowledge_rights=True)
+          PY
+      - name: Verify source images, CBZ hashes and chapter count
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from manga_retriever.relife import audit_download
+          output = Path('downloads/ReLIFE')
+          audit = audit_download(output)
+          expected = int(os.environ['CHAPTER_END']) - int(os.environ['CHAPTER_START']) + 1
+          if audit['verifiedArchives'] < expected:
+              raise SystemExit(f'Expected at least {expected} independent chapters, got {audit["verifiedArchives"]} verified CBZs; this batch cannot be marked complete.')
+          audit['requestedRange'] = {'start': int(os.environ['CHAPTER_START']), 'end': int(os.environ['CHAPTER_END'])}
+          audit['rangeVerified'] = True
+          audit['rangeCaveat'] = 'CBZ count alone cannot prove distinct source chapter numbers; compare release labels if duplicates appear.'
+          Path('downloads/relife_quality_audit.json').write_text(json.dumps(audit, indent=2) + '\n', encoding='utf-8')
+          Path('downloads/SOURCE_AND_RIGHTS.txt').write_text(
+              'ReLIFE by YayoiSo. English uploads sourced from MangaDex.\n'
+              'MangaDex: https://mangadex.org/title/6e3553b9-ddb5-4d37-b7a3-99998044774e/relife\n'
+              'Retain uploader/scanlator credits (ComicInfo.xml where provided).\n'
+              'Original MangaDex uploaded image quality requested, never data-saver.\n'
+              'No publisher-master equivalence, rights permission or complete edition is asserted.\n',
+              encoding='utf-8')
+          print(f'Verified {audit["verifiedArchives"]} CBZs, {audit["verifiedPages"]} image pages in range {os.environ["CHAPTER_START"]}-{os.environ["CHAPTER_END"]}')
+          PY
+      - name: Upload each verified batch (seven days)
+        uses: actions/upload-artifact@v7
+        with:
+          name: ReLIFE-Original-Quality-Ch${{ matrix.start }}-${{ matrix.end }}
+          path: downloads/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
