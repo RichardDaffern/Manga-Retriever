@@ -205,6 +205,24 @@ def check_work(work: dict, client: MangaDexMetadata) -> dict:
         ]
         if selected is None:
             result["status"] = "ambiguous" if matches else "not-found"
+            # Lovely Complex has a conventional and a separately listed digital
+            # coloured edition. Inspect both, but never choose one silently.
+            if matches and work["name"] == "Lovely Complex":
+                result["editionAlternatives"] = []
+                for candidate in matches[:3]:
+                    record = {"mangaDexId": candidate["id"],
+                              "title": next(iter(titles_for(candidate)), "Untitled")}
+                    try:
+                        total, chapters = client.feed(candidate["id"])
+                        record["englishFeedEntries"] = total
+                        summary = summarise(chapters)
+                        chapter_id = summary.pop("firstChapterId")
+                        record["numberedCoverage"] = summary
+                        if chapter_id is not None:
+                            record["sampleImageManifest"] = client.image_manifest(chapter_id)
+                    except (OSError, ValueError, KeyError, TypeError) as exc:
+                        record["error"] = str(exc)[:160]
+                    result["editionAlternatives"].append(record)
             return result
         manga_id = selected["id"]
         result["sourceUrl"] = f"https://mangadex.org/title/{manga_id}"
@@ -218,6 +236,11 @@ def check_work(work: dict, client: MangaDexMetadata) -> dict:
         if chapter_id is not None:
             try:
                 result["imageManifest"] = client.image_manifest(chapter_id)
+                if result["imageManifest"].get("originalPagePaths") == 0:
+                    result["sourceCaution"] = (
+                        "The sampled first English chapter exposes no MangaDex-hosted "
+                        "original image pages; it may be an external-reader link."
+                    )
             except (OSError, ValueError, TypeError, KeyError) as exc:
                 result["imageManifest"] = {"status": "unavailable", "error": str(exc)[:160]}
     except (OSError, ValueError, TypeError, KeyError) as exc:
