@@ -93,6 +93,18 @@ jobs:
               else:
                   unnumbered += 1
           target = set(range(1, 86))
+          # Ask MangaDex only for the first English chapter's public image *manifest*.
+          # Do not fetch image bytes, generate CBZs or publish copyrighted media.
+          first = next((c for c in chapters if c.get("attributes", {}).get("chapter") == "1"), None)
+          if not isinstance(first, dict) or not isinstance(first.get("id"), str):
+              raise RuntimeError("No English chapter 1 manifest identifier")
+          time.sleep(2)
+          manifest = get("/at-home/server/" + first["id"])
+          paths = manifest.get("chapter", {})
+          originals, compressed = paths.get("data"), paths.get("dataSaver")
+          if (not isinstance(originals, list) or not originals
+                  or not isinstance(compressed, list) or len(compressed) != len(originals)):
+              raise RuntimeError("No matching original/data-saver page manifest for chapter 1")
           report = {
               "schemaVersion": 1,
               "title": "Kaichou wa Maid-sama! (Maid-sama!)",
@@ -106,7 +118,10 @@ jobs:
               "highestNumberedChapter": max(numbers) if numbers else None,
               "decimalExtraEntries": len(decimal_extras),
               "unnumberedEntries": unnumbered,
-              "quality": "not checked: this probe never downloads images",
+              "chapter1OriginalImagePaths": len(originals),
+              "chapter1DataSaverImagePaths": len(compressed),
+              "chapter1ImageBytesRetrieved": 0,
+              "quality": "public original-image paths enumerated; actual pixel fidelity untested",
               "rights": "Metadata availability does not grant download or rehosting permission",
           }
           Path("maid-sama-source-report.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
