@@ -1,7 +1,10 @@
 """Offline regression tests of the eight-title source identification."""
 from __future__ import annotations
+
 import unittest
+
 from scripts.source_probe_eight import WORKS, check_work, normalise, select_exact, summarise
+
 
 class SourceProbeEightTests(unittest.TestCase):
     def test_normalise_punctuation(self):
