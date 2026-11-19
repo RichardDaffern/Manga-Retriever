@@ -11,3 +11,7 @@ The Pepper&Carrot pilot accepts only the approved official Episode 26 source and
 ## M5 safe bulk permissions
 
 Bulk jobs take only allowlisted `source:episode` IDs. They cannot request arbitrary hosts/URLs or import personal data into public Actions. The manual workflow grants read-only repository access to download workers, with `contents:write` confined to the serial metadata finaliser. The finaliser records verified short-lived artefact URLs but never commits media. Registry writes use strict receipt validation and bounded retries against fresh `origin/main` to avoid silently overwriting concurrent records. The operational scope is the already verified CC BY 4.0 Episode 26 alone.
+
+## ReLIFE source-specific local-only workflow
+
+The opted-in ReLIFE wrapper invokes a pinned third-party client using `subprocess.run` with an argv list, no shell, no credentials or bypass flags, a fixed MangaDex title ID, English language, and full uploaded-quality CBZ images. It does not run in public CI or expose media through GitHub Actions. The offline CBZ scanner applies path traversal, ZIP encryption/special file, compression ratio, page type/dimensions, member count and byte budgets before recording per-page SHA-256 and a report that never claims series completeness. The third-party client, source availability and end-user local rights are separate trust boundaries; maintainers should review upstream source changes before recommending execution. The user must explicitly acknowledge source permission and must not publish third-party images or scanlations.

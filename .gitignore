@@ -26,3 +26,6 @@ dist/
 /rights.json
 /receipts/
 /manga_batch_status.json
+# Private ReLIFE scan files and local quality reports
+/ReLIFE/
+/relife_quality_audit.json

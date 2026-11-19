@@ -11,3 +11,7 @@ Pepper&Carrot Episode 26 (English high-resolution 6 pages) uses a fixed official
 ## Local creator-authorised PDF manga
 
 The creator-published [*Give My Regards to Black Jack*](https://densho810.com/free/) PDF volumes can now be imported offline using `python -m manga_retriever.blackjack_pdf` after you download originals manually and explicitly declare `--official-source`. The converter produces rasterised PNG pages, CBZs and a Controller candidate. **It does not independently authenticate the PDFs, fetch them from the website or authorise publishing them to e-book stores or public GitHub Actions.** Attribution and the original owner's terms apply. [Guide](BLACKJACK_PDF_IMPORT.md).
+
+## ReLIFE private local quality pilot (not a production source)
+
+A **local-only** opt-in wrapper for the third-party `mangadex-downloader` client is available in [the ReLIFE guide](RELIFE_DOWNLOAD.md). It fixes the title and English language, avoids MangaDex compressed `data-saver` images, and audits CBZ pages and hashes offline. The public bulk workflow's source allowlist **is unchanged**. MangaDex upload provenance does not prove re-archival permission; no remote title-level adapter is included in GitHub Actions, and no source images are committed. Only an end-user with suitable permission should enable downloads. The original, officially distributed *ReLIFE* is a 15-volume full-colour Japanese edition; English third-party scans are not guaranteed to match master quality.
