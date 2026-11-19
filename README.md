@@ -67,3 +67,9 @@ Each job verifies complete CBZ/media bytes and posts a short-lived licensed expo
 Local batch planning: `python -m manga_retriever.batch prepare --selection peppercarrot:26`. Future source adapters require separate explicit licensing review and tests before their identifiers may join the production allowlist.
 
 **Live-source verification:** The public Pepper&Carrot website can be temporarily unreachable from GitHub runners. A full live download was verified during M3. M5 synthetic CI verifies the batch planning, receipt and recovery code without making external site health a release gate. To verify live availability, manually run an approved download Action and inspect its complete source-verified artefact.
+
+## M6: Windows download and consolidated ZIP
+
+Use `Download-Manga.cmd` after installing the [GitHub CLI](https://cli.github.com/) and running `gh auth login`, to retrieve the latest **unexpired, approved** licence-authorised GitHub Actions artefact listed in `downloaded_manga.json`. The command re-verifies original export integrity and CBZ SHA-256, and skips existing **valid** copies. Invalid or incomplete copies are **never overwritten automatically**. `Bundle-Manga.cmd` combines independently verified downloads into a local ZIP with a full SHA-256 member manifest. See [step-by-step Windows guide](docs/WINDOWS_RETRIEVAL.md).
+
+**Not a manga-anywhere scraper:** Only the existing approved Pepper&Carrot Episode 26 remains enabled for remote downloading. Creator-authorised Japanese manga [*Give My Regards to Black Jack*](docs/SOURCE_RESEARCH.md) has been identified as a high-priority next source, subject to its more specific attribution, reporting and redistribution terms. Direct PDF download and conversion are not yet implemented.
