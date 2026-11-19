@@ -1,0 +1,67 @@
+name: Three Manga English Original-Quality Downloads
+
+on:
+  push:
+    branches: [feature/three-manga-actions-20261119]
+    paths:
+      - .github/workflows/three-manga-download.yml
+      - manga_retriever/selected_sources.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: three-manga-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  download-and-verify:
+    name: ${{ matrix.slug }} chapters ${{ matrix.start }}-${{ matrix.end }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        include:
+          - {slug: maid-sama, start: 1, end: 20}
+          - {slug: maid-sama, start: 21, end: 40}
+          - {slug: maid-sama, start: 41, end: 60}
+          - {slug: maid-sama, start: 61, end: 80}
+          - {slug: maid-sama, start: 81, end: 85}
+          - {slug: last-game, start: 1, end: 20}
+          - {slug: last-game, start: 21, end: 40}
+          - {slug: last-game, start: 41, end: 56}
+          - {slug: onizuka-sawarida, start: 1, end: 20}
+          - {slug: onizuka-sawarida, start: 21, end: 40}
+          - {slug: onizuka-sawarida, start: 41, end: 49}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install verified downloader dependencies
+        run: |
+          python -m pip install -e .
+          python -m pip install 'mangadex-downloader==3.1.4'
+      - name: Download numbered English manga at original uploaded image quality and verify CBZs
+        shell: bash
+        env:
+          SELECTED_SLUG: ${{ matrix.slug }}
+          SELECTED_START: ${{ matrix.start }}
+          SELECTED_END: ${{ matrix.end }}
+        run: |
+          python -m manga_retriever.selected_sources \
+            --slug "$SELECTED_SLUG" --start "$SELECTED_START" --end "$SELECTED_END" \
+            --output "downloads/$SELECTED_SLUG" \
+            --verified-output "verified/$SELECTED_SLUG-$SELECTED_START-$SELECTED_END" \
+            --acknowledge-rights
+      - name: Upload only independently verified CBZs and checksum reports
+        uses: actions/upload-artifact@v7
+        with:
+          name: Manga-${{ matrix.slug }}-Original-Ch${{ matrix.start }}-${{ matrix.end }}
+          path: verified/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
