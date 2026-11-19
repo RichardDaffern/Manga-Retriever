@@ -1,0 +1,99 @@
+name: ReLIFE High-Quality Download
+
+on:
+  # One-time branch push starts the first two-chapter pilot immediately.
+  push:
+    branches:
+      - feature/relife-actions-download
+    paths:
+      - .github/workflows/relife-download.yml
+  workflow_dispatch:
+    inputs:
+      start_chapter:
+        description: 'First numbered chapter (1 to 222)'
+        required: true
+        default: '1'
+        type: string
+      end_chapter:
+        description: 'Last numbered chapter (1 to 222)'
+        required: true
+        default: '2'
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: relife-download-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  download:
+    name: Download and verify full-quality English CBZ
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      CHAPTER_START: ${{ github.event_name == 'workflow_dispatch' && inputs.start_chapter || '1' }}
+      CHAPTER_END: ${{ github.event_name == 'workflow_dispatch' && inputs.end_chapter || '2' }}
+    steps:
+      - name: Check chapter range
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os
+          start = os.environ['CHAPTER_START']
+          end = os.environ['CHAPTER_END']
+          if not (start.isdecimal() and end.isdecimal() and 1 <= int(start) <= int(end) <= 222):
+              raise SystemExit('Invalid ReLIFE chapter range: 1 to 222, start <= end')
+          if int(end) - int(start) >= 20:
+              raise SystemExit('A single job accepts at most 20 chapters. Run sequential batches to avoid server abuse.')
+          print(f'ReLIFE English chapter range {start}-{end} (MangaDex original uploaded resolution)')
+          PY
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install pinned MangaDex client and verifier
+        run: |
+          python -m pip install -e .
+          python -m pip install 'mangadex-downloader==3.1.4'
+      - name: Download ReLIFE chapter images at full uploaded quality
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          from manga_retriever.relife import download
+          download(Path('downloads/ReLIFE'), int(os.environ['CHAPTER_START']), int(os.environ['CHAPTER_END']), acknowledge_rights=True)
+          PY
+      - name: Verify complete CBZ files and source image quality
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from manga_retriever.relife import audit_download
+          result = audit_download(Path('downloads/ReLIFE'))
+          # Do not publish an empty/partial pilot or a false full-series claim.
+          requested = int(__import__('os').environ['CHAPTER_END']) - int(__import__('os').environ['CHAPTER_START']) + 1
+          if result['verifiedArchives'] < requested:
+              raise SystemExit(f"Only {result['verifiedArchives']} archives passed verification for {requested} requested chapters")
+          out = Path('downloads/relife_quality_audit.json')
+          out.write_text(json.dumps(result, indent=2) + '\n', encoding='utf-8')
+          Path('downloads/SOURCE_AND_RIGHTS.txt').write_text(
+              'ReLIFE by YayoiSo. Chapter files from MangaDex English scanlation uploads.\n'
+              'MangaDex: https://mangadex.org/title/6e3553b9-ddb5-4d37-b7a3-99998044774e/relife\n'
+              'Uploader/scanlation group credits are retained in the respective ComicInfo.xml files, when present.\n'
+              'Not verified against official publisher master images. No redistribution permission is asserted.\n',
+              encoding='utf-8')
+          print(f"Verified {result['verifiedArchives']} CBZ, {result['verifiedPages']} original-upload pages.")
+          print(f"Dimensions: {result['minWidth']} to {result['maxWidth']}px wide")
+          PY
+      - name: Upload verified ReLIFE CBZ artefact (7 days)
+        uses: actions/upload-artifact@v7
+        with:
+          name: ReLIFE-English-Original-Quality-Ch${{ env.CHAPTER_START }}-${{ env.CHAPTER_END }}
+          path: downloads/
+          compression-level: 0
+          retention-days: 7
+          if-no-files-found: error
