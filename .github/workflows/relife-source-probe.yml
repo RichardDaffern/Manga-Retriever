@@ -1,0 +1,54 @@
+name: ReLIFE Source Metadata Probe
+on:
+  pull_request:
+    paths:
+      - .github/workflows/relife-source-probe.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect-metadata-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Inspect public ReLIFE listing and English feed (no media)
+        run: |
+          python - <<'PY'
+          import json
+          import time
+          from urllib.parse import urlencode
+          from urllib.request import Request, urlopen
+
+          manga_id = "6e3553b9-ddb5-4d37-b7a3-99998044774e"
+          api = "https://api.mangadex.org"
+          headers = {"User-Agent": "Taiyou-Manga-Retriever/0.1 (metadata-only; no media)", "Accept": "application/json"}
+          def get(path):
+              request = Request(api + path, headers=headers)
+              with urlopen(request, timeout=15) as response:
+                  if response.status != 200:
+                      raise RuntimeError(f"Unexpected metadata HTTP {response.status}")
+                  data = response.read(1024 * 1024 + 1)
+              if len(data) > 1024 * 1024:
+                  raise RuntimeError("Oversized public metadata")
+              return json.loads(data)
+
+          manga = get(f"/manga/{manga_id}")
+          if manga.get("data", {}).get("id") != manga_id:
+              raise RuntimeError("Manga ID mismatched")
+          titles = manga["data"]["attributes"]["title"]
+          print("Verified MangaDex title:", titles)
+          time.sleep(2)
+          params = urlencode({"limit": 1, "translatedLanguage[]": "en"})
+          feed = get(f"/manga/{manga_id}/feed?{params}")
+          total = feed.get("total")
+          if type(total) is not int:
+              raise RuntimeError("English feed count unavailable")
+          print("MangaDex English chapter entries:", total)
+          if total < 1:
+              raise RuntimeError("No English chapters available")
+          print("Metadata API probe passed. No image URLs fetched and no manga files downloaded.")
+          PY
