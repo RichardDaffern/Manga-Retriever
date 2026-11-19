@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "taiyou-manga-retriever"
+version = "0.1.0"
+description = "Authorised manga local importer and verified CBZ packager"
+requires-python = ">=3.12"
+dependencies = ["Pillow>=13,<14"]
+
+[project.optional-dependencies]
+dev = ["ruff>=0.8,<1", "mypy>=1.13,<2", "pip-audit>=2.7,<3"]
+
+[project.scripts]
+manga-retriever = "manga_retriever.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["manga_retriever*"]
+
+[tool.ruff]
+line-length = 140
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "S"]
+ignore = ["S101"]
