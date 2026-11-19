@@ -53,3 +53,7 @@ GitHub Actions CI runs 25 synthetic tests and a dependency/security check. No li
 ## Responsibilities
 
 Manga Retriever produces validated local packages. [Manga Storage Controller](https://github.com/AdityaSreevatsaK/Taiyou-Manga-Storage-Controller) handles owner-controlled private uploads, backups and decisions. [Manga Library](https://github.com/AdityaSreevatsaK/Taiyous-Manga-Library) owns reading UX and progress. No HF writes are enabled in the Storage Controller, and nothing in this project overrides that policy.
+
+## M4: verified page-level resume
+
+The authorised Pepper&Carrot episode now checkpoints each successfully downloaded image at `.<output-folder>.checkpoint/` alongside the requested export. On a transient or permanent later-page error, no incomplete CBZ is published. Repeat the **same** command and registry to revalidate and reuse the completed page bytes, fetching only missing or corrupt pages. The official source page and licence are rechecked on every attempt. The checkpoint is removed after a fully verified export is published. **Do not delete or commit the checkpoint while recovering; it contains actual licensed pages.** This is chapter-level only for the sole approved Episode 26; arbitrary manga acquisition remains disabled.

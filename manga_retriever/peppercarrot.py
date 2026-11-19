@@ -20,7 +20,8 @@ from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import urljoin, urlsplit
 
-from .importer import ImportFailure, import_local, verify_export
+from .checkpoint import CheckpointError, PageCheckpoint, PageSpec
+from .importer import ImportFailure, _validate_image, import_local, verify_export
 
 SOURCE_PAGE = "https://www.peppercarrot.com/en/webcomic-sources/ep26_Books-Are-Great.html"
 LICENCE_URL = "https://creativecommons.org/licenses/by/4.0/"
@@ -166,11 +167,26 @@ def download_episode_26(output: Path, registry: Path, *, fetch=None, sleep=time.
     pages = plan_episode_26(html)
     work = Path(tempfile.mkdtemp(prefix=".peppercarrot-stage-", dir=output.parent))
     try:
+        checkpoint = PageCheckpoint(
+            output.with_name(f".{output.name}.checkpoint"),
+            SOURCE_PAGE,
+            (PageSpec(page.number, page.url) for page in pages),
+            maximum_bytes=MAX_PAGE_BYTES,
+            validate=_validate_image,
+        )
+        try:
+            checkpoint.run(
+                lambda url, maximum: fetch_with_retries(url, maximum, fetch=fetch, sleep=sleep)
+            )
+        except CheckpointError as error:
+            raise ImportFailure(f"Unsafe or incompatible page checkpoint: {error}") from error
         page_folder = work / "input" / "Pepper-and-Carrot" / "Episode 26"
         page_folder.mkdir(parents=True)
         for page in pages:
-            data = fetch_with_retries(page.url, MAX_PAGE_BYTES, fetch=fetch, sleep=sleep)
-            (page_folder / f"{page.number:04d}.jpg").write_bytes(data)
+            shutil.copyfile(
+                checkpoint.page_folder / f"{page.number:04d}.jpg",
+                page_folder / f"{page.number:04d}.jpg",
+            )
         rights = {
             "schemaVersion": 1,
             "sourceType": "licensed",
@@ -218,6 +234,8 @@ def download_episode_26(output: Path, registry: Path, *, fetch=None, sleep=time.
         if output.exists() or output.is_symlink():
             raise ImportFailure("Destination appeared during download")
         staged.rename(output)
+        # These are generated scratch pages only; never remove the verified export.
+        shutil.rmtree(checkpoint.directory, ignore_errors=True)
         return result
     finally:
         shutil.rmtree(work, ignore_errors=True)

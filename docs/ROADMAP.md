@@ -5,7 +5,7 @@
 | M1: architecture, source research, scaffold, CI specification | Built locally, remote CI pending |
 | M2: local folder/CBZ/ZIP import, original bytes, verified candidate/CBZ | Implemented and locally tested |
 | M3: licensed Pepper&Carrot live acquisition | Pending per-episode rights-aware adaptor and safe network testing |
-| M4: checkpoints, bounded retries, resume and corruption recovery | Pending |
+| M4: checkpoints, bounded retries, resume and corruption recovery | Implemented for the single approved Pepper&Carrot episode; source expansion and cross-run CI validation remain separate |
 | M5: bulk download, Actions orchestration, metadata-only completion registry | Pending |
 | M6: Windows retrieval utilities, consolidated exports, skip-existing | Windows import/verify implemented; remainder pending |
 | M7: full Manga Controller and Reader contract integration | Candidate v1 shape implemented; live Controller verification pending |
