@@ -18,10 +18,10 @@ import tempfile
 import warnings
 import zipfile
 from collections import defaultdict
+from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
-from typing import Iterator
 
 from PIL import Image, ImageFile
 
