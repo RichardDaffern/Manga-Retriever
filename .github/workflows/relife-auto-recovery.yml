@@ -1,0 +1,72 @@
+name: ReLIFE Automatic Batch Recovery
+
+on:
+  workflow_run:
+    workflows:
+      - ReLIFE Complete Numbered Series Download
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    name: Record ReLIFE batch artefact coverage
+    if: ${{ github.event.workflow_run.head_repository.full_name == github.repository && (github.event.workflow_run.event == 'push' || github.event.workflow_run.event == 'workflow_dispatch') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+      SOURCE_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+      SOURCE_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Query non-media run artefact metadata
+        run: gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID/artifacts?per_page=100" > run_artifacts.json
+      - name: Create completeness/recovery report
+        run: |
+          python scripts/relife_run_summary.py \
+            --artifacts run_artifacts.json \
+            --run-id "$SOURCE_RUN_ID" \
+            --attempt "$SOURCE_ATTEMPT" \
+            --conclusion "$SOURCE_CONCLUSION" \
+            --output relife_batch_status.json
+      - name: Store metadata-only report for seven days
+        uses: actions/upload-artifact@v7
+        with:
+          name: relife-batch-status-${{ github.event.workflow_run.id }}-attempt-${{ github.event.workflow_run.run_attempt }}
+          path: relife_batch_status.json
+          retention-days: 7
+          if-no-files-found: error
+
+  retry-failed:
+    name: Bounded automatic re-run of failed chapter ranges
+    needs: report
+    if: ${{ needs.report.result == 'success' && github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.run_attempt < 3 && (github.event.workflow_run.head_repository.full_name == github.repository && (github.event.workflow_run.event == 'push' || github.event.workflow_run.event == 'workflow_dispatch')) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+    steps:
+      - name: Wait briefly for transient source failures
+        run: sleep 60
+      - name: Request failed-jobs-only rerun (successful artefacts retained)
+        run: |
+          if [[ ! "$SOURCE_RUN_ID" =~ ^[1-9][0-9]*$ ]]; then
+            echo 'Invalid source workflow run' >&2
+            exit 1
+          fi
+          gh api -X POST "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID/rerun-failed-jobs"
