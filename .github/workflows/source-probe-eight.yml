@@ -1,0 +1,32 @@
+name: Eight Manga English Source Audit
+on:
+  push:
+    branches: [feature/expanded-eight-title-source-audit]
+    paths:
+      - scripts/source_probe_eight.py
+      - .github/workflows/source-probe-eight.yml
+      - tests/test_source_probe_eight.py
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  metadata-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Test source identity and chapter gap calculations offline
+        run: python -m unittest tests.test_source_probe_eight -v
+      - name: Check eight titles from MangaDex's public metadata only
+        run: python scripts/source_probe_eight.py --output reports/manga-source-audit-eight.json
+      - name: Publish safe source summary, never copyrighted artwork
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: eight-manga-english-source-report
+          path: reports/manga-source-audit-eight.json
+          retention-days: 7
+          if-no-files-found: warn
