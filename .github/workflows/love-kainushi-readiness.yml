@@ -1,0 +1,35 @@
+name: Love So Life and Kainushi Readiness Audit
+
+on:
+  push:
+    branches:
+      - feature/love-kainushi-readiness-audit-20261120
+    paths:
+      - scripts/love_kainushi_readiness.py
+      - tests/test_love_kainushi_readiness.py
+      - .github/workflows/love-kainushi-readiness.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-quality-metadata:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Verify chapter label normalisation and image manifest safety
+        run: python -m unittest tests.test_love_kainushi_readiness -v
+      - name: Inspect actual English chapter feed and 3 image manifests per title
+        run: python -m scripts.love_kainushi_readiness --output reports/love-kainushi-readiness.json
+      - name: Upload non-media source suitability report
+        uses: actions/upload-artifact@v7
+        with:
+          name: love-so-life-kainushi-source-readiness
+          path: reports/love-kainushi-readiness.json
+          retention-days: 7
+          if-no-files-found: error
