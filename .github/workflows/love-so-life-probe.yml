@@ -1,0 +1,56 @@
+name: Love So Life English MangaDex Metadata Probe
+
+on:
+  push:
+    branches:
+      - feature/love-so-life-live-source-probe
+    paths:
+      - .github/workflows/love-so-life-probe.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-coverage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Inspect exact manga title and English chapter feed without downloading pages
+        run: |
+          python - <<'PY'
+          import json
+          from datetime import UTC, datetime
+          from pathlib import Path
+          from scripts.source_probe_eight import MangaDexMetadata, check_work
+          work = {"name": "Love So Life", "queries": ["Love So Life"],
+                  "aliases": ["Love So Life", "LOVE SO LIFE"]}
+          result = check_work(work, MangaDexMetadata(delay=2))
+          report = {
+              "schemaVersion": 1,
+              "checkedAtUtc": datetime.now(UTC).isoformat(),
+              "source": "MangaDex public metadata and first-image-path manifest only",
+              "artworkDownloaded": False,
+              "verifiedDownloadRights": False,
+              "manga": result,
+              "independentCatalogueExpectedMainChapters": 111,
+              "weebCentralLastVisibleChapter": 106,
+              "comparisonCaveat": "Catalogue totals and latest visible Weeb Central chapter numbers are not proof of chapter completeness or identical editions."
+          }
+          Path("love-so-life-source-audit.json").write_text(
+              json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+          print(json.dumps(result, indent=2, ensure_ascii=False))
+          if result["status"] == "source-check-failed":
+              raise SystemExit("MangaDex metadata probe failed; do not treat this as a zero-chapter result")
+          PY
+      - name: Retain metadata-only results for seven days
+        uses: actions/upload-artifact@v7
+        with:
+          name: love-so-life-english-source-audit
+          path: love-so-life-source-audit.json
+          if-no-files-found: error
+          retention-days: 7
