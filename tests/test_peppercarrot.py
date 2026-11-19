@@ -21,7 +21,6 @@ from manga_retriever.peppercarrot import (
     plan_episode_26,
 )
 
-
 PAGE_ROOT = (
     "https://www.peppercarrot.com/0_sources/ep26_Books-Are-Great/hi-res/"
     "en_Pepper-and-Carrot_by-David-Revoy_E26P"
