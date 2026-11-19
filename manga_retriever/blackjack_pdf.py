@@ -143,7 +143,8 @@ def import_blackjack_pdfs(
             "title": TITLE,
             "permissionEvidence": SOURCE_URL + " (creator's official PDF download terms)",
             "attribution": (
-                "Give My Regards to Black Jack; SHUHO SATO. Original publisher PDFs only. "
+                "Give My Regards to Black Jack / ブラックジャックによろしく; "
+                "SHUHO SATO / 佐藤秀峰. Original publisher PDFs only. "
                 "Review Sato Manga Works terms: attribution, ebook-store, music and reporting duties."
             ),
             "recordedAt": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
