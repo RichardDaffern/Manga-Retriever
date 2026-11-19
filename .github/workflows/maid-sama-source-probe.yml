@@ -1,0 +1,138 @@
+name: Maid-sama English MangaDex Availability Probe
+on:
+  push:
+    branches: [feature/maid-sama-source-availability]
+    paths:
+      - .github/workflows/maid-sama-source-probe.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  english-chapter-metadata:
+    name: Check English chapter coverage without downloading images
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Fetch public metadata only; respect rate limits
+        run: |
+          python - <<'PY'
+          import json
+          import re
+          import time
+          from datetime import datetime, timezone
+          from pathlib import Path
+          from urllib.error import HTTPError, URLError
+          from urllib.parse import urlencode
+          from urllib.request import Request, urlopen
+
+          manga_id = "d5e2bd89-e300-4262-a799-fb4f79bdb777"
+          base = "https://api.mangadex.org"
+          headers = {
+              "User-Agent": "Taiyou-Manga-Retriever/0.1 (metadata-only; no artwork)",
+              "Accept": "application/json",
+          }
+          def get(path):
+              for attempt in range(3):
+                  try:
+                      req = Request(base + path, headers=headers)
+                      with urlopen(req, timeout=20) as resp:
+                          if resp.status != 200:
+                              raise RuntimeError(f"Unexpected HTTP {resp.status}")
+                          raw = resp.read(1_000_001)
+                          if len(raw) > 1_000_000:
+                              raise RuntimeError("Unexpectedly large public metadata response")
+                      return json.loads(raw)
+                  except HTTPError as err:
+                      if err.code not in {429, 500, 502, 503, 504} or attempt == 2:
+                          raise
+                  except URLError:
+                      if attempt == 2:
+                          raise
+                  time.sleep(4 * (attempt + 1))
+              raise RuntimeError("Metadata unavailable")
+
+          info = get("/manga/" + manga_id)
+          manga = info.get("data", {})
+          if manga.get("id") != manga_id:
+              raise RuntimeError("Incorrect MangaDex manga identity")
+          title = manga.get("attributes", {}).get("title", {})
+          if not isinstance(title, dict) or not any("maid" in str(v).lower() for v in title.values()):
+              raise RuntimeError("Returned manga is not Maid-sama!")
+          time.sleep(2)
+          chapters = []
+          total = None
+          for offset in range(0, 500, 100):
+              params = urlencode({"limit": 100, "offset": offset, "translatedLanguage[]": "en"})
+              page = get("/manga/" + manga_id + "/feed?" + params)
+              if page.get("result") != "ok" or not isinstance(page.get("data"), list):
+                  raise RuntimeError("Invalid English chapter response")
+              if total is None:
+                  total = page.get("total")
+                  if type(total) is not int or total < 0 or total > 500:
+                      raise RuntimeError("Unknown or excessive English feed size")
+              chapters.extend(page["data"])
+              if len(chapters) >= total:
+                  break
+              time.sleep(2)
+          if len(chapters) != total:
+              raise RuntimeError("English chapter listing incomplete")
+          numbers = set()
+          decimal_extras = set()
+          unnumbered = 0
+          for chapter in chapters:
+              attr = chapter.get("attributes", {})
+              value = attr.get("chapter")
+              if isinstance(value, str) and re.fullmatch(r"[0-9]+", value):
+                  numbers.add(int(value))
+              elif isinstance(value, str) and re.fullmatch(r"[0-9]+\.[0-9]+", value):
+                  decimal_extras.add(value)
+              else:
+                  unnumbered += 1
+          target = set(range(1, 86))
+          # Ask MangaDex only for the first English chapter's public image *manifest*.
+          # Do not fetch image bytes, generate CBZs or publish copyrighted media.
+          first = next((c for c in chapters if c.get("attributes", {}).get("chapter") == "1"), None)
+          if not isinstance(first, dict) or not isinstance(first.get("id"), str):
+              raise RuntimeError("No English chapter 1 manifest identifier")
+          time.sleep(2)
+          manifest = get("/at-home/server/" + first["id"])
+          paths = manifest.get("chapter", {})
+          originals, compressed = paths.get("data"), paths.get("dataSaver")
+          if (not isinstance(originals, list) or not originals
+                  or not isinstance(compressed, list) or len(compressed) != len(originals)):
+              raise RuntimeError("No matching original/data-saver page manifest for chapter 1")
+          report = {
+              "schemaVersion": 1,
+              "title": "Kaichou wa Maid-sama! (Maid-sama!)",
+              "mangaDexId": manga_id,
+              "mangaDexUrl": "https://mangadex.org/title/" + manga_id + "/kaichou-wa-maid-sama",
+              "checkedAtUtc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+              "englishFeedEntries": total,
+              "uniqueNumberedChapters": len(numbers),
+              "mainChaptersPresent1To85": len(numbers & target),
+              "missingMainChapterNumbers1To85": sorted(target - numbers),
+              "highestNumberedChapter": max(numbers) if numbers else None,
+              "decimalExtraEntries": len(decimal_extras),
+              "unnumberedEntries": unnumbered,
+              "chapter1OriginalImagePaths": len(originals),
+              "chapter1DataSaverImagePaths": len(compressed),
+              "chapter1ImageBytesRetrieved": 0,
+              "quality": "public original-image paths enumerated; actual pixel fidelity untested",
+              "rights": "Metadata availability does not grant download or rehosting permission",
+          }
+          Path("maid-sama-source-report.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+          print(json.dumps(report, indent=2))
+          if total == 0:
+              raise RuntimeError("No English chapter entries found on this source")
+          PY
+      - name: Save safe metadata-only report
+        uses: actions/upload-artifact@v7
+        with:
+          name: maid-sama-source-metadata
+          path: maid-sama-source-report.json
+          retention-days: 7
+          if-no-files-found: error
