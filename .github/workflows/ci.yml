@@ -68,6 +68,8 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
+      - name: Install package and Pillow dependency
+        run: python -m pip install -e .
       - name: Exercise approved planning and offline registry tests
         run: |
           python -m manga_retriever.batch prepare --selection peppercarrot:26
