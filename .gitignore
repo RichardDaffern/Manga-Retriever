@@ -8,6 +8,7 @@ build/
 dist/
 *.egg-info/
 .manga-retriever/
+*.checkpoint/
 *.cbz
 *.CBZ
 *.zip
@@ -23,9 +24,5 @@ dist/
 /bundles/
 /ids.json
 /rights.json
-
-# Private, partial downloads must never enter a public repo.
-*.checkpoint/
-
 /receipts/
 /manga_batch_status.json
