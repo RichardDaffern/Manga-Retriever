@@ -222,7 +222,7 @@ def receipt_from_export(
     pages = licensed.get("pages")
     if not isinstance(pages, list) or len(pages) != 6 or [x.get("pageNumber") for x in pages if isinstance(x, dict)] != list(range(1, 7)):
         raise BatchError("Licensed source page plan incomplete")
-    from .peppercarrot import _official_page_url, LICENCE_URL, SOURCE_PAGE
+    from .peppercarrot import LICENCE_URL, SOURCE_PAGE, _official_page_url
     if licensed.get("sourcePage") != SOURCE_PAGE or licensed.get("licenceUrl") != LICENCE_URL:
         raise BatchError("Unapproved source page/licence")
     for page in pages:

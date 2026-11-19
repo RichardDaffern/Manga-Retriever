@@ -23,7 +23,6 @@ from manga_retriever.batch import (
 )
 from manga_retriever.peppercarrot import LICENCE_URL, SOURCE_PAGE
 
-
 NOW = datetime(2026, 11, 19, tzinfo=UTC)
 RUN = 7654321
 ARTIFACT = 123456
