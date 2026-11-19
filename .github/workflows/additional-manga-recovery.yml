@@ -5,6 +5,7 @@ on:
     workflows:
       - Love So Life English Original-Quality Download
       - Kainushi wa Akuma Available English Batches
+      - Love So Life English Bonus Chapter Downloads
     types: [completed]
 
 permissions:

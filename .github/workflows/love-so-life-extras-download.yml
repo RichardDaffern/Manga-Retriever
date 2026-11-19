@@ -1,0 +1,40 @@
+name: Love So Life English Bonus Chapter Downloads
+
+on:
+  push:
+    branches: [feature/love-so-life-extras-20261120]
+    paths:
+      - .github/workflows/love-so-life-extras-download.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-five-extras:
+    name: Download and audit Love So Life 33.5, 33.6, 63.5, 75.5 and 99.5
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install exact pinned downloader
+        run: |
+          python -m pip install -e .
+          python -m pip install 'mangadex-downloader==3.1.4'
+      - name: Retrieve each named English bonus chapter separately, verify images and labels
+        run: |
+          python -m scripts.love_so_life_extras \
+            --output downloads/love-so-life-bonuses \
+            --verified-output verified/love-so-life-bonuses
+      - name: Preserve verified extras and report even if individual extras fail
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: LoveSoLife-Five-Extras-Original-Quality
+          path: verified/
+          if-no-files-found: warn
+          retention-days: 7
+          compression-level: 0
