@@ -23,3 +23,6 @@ dist/
 /bundles/
 /ids.json
 /rights.json
+
+# Private, partial downloads must never enter a public repo.
+*.checkpoint/

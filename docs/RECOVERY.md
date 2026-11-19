@@ -1,7 +1,7 @@
 # Recovery and data integrity
 
-A failed local import removes its temporary staging directory and does not publish an incomplete export. The identity registry is written via a temporary file and atomic replacement under an exclusive `.lock`; never delete a lock before checking that no other import runs. Existing output is never intentionally replaced.
+M4 (implemented): Pepper&Carrot Episode 26 uses a persistent, private page checkpoint named `.<output-name>.checkpoint/` alongside the export. The index is schemaVersion 1 with an immutable source URL, ordered six-page URL plan, and SHA-256 and byte size for completed images. Each image is fully decoded and saved via fsync and atomic rename before the index is updated. Repeat the same command and registry after interruption. Valid cached pages are revalidated, missing or corrupt pages are downloaded again, and no partial Controller candidate or CBZ is published. An exclusive lock forbids concurrent writes; inspect a stale lock rather than deleting it automatically. A changed source plan or malformed index refuses to resume. The official licence and source page are fetched again on every retry.
 
-Repeat the import into a **new** output directory with the same registry. Verify each export with `python -m manga_retriever verify --export DIR`. Keep a private backup of `ids.json`, original input files and validated export. If a file has changed, a different page ID is expected; never silently restore reading progress to a new image.
+The checkpoint directory is generated scratch media and is deleted **only after** the verified export is published. The verified export and private identity registry are never overwritten. Files stranded between page write and index commit are treated as untrusted and fetched again, not marked completed. Back up the private `ids.json` before renaming/moving input paths. Run `python -m manga_retriever verify --export DIR` before trusting a completed export.
 
-Remote retry/checkpoint/partial export handling is **planned for M4/M5**, not available in M1/M2.
+M5 bulk scheduling and metadata-only registries are planned. No unsupported source or cloud upload is activated.
