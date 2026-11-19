@@ -16,9 +16,10 @@ import subprocess
 import sys
 import tempfile
 import zipfile
+from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from .batch import APPROVED, GITHUB_REPO, BatchError, _load_registry, _parse_date, validate_receipt
 

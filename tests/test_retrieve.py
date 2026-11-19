@@ -121,7 +121,9 @@ class RetrievalTests(unittest.TestCase):
         self.assertFalse(self.output.exists())
 
     def test_reject_expired_and_unknown_sources(self) -> None:
-        self.registry.write_text(json.dumps({"schemaVersion": 1, "downloads": [receipt(self.digest, expires="2026-11-18T00:00:00Z")]}))
+        past = receipt(self.digest, expires="2026-11-18T00:00:00Z")
+        past["completedAt"] = "2026-11-11T00:00:00Z"
+        self.registry.write_text(json.dumps({"schemaVersion": 1, "downloads": [past]}))
         with self.assertRaisesRegex(RetrievalError, "unexpired"):
             choose_receipts(self.registry, now=NOW)
         with self.assertRaises(RetrievalError):
