@@ -12,3 +12,5 @@
 | M8: additional sources and performance/security hardening | Pending |
 
 Remote downloading and CI artefact delivery must never be enabled for content without explicit redistribution rights.
+
+M3 pilot: implement explicit Pepper&Carrot Episode 26 with licence/credits validation, high-resolution original bytes, six-page completeness and provenance. Other episodes and independent providers remain future work.

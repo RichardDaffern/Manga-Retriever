@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 from .importer import ImportFailure, import_local, verify_export
+from .peppercarrot import download_episode_26
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -19,13 +20,19 @@ def main(argv: list[str] | None = None) -> int:
     ingest.add_argument("--direction", choices=["rtl", "ltr", "vertical"], default="rtl")
     verify = commands.add_parser("verify", help="Verify candidate assets and chapter CBZs")
     verify.add_argument("--export", type=Path, required=True)
+    licensed = commands.add_parser("peppercarrot", help="Download licensed Pepper&Carrot episode 26")
+    licensed.add_argument("--episode", type=int, choices=[26], default=26)
+    licensed.add_argument("--output", type=Path, required=True)
+    licensed.add_argument("--registry", type=Path, default=Path(".manga-retriever/ids.json"))
     args = parser.parse_args(argv)
     try:
         if args.command == "import":
             result = import_local(args.source, args.output, args.registry,
                                   rights_path=args.rights_json, direction=args.direction)
-        else:
+        elif args.command == "verify":
             result = verify_export(args.export)
+        else:
+            result = download_episode_26(args.output, args.registry)
     except (ImportFailure, OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as error:
         print(f"Import/verification failed: {error}", file=sys.stderr)
         return 1

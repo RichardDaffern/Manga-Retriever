@@ -1,0 +1,47 @@
+name: Single Manga Download
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: Licensed source
+        required: true
+        type: choice
+        options:
+          - peppercarrot
+      episode:
+        description: Verified licensed episode
+        required: true
+        type: choice
+        options:
+          - '26'
+permissions:
+  contents: read
+concurrency:
+  group: manga-single-${{ github.ref }}-${{ inputs.source }}-${{ inputs.episode }}
+  cancel-in-progress: false
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install package
+        run: python -m pip install -e .
+      - name: Download explicitly licensed episode
+        run: |
+          python -m manga_retriever peppercarrot --episode 26 \
+            --output downloads/peppercarrot-episode-26 \
+            --registry .manga-retriever/ids.json
+      - name: Verify original bytes, attribution and completeness
+        run: |
+          python -m manga_retriever verify --export downloads/peppercarrot-episode-26
+      - name: Publish short-lived licensed export
+        uses: actions/upload-artifact@v7
+        with:
+          name: licensed-peppercarrot-episode26-${{ github.run_id }}
+          path: downloads/peppercarrot-episode-26/
+          retention-days: 7
+          if-no-files-found: error

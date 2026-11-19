@@ -1,6 +1,6 @@
 # Manga Retriever
 
-**Status: M1 and M2 local starter.** This toolkit imports manga pages you are authorised to possess, validates unmodified source image bytes, creates one CBZ per chapter, and exports a **local Controller v1 candidate**. It does **not** scrape sites, fetch chapters, upload to cloud storage, or connect to the Manga Reader. Source adaptors, resumable remote downloads, bulk actions and production release remain planned.
+**Status: M1/M2 complete; M3 first authorised live-source adapter available for one explicitly licensed webcomic episode.** This toolkit imports manga pages you are authorised to possess, validates unmodified source image bytes, creates one CBZ per chapter, and exports a **local Controller v1 candidate**. It does **not** enable general manga-site scraping, arbitrary chapter URLs, cloud storage or Manga Reader integration. The initial Pepper&Carrot adapter supports only the creator-published high-resolution English pages of episode 26 under CC BY 4.0; larger source coverage, bulk resumable downloads and production release remain planned.
 
 ## Windows quick start
 
@@ -30,6 +30,17 @@ MyExport/
 
 **Stable IDs:** `--registry` records source paths to opaque series/chapter IDs. Keep and back up this file. Repeat imports of the same path preserve chapter IDs; identical page bytes preserve page IDs. If moving/renaming an input path, maintain the registry mapping before reimporting; automatic path-rename reconciliation is not implemented. Changed page bytes receive a new page ID intentionally.
 
+## Download the first authorised webcomic source
+
+The official [Pepper&Carrot Episode 26 source page](https://www.peppercarrot.com/en/webcomic-sources/ep26_Books-Are-Great.html) publishes six high-resolution English pages under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) with attribution. The adapter validates the official licence link, expected six page URLs and source host, blocks redirects, retries only transient errors, and records page-level source URLs plus SHA-256 in `download_manifest.json`. It preserves image bytes and credits contributors through the official episode credit page. This **webcomic** is not being represented as Japanese manga.
+
+```powershell
+py -3.12 -m manga_retriever peppercarrot --episode 26 --output "C:\MangaExport\Pepper26" --registry "C:\MangaExport\ids.json"
+py -3.12 -m manga_retriever verify --export "C:\MangaExport\Pepper26"
+```
+
+Alternatively, use [Single Manga Download](.github/workflows/download-manga.yml) under GitHub Actions. The workflow publishes only this licensed work, with its attribution, as a short-lived artefact. A metadata-only API does not authorise general-purpose manga archiving. Live success must be verified from a completed Action; offline tests do not prove site availability.
+
 ## Local verification
 
 ```powershell
@@ -37,7 +48,7 @@ py -3.12 -m unittest discover -s tests -v
 py -3.12 -m compileall -q manga_retriever tests
 ```
 
-GitHub Actions CI runs 17 synthetic tests and a dependency/security check. No live-site test is claimed. See `docs/SOURCE_RESEARCH.md`, `docs/STORAGE_INTEGRATION.md` and `docs/ROADMAP.md`.
+GitHub Actions CI runs 25 synthetic tests and a dependency/security check. No live-site test is claimed. See `docs/SOURCE_RESEARCH.md`, `docs/STORAGE_INTEGRATION.md` and `docs/ROADMAP.md`.
 
 ## Responsibilities
 
