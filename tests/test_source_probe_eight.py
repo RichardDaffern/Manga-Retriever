@@ -42,6 +42,26 @@ class SourceProbeEightTests(unittest.TestCase):
         self.assertEqual(record["decimalNumberedExtras"], 1)
         self.assertEqual(record["unnumberedEntries"], 1)
 
+    def test_lovely_complex_editions_reported_separately(self):
+        ids = ["7a1c6e41-6c2d-401e-90fe-baccb637a63e",
+               "7b273ab1-42cb-4004-8ffd-1c6f580cc107"]
+        class FakeClient:
+            def discover(self, work):
+                return None, [
+                    {"id": item, "attributes": {"title": {"en": "Lovely★Complex"}}}
+                    for item in ids
+                ]
+            def feed(self, manga_id):
+                return 1, [{"id": manga_id, "attributes": {"chapter": "1"}}]
+            def image_manifest(self, manga_id):
+                return {"status": "manifest-only-no-artwork-retrieved",
+                        "originalPagePaths": 20, "dataSaverPagePaths": 20}
+        result = check_work({"name": "Lovely Complex"}, FakeClient())
+        self.assertEqual(result["status"], "ambiguous")
+        self.assertEqual(len(result["editionAlternatives"]), 2)
+        self.assertEqual([x["englishFeedEntries"] for x in result["editionAlternatives"]], [1, 1])
+        self.assertIsNone(result["sourceUrl"])
+
     def test_no_match_stays_not_found_without_feeds(self):
         class FakeClient:
             def discover(self, work):
