@@ -22,3 +22,7 @@
 | ComicFury | https://comicfury.com/tos.php | No general archival adapter without specific creator/platform permission. |
 
 Next stage: validate PDF provenance, establish exact downloadable links and preservation rules, then add regression-tested adapters without enabling arbitrary site scraping or bypassing paywalls, DRM, authentication or anti-bot controls.
+
+## Follow-up: user's remaining named manga
+
+For a title-by-title comparison of additional English sources, publisher editions, reader coverage, image/export feasibility and blockers, see [Remaining manga source feasibility](REMAINING_MANGA_FEASIBILITY.md) (researched 20 November 2026). No downloads from these seven titles were triggered by that research.
