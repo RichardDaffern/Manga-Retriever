@@ -22,7 +22,7 @@ jobs:
           cache: pip
           cache-dependency-path: pyproject.toml
       - name: Install
-        run: python -m pip install -e .
+        run: python -m pip install -e '.[pdf]'
       - name: Synthetic unit tests
         run: python -m unittest discover -s tests -v
       - name: Compile all Python modules
@@ -35,7 +35,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install
-        run: python -m pip install -e '.[dev]'
+        run: python -m pip install -e '.[dev,pdf]'
       - name: Static lint
         run: python -m ruff check manga_retriever tests
       - name: Dependency audit

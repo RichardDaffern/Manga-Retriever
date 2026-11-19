@@ -13,3 +13,7 @@ M3 adds 8 offline synthetic adapter tests (25 in total), including complete high
 ## M5 batch verification
 
 `tests/test_batch.py` uses invented receipt data to test strict source selection, immutable GitHub artefact IDs/URLs, hash and expiry validation, source provenance, idempotent registry updates, duplicate rejection, fail-closed future versions, partial result retention and CLI workflow output. PR CI uses deterministic synthetic fixtures and verifies that missing jobs fail the batch without discarding completed registry entries. Real Pepper&Carrot downloads are exercised separately with the existing manual Single Manga Download or Bulk Manga Download Actions; external website downtime is not a deterministic CI gate. CI continues to require Python 3.12 tests on Windows and Linux, Ruff, and dependency audit.
+
+## Source expansion PDF tests
+
+`tests/test_blackjack_pdf.py` creates temporary fully synthetic PDFs locally, renders with PDFium via the optional `pdf` package extra, then verifies full CBZ/Controller packaging, per-volume hashes and creator credits. It also tests missing source declarations, broken PDFs, wrong volume counts, unsafe symlinks, invalid render scales, output paths and no-overwrite. All CI platforms install the PDF extra in this source-expansion PR, with dependency vulnerability audit enabled.
