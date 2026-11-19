@@ -1,4 +1,4 @@
-"""Allowlisted three-manga MangaDex acquisition and independent CBZ verification.
+"""Allowlisted fixed-title MangaDex acquisition and independent CBZ verification.
 
 Uses the externally installed MangaDex downloader. No arbitrary URL inputs,
 credential bypass or DRM removal. Intended for files the user can lawfully keep.
@@ -18,6 +18,9 @@ from pathlib import Path
 from .relife import MAX_ARCHIVES, MAX_AUDIT_BYTES, ReLIFEError, _inspect_cbz, _safe_output
 
 SOURCES = {
+    "love-so-life": {
+        "title": "Love So Life", "id": "911a12ae-1022-448e-9219-b7b294d7fb3e", "chapters": 106,
+    },
     "maid-sama": {
         "title": "Kaichou wa Maid-sama!", "id": "d5e2bd89-e300-4262-a799-fb4f79bdb777", "chapters": 85,
     },
@@ -155,7 +158,7 @@ def publish_verified(folder: Path, report: dict, target: Path) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Three fixed MangaDex manga sources, original quality, verified local CBZs")
+    parser = argparse.ArgumentParser(description="Fixed MangaDex manga sources, original quality, verified local CBZs")
     parser.add_argument("--slug", choices=tuple(SOURCES), required=True)
     parser.add_argument("--start", type=int, required=True)
     parser.add_argument("--end", type=int, required=True)

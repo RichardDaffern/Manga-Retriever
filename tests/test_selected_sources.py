@@ -48,6 +48,7 @@ class SourcesTests(unittest.TestCase):
     def test_titles_fixed(self):
         self.assertEqual({k: v["chapters"] for k, v in SOURCES.items()}, {
             "maid-sama": 85, "last-game": 56, "onizuka-sawarida": 49,
+            "love-so-life": 106,
         })
 
     def test_prevents_arbitrary_sources_and_oversized_batch(self):

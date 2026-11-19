@@ -1,0 +1,59 @@
+name: Love So Life English Original-Quality Download
+
+on:
+  push:
+    branches: [feature/love-so-life-kainushi-actions-20261120]
+    paths:
+      - .github/workflows/love-so-life-download.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: love-so-life-download-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verified-chapter-batches:
+    name: Love So Life chapters ${{ matrix.start }}-${{ matrix.end }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        include:
+          - {start: 1, end: 20}
+          - {start: 21, end: 40}
+          - {start: 41, end: 60}
+          - {start: 61, end: 80}
+          - {start: 81, end: 100}
+          - {start: 101, end: 106}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install pinned English MangaDex downloader
+        run: |
+          python -m pip install -e .
+          python -m pip install 'mangadex-downloader==3.1.4'
+      - name: Download source-original English chapter CBZs, verify exact main chapter labels
+        env:
+          MANGA_START: ${{ matrix.start }}
+          MANGA_END: ${{ matrix.end }}
+        run: |
+          python -m manga_retriever.selected_sources \
+            --slug love-so-life --start "$MANGA_START" --end "$MANGA_END" \
+            --output "downloads/love-so-life" \
+            --verified-output "verified/love-so-life-$MANGA_START-$MANGA_END" \
+            --acknowledge-rights
+      - name: Publish verified CBZs and checksums for seven days
+        uses: actions/upload-artifact@v7
+        with:
+          name: LoveSoLife-Original-Ch${{ matrix.start }}-${{ matrix.end }}
+          path: verified/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
