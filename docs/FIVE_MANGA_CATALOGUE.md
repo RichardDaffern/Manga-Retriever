@@ -20,6 +20,29 @@ tests the following **fixed** series URLs independently:
 | Mado kara Madoka-chan | [Listing](https://mangakatana.com/manga/mado-kara-madoka-chan.21642) | 74, plus fractional afterword |
 | Nisekoi | [Listing](https://mangakatana.com/manga/nisekoi.553) | 229 |
 
+## Live results, 20 November 2026
+
+All five independently checked catalogue jobs **passed** in
+[run 44679559853](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44679559853).
+This verifies only the returned **series names and chapter labels**:
+
+| Manga | Distinct main chapter labels | Decimal extras | Chapter 0 | Total entries | Missing main labels |
+| --- | ---: | ---: | ---: | ---: | --- |
+| Kimi no Iru Machi | 261/261 | 16 | 0 | 277 | 0 |
+| Love Hina | 120/120 | 3 | 0 | 123 | 0 |
+| Lovely Complex | 66/66 | 2 | 0 | 68 | 0 |
+| Mado kara Madoka-chan | 74/74 | 2 | 0 | 76 | 0 |
+| Nisekoi | 229/229 | 11 | 1 | 241 | 0 |
+
+The first Nisekoi check flagged a Chapter 0 release as an invalid numbered
+chapter. The verified follow-up recognises it as an extra, separately from
+its 229 numbered main chapters. All five reports have zero malformed entries,
+zero locked chapter entries, and no duplicate integer-number releases.
+
+**Important:** These are metadata completeness results, **not downloads**.
+No chapter images were fetched, and the language, page quality, completeness of
+bonus material and lawful download/export rights have not been established.
+
 **These are provisional expectations from external indices, not established coverage
 or download rights.** A catalogue result records missing main chapters, decimal
 extras, duplicates/lock issues, possible series-title mismatches and listed language
