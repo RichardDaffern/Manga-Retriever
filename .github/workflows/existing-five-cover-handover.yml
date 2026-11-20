@@ -1,0 +1,40 @@
+name: Existing Five Cover Retrieval for Private Controller Handover
+
+on:
+  push:
+    branches: [feature/five-existing-cover-bundle-20261120]
+    paths:
+      - scripts/download_existing_five_covers.py
+      - tests/test_existing_five_covers.py
+      - .github/workflows/existing-five-cover-handover.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-and-download:
+    name: Retrieve real cover images from five fixed MangaDex sources
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install Pillow and local project
+        run: python -m pip install -e .
+      - name: Test image format and exact source matching
+        run: python -m unittest tests.test_existing_five_covers -v
+      - name: Download five real cover images
+        run: |
+          python -m scripts.download_existing_five_covers \
+            --output deliverables/existing-five-verified-covers.zip
+      - name: Publish short-lived cover bundle for the owner
+        uses: actions/upload-artifact@v7
+        with:
+          name: existing-five-original-cover-images
+          path: deliverables/existing-five-verified-covers.zip
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 0
