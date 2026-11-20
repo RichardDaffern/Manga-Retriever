@@ -285,7 +285,7 @@ def fetch_metadata(slug: str, *, open_url=urlopen) -> dict:
         raise MetadataError("Invalid pinned MangaDex source identity")
     params = urlencode([("includes[]", "author"), ("includes[]", "artist"),
                         ("includes[]", "cover_art")])
-    request = Request(
+    request = Request(  # noqa: S310 - URL built from constant HTTPS host and fixed UUID
         f"{API_HOST}/manga/{manga_id}?{params}",
         headers={"Accept": "application/json",
                  "User-Agent": "Taiyou-Manga-Retriever/0.1 metadata-only (GitHub: RichardDaffern/Manga-Retriever)"},
