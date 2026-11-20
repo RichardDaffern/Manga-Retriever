@@ -35,20 +35,25 @@ jobs:
           python-version: '3.12'
       - name: Validate catalogue parser without external sites
         run: python -m unittest tests.test_five_manga_catalogue -v
-      - uses: actions/setup-go@v6
-        with:
-          go-version: '1.26'
-          cache: false
-      - name: Install pinned chapter-list-only client
+      - name: Install published Linux CLI with pinned SHA-256
         run: |
-          go install github.com/elboletaire/manga-downloader@v25.3.0
+          curl --fail --location --silent --show-error --retry 2 \
+            --output "$RUNNER_TEMP/manga-downloader.tar.gz" \
+            https://github.com/elboletaire/manga-downloader/releases/download/v25.3.0/manga-downloader-v25.3.0-linux-amd64.tar.gz
+          echo "2ff911436f853457aef21ed3c1a86425d0f380dc26235d47777e362a260fdf34  $RUNNER_TEMP/manga-downloader.tar.gz" | sha256sum --check
+          mkdir -p "$RUNNER_TEMP/manga-cli"
+          tar -xzf "$RUNNER_TEMP/manga-downloader.tar.gz" -C "$RUNNER_TEMP/manga-cli"
+          BIN_PATH="$(find "$RUNNER_TEMP/manga-cli" -type f -name manga-downloader -print -quit)"
+          test -n "$BIN_PATH"
+          chmod +x "$BIN_PATH"
+          printf 'MANGA_DOWNLOADER_BIN=%s\n' "$BIN_PATH" >> "$GITHUB_ENV"
       - name: Catalogue one exact manga series, never download images
         env:
           SLUG: ${{ matrix.slug }}
         run: |
           python scripts/five_manga_catalogue.py \
             --slug "$SLUG" \
-            --client "$(go env GOPATH)/bin/manga-downloader" \
+            --client "$MANGA_DOWNLOADER_BIN" \
             --output "reports/$SLUG.json"
       - name: Upload metadata-only report (not manga files)
         if: always()
