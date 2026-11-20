@@ -2,6 +2,10 @@
 
 **Status: M1/M2 complete; M3 first authorised live-source adapter available for one explicitly licensed webcomic episode.** This toolkit imports manga pages you are authorised to possess, validates unmodified source image bytes, creates one CBZ per chapter, and exports a **local Controller v1 candidate**. It does **not** enable general manga-site scraping, arbitrary chapter URLs, cloud storage or Manga Reader integration. The initial Pepper&Carrot adapter supports only the creator-published high-resolution English pages of episode 26 under CC BY 4.0; larger source coverage, bulk resumable downloads and production release remain planned.
 
+## P0 manga request: Acquainted: Encounter Spin-Off
+
+The user's [exact MangaDex title ID](https://mangadex.org/title/90f7c7a6-b759-4afb-b1cb-1af4660df307) has **zero English chapters** in the verified MangaDex feed. An official completed English edition of **50 episodes** exists on [Tapas](https://tapas.io/series/acquainted-encounter-spin-off/info), but [Tapas's in-app offline policy](https://help.tapas.io/hc/en-us/articles/115000415034-Read-offline) does not permit external archive export. Consequently **no CBZ was downloaded or published**. The title is now tracked as highest priority for a legitimate DRM-free English export or rights-holder permission. [Exact audit and next steps](docs/PRIORITY_ACQUAINTED_ENCOUNTER_SPIN_OFF.md).
+
 ## Five-series URL-based chapter download pilot
 
 The [local MangaKatana URL downloader](docs/LOCAL_URL_MANGA_DOWNLOAD.md) now accepts **five exact requested manga URLs** and one to twenty chapters per batch. It uses the independent Manga Downloader CLI, preserves original page bytes, verifies CBZ image integrity and stores files on your own Windows computer. Source pages lacking reliable English labels are **quarantined for manual English-page verification**.
