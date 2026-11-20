@@ -1,0 +1,48 @@
+name: English Manga Publication Metadata Audit
+
+on:
+  push:
+    branches: [feature/metadata-enrichment-candidates-20261120]
+    paths:
+      - manga_retriever/publication_metadata.py
+      - tests/test_publication_metadata.py
+      - .github/workflows/publication-metadata.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  metadata:
+    name: Metadata and cover reference - ${{ matrix.slug }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        slug: [relife, maid-sama, last-game, love-so-life, onizuka-sawarida]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install metadata-only package
+        run: python -m pip install -e .
+      - name: Check metadata schema, source identity and no artwork retrieval
+        run: python -m unittest tests.test_publication_metadata -v
+      - name: Fetch source-authorised public metadata only (no image bytes)
+        env:
+          MANGA_SLUG: ${{ matrix.slug }}
+        run: |
+          python -m manga_retriever.publication_metadata \
+            --slug "$MANGA_SLUG" \
+            --output "metadata-candidates/$MANGA_SLUG.json"
+      - name: Upload provenance-labelled draft for Controller review
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: metadata-review-${{ matrix.slug }}
+          path: metadata-candidates/${{ matrix.slug }}.json
+          retention-days: 7
+          if-no-files-found: warn
