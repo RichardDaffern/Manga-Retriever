@@ -1,0 +1,40 @@
+name: Kainushi English Chapter Label Reconciliation
+
+on:
+  push:
+    branches: [feature/kainushi-label-reconciliation-20261120]
+    paths:
+      - scripts/kainushi_gap_audit.py
+      - tests/test_kainushi_gap_audit.py
+      - .github/workflows/kainushi-label-reconciliation.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reconcile:
+    name: Compare live MangaDex labels against attributed public index
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install metadata parser dependencies
+        run: python -m pip install -e .
+      - name: Test exact labels, incomplete feeds and no false download claims
+        run: python -m unittest tests.test_kainushi_gap_audit -v
+      - name: Retrieve current MangaDex English chapter labels only
+        run: |
+          python -m scripts.kainushi_gap_audit \
+            --output reports/kainushi-chapter-label-comparison.json \
+            --csv reports/kainushi-chapter-label-comparison.csv
+      - name: Publish JSON and CSV gap evidence (no manga images)
+        uses: actions/upload-artifact@v7
+        with:
+          name: kainushi-chapter-label-reconciliation
+          path: reports/
+          retention-days: 7
+          if-no-files-found: error

@@ -17,6 +17,18 @@ The five catalogue jobs use `strategy.max-parallel: 5`, `fail-fast: false`; Kain
 
 These are **investigation jobs**, not manga chapter downloads. Metadata coverage and publication cover references **do not** constitute verified English chapter image downloads.
 
+## Kainushi chapter-label reconciliation, exact evidence
+
+[Live CI run 44717986150](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44717986150) independently checked **all 45 live English MangaDex feed labels** against the **56 unique English chapter labels** in the publicly indexed [OniSaga chapter list](https://onisaga.com/manga/kainushi-wa-akuma), snapshot **20 November 2026**.
+
+- **All 45 MangaDex labels also appear in the OniSaga index.** There are no MangaDex-only labels.
+- **11 labels appear only in OniSaga's index:** `1.1, 3, 4, 5, 6, 7, 8, 9, 9.5, 16, 18`.
+- The workflow publishes `kainushi-chapter-label-reconciliation` with a 56-row CSV and JSON report. It performs **no image downloads**.
+- These eleven are **catalogue-label gaps**, not 11 confirmed missing manga image files. The English content, image quality, source entitlement and whether different chapter editions are equivalent have not been confirmed.
+- OniSaga's ordinary remote reader currently returns HTTP 403 on direct inspection. Do not bypass this restriction. The reference comes from the publicly indexed listing, not an automated reader export.
+
+**Next actionable step:** Find an authorised downloadable English source for these eleven **specific** labels (not a generic 56-entry count). Download and verify actual page bytes, chapter number and source rights per label before marking any as complete. Keep the other five research tracks running independently.
+
 ## New storefront evidence, verified independently
 
 - **Love Hina, Neon Ichiban:** All five [Kodansha Love Hina Omnibus listings](https://neonichiban.com/item/3101/love-hina-omnibus-vol-1) are sold digitally, but their own detail views say the **publisher does not allow PDF downloads**. Search descriptions that label the product *DRM-free* are not proof it can be exported into Manga Library. Do not mark this a portable file source. Additional volumes: [2](https://neonichiban.com/item/3112/love-hina-omnibus-vol-2), [3](https://neonichiban.com/item/3113/love-hina-omnibus-vol-3), [4](https://neonichiban.com/item/3114/love-hina-omnibus-vol-4), [5](https://neonichiban.com/item/3116/love-hina-omnibus-vol-5).
