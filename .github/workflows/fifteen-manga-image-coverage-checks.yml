@@ -1,0 +1,103 @@
+name: Fifteen Actual Chapter Image Coverage Checks
+
+on:
+  push:
+    branches: [feature/recover-six-manga-and-verify-five-coverage-20261120]
+    paths:
+      - .github/workflows/fifteen-manga-image-coverage-checks.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  chapter-image-verification:
+    name: "${{ matrix.slug }}: chapters ${{ matrix.chapters }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        include:
+          - {slug: kimi-no-iru-machi, chapters: "2-3", url: "https://mangakatana.com/manga/kimi-no-iru-machi.2162"}
+          - {slug: kimi-no-iru-machi, chapters: "130-131", url: "https://mangakatana.com/manga/kimi-no-iru-machi.2162"}
+          - {slug: kimi-no-iru-machi, chapters: "260-261", url: "https://mangakatana.com/manga/kimi-no-iru-machi.2162"}
+          - {slug: love-hina, chapters: "2-3", url: "https://mangakatana.com/manga/love-hina.4545"}
+          - {slug: love-hina, chapters: "60-61", url: "https://mangakatana.com/manga/love-hina.4545"}
+          - {slug: love-hina, chapters: "119-120", url: "https://mangakatana.com/manga/love-hina.4545"}
+          - {slug: lovely-complex, chapters: "2-3", url: "https://mangakatana.com/manga/lovely-complex.6103"}
+          - {slug: lovely-complex, chapters: "33-34", url: "https://mangakatana.com/manga/lovely-complex.6103"}
+          - {slug: lovely-complex, chapters: "65-66", url: "https://mangakatana.com/manga/lovely-complex.6103"}
+          - {slug: mado-kara-madoka-chan, chapters: "2-3", url: "https://mangakatana.com/manga/mado-kara-madoka-chan.21642"}
+          - {slug: mado-kara-madoka-chan, chapters: "37-38", url: "https://mangakatana.com/manga/mado-kara-madoka-chan.21642"}
+          - {slug: mado-kara-madoka-chan, chapters: "73-74", url: "https://mangakatana.com/manga/mado-kara-madoka-chan.21642"}
+          - {slug: nisekoi, chapters: "2-3", url: "https://mangakatana.com/manga/nisekoi.553"}
+          - {slug: nisekoi, chapters: "114-115", url: "https://mangakatana.com/manga/nisekoi.553"}
+          - {slug: nisekoi, chapters: "228-229", url: "https://mangakatana.com/manga/nisekoi.553"}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install image verifier
+        run: python -m pip install -e .
+      - name: Install pinned independently verified manga source client
+        shell: bash
+        run: |
+          curl --fail --location --silent --show-error --retry 2 \
+            --output "$RUNNER_TEMP/manga-downloader.tar.gz" \
+            https://github.com/elboletaire/manga-downloader/releases/download/v25.3.0/manga-downloader-v25.3.0-linux-amd64.tar.gz
+          echo "2ff911436f853457aef21ed3c1a86425d0f380dc26235d47777e362a260fdf34  $RUNNER_TEMP/manga-downloader.tar.gz" | sha256sum --check
+          mkdir -p "$RUNNER_TEMP/manga-cli"
+          tar -xzf "$RUNNER_TEMP/manga-downloader.tar.gz" -C "$RUNNER_TEMP/manga-cli"
+          BIN_PATH="$(find "$RUNNER_TEMP/manga-cli" -type f -name manga-downloader -print -quit)"
+          test -n "$BIN_PATH"
+          chmod +x "$BIN_PATH"
+          printf 'MANGA_DOWNLOADER_BIN=%s\n' "$BIN_PATH" >> "$GITHUB_ENV"
+      - name: Download actual chapter image bytes and verify CBZ integrity
+        env:
+          SERIES_URL: ${{ matrix.url }}
+          SERIES_SLUG: ${{ matrix.slug }}
+          CHAPTER_SELECTION: ${{ matrix.chapters }}
+          MANGA_DOWNLOADER_NO_UPDATE_CHECK: '1'
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/ephemeral-manga"
+          python -m scripts.local_url_manga_download \
+            --url "$SERIES_URL" --chapters "$CHAPTER_SELECTION" \
+            --output "$RUNNER_TEMP/ephemeral-manga/$SERIES_SLUG-$CHAPTER_SELECTION" \
+            --client "$MANGA_DOWNLOADER_BIN" --acknowledge-local-rights
+          mkdir -p reports
+          cp "$RUNNER_TEMP/ephemeral-manga/$SERIES_SLUG-$CHAPTER_SELECTION/download-report.json" \
+            "reports/$SERIES_SLUG-$CHAPTER_SELECTION.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          slug = os.environ["SERIES_SLUG"]
+          selection = os.environ["CHAPTER_SELECTION"]
+          report = json.loads(Path(f"reports/{slug}-{selection}.json").read_text())
+          assert report["verifiedArchiveCount"] >= 2
+          assert report["verifiedPages"] > 0
+          print("REAL IMAGE DOWNLOAD VERIFIED:", json.dumps({
+              "title": report["sourceTitle"],
+              "slug": slug,
+              "chapters": selection,
+              "verifiedCBZ": report["verifiedArchiveCount"],
+              "verifiedPages": report["verifiedPages"],
+              "englishReviewRequired": report["requiresManualEnglishReview"],
+              "retainedMedia": False
+          }))
+          PY
+      - name: Remove all copyrighted chapter image bytes
+        if: always()
+        shell: bash
+        run: rm -rf "$RUNNER_TEMP/ephemeral-manga"
+      - name: Upload JSON technical receipts only, never media or artwork
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: chapter-coverage-${{ matrix.slug }}-${{ matrix.chapters }}
+          path: reports/${{ matrix.slug }}-${{ matrix.chapters }}.json
+          retention-days: 7
+          if-no-files-found: warn
