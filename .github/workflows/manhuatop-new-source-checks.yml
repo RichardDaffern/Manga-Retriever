@@ -1,0 +1,68 @@
+name: ManhuaTop Four New Manga Source Compatibility
+
+on:
+  push:
+    branches: [feature/manhuatop-source-viability-20261121]
+    paths:
+      - .github/workflows/manhuatop-new-source-checks.yml
+      - scripts/manhuatop_source_probe.py
+      - tests/test_manhuatop_source_probe.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  four-new-title-checks:
+    name: Verify source availability - ${{ matrix.slug }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        slug:
+          - heavenly-demon-normal-life
+          - disastrous-necromancer
+          - high-martial-world
+          - magic-emperor
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install project and test strict source validation
+        run: |
+          python -m pip install -e .
+          python -m unittest tests.test_manhuatop_source_probe -v
+      - name: Install verified upstream CLI v25.3.0
+        shell: bash
+        run: |
+          curl --fail --location --silent --show-error --retry 2 \
+            --output "$RUNNER_TEMP/manga-downloader.tar.gz" \
+            https://github.com/elboletaire/manga-downloader/releases/download/v25.3.0/manga-downloader-v25.3.0-linux-amd64.tar.gz
+          echo "2ff911436f853457aef21ed3c1a86425d0f380dc26235d47777e362a260fdf34  $RUNNER_TEMP/manga-downloader.tar.gz" | sha256sum --check
+          mkdir -p "$RUNNER_TEMP/manga-cli"
+          tar -xzf "$RUNNER_TEMP/manga-downloader.tar.gz" -C "$RUNNER_TEMP/manga-cli"
+          BIN_PATH="$(find "$RUNNER_TEMP/manga-cli" -type f -name manga-downloader -print -quit)"
+          test -n "$BIN_PATH"
+          chmod +x "$BIN_PATH"
+          printf 'MANGA_DOWNLOADER_BIN=%s\n' "$BIN_PATH" >> "$GITHUB_ENV"
+      - name: Check exact chapter listing only, no artwork
+        env:
+          SERIES: ${{ matrix.slug }}
+          MANGA_DOWNLOADER_NO_UPDATE_CHECK: '1'
+        shell: bash
+        run: |
+          mkdir -p reports
+          python -m scripts.manhuatop_source_probe \
+            --slug "$SERIES" --client "$MANGA_DOWNLOADER_BIN" \
+            --output "reports/$SERIES.json"
+      - name: Upload non-media source evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: manhuatop-source-check-${{ matrix.slug }}
+          path: reports/${{ matrix.slug }}.json
+          retention-days: 7
+          if-no-files-found: warn
