@@ -1,0 +1,62 @@
+name: Historical Artifact Private Recovery - Licensed Real Smoke
+
+on:
+  push:
+    branches: [feature/recover-six-manga-and-verify-five-coverage-20261120]
+    paths:
+      - .github/workflows/historical-recovery-licensed-smoke.yml
+      - scripts/recover_existing_manga.py
+      - tests/test_recover_existing_manga.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  licensed-github-artifact-recovery:
+    name: Restore and decode six real licensed PepperCarrot source images
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install local verifier
+        run: python -m pip install -e .
+      - name: Verify exact source ID recovery tests
+        run: python -m unittest tests.test_recover_existing_manga -v
+      - name: Download existing CC BY 4.0 artifact by exact GitHub ID and verify CBZ
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          from scripts.recover_existing_manga import recover_one
+
+          item = {
+              "name": "licensed-english-ZIP-EPUB-CBZ-44686201935",
+              "artifactId": 14605709870,
+              "runId": 44686201935,
+          }
+          root = Path(os.environ["RUNNER_TEMP"]) / "licensed-recovery-smoke"
+          root.mkdir(parents=True)
+          result = recover_one("licensed-peppercarrot-26", item, root)
+          assert result["verifiedCBZ"] >= 1
+          assert result["verifiedPages"] == 6
+          assert result["artifactId"] == 14605709870
+          assert result["outcome"] == "downloaded-and-verified"
+          print("LICENSED REAL ARTIFACT RECOVERY VERIFIED:", json.dumps({
+              "verifiedCBZ": result["verifiedCBZ"],
+              "verifiedPages": result["verifiedPages"],
+              "mediaRetained": False,
+          }))
+          PY
+      - name: Remove source media from CI runner
+        if: always()
+        shell: bash
+        run: rm -rf "$RUNNER_TEMP/licensed-recovery-smoke"

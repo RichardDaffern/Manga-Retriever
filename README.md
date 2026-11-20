@@ -12,6 +12,14 @@
 
 The user's [exact MangaDex title ID](https://mangadex.org/title/90f7c7a6-b759-4afb-b1cb-1af4660df307) has **zero English chapters** in the verified MangaDex feed. An official completed English edition of **50 episodes** exists on [Tapas](https://tapas.io/series/acquainted-encounter-spin-off/info), but [Tapas's in-app offline policy](https://help.tapas.io/hc/en-us/articles/115000415034-Read-offline) does not permit external archive export. Consequently **no CBZ was downloaded or published**. The title is now tracked as highest priority for a legitimate DRM-free English export or rights-holder permission. [Exact audit and next steps](docs/PRIORITY_ACQUAINTED_ENCOUNTER_SPIN_OFF.md).
 
+## Recover 33 existing manga artifacts before 26-27 November 2026
+
+Previously completed GitHub Actions batches have **33 currently unexpired CBZ artefacts across six requested manga**: ReLIFE, Love So Life (including five extras), Last Game, Kaichou wa Maid-sama!, Onizuka-chan and Sawarida-kun, and partially covered Kainushi wa Akuma. Do **not** repeat huge downloads before inspecting these existing media files; the public metadata registry is not their inventory.
+
+Use [the verified private Windows recovery guide](docs/HISTORICAL_MANGA_ARTIFACT_RECOVERY.md) and launcher `Recover-Existing-Manga.cmd` to download by **exact GitHub artifact ID**, independently inspect actual CBZ images, skip valid existing batches and generate local integrity reports. No new copyright files are uploaded by the recovery utility.
+
+Fifteen additional [real original-image chapter checks](.github/workflows/fifteen-manga-image-coverage-checks.yml) are available for five other requested series, covering early, middle and final chapters. These are **ephemeral technical tests**, not retained full-series downloads.
+
 ## Five-series URL-based chapter download pilot
 
 The [local MangaKatana URL downloader](docs/LOCAL_URL_MANGA_DOWNLOAD.md) now accepts **five exact requested manga URLs** and one to twenty chapters per batch. It uses the independent Manga Downloader CLI, preserves original page bytes, verifies CBZ image integrity and stores files on your own Windows computer. Source pages lacking reliable English labels are **quarantined for manual English-page verification**.
