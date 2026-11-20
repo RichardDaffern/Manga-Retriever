@@ -31,8 +31,8 @@ def _png() -> bytes:
 
 
 class URLChapterPilotTests(unittest.TestCase):
-    def test_five_exact_source_urls_only(self):
-        self.assertEqual(len(SOURCES), 5)
+    def test_six_exact_source_urls_only(self):
+        self.assertEqual(len(SOURCES), 6)
         for slug, source in SOURCES.items():
             self.assertEqual(source_for_url(source["url"])[0], slug)
         for bad in [
