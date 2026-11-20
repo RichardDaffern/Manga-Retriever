@@ -7,7 +7,6 @@ on:
       - scripts/five_manga_catalogue.py
       - tests/test_five_manga_catalogue.py
       - .github/workflows/five-manga-catalogue.yml
-      - docs/FIVE_MANGA_CATALOGUE.md
   workflow_dispatch:
 
 permissions:
