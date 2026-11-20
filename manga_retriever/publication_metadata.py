@@ -215,16 +215,6 @@ def normalise(slug: str, payload: object, *, checked_at: str | None = None) -> d
     return result
 
 
-class _NoRedirect:
-    """Keep the request on the expected MangaDex API host."""
-
-    def __init__(self, open_url=urlopen) -> None:
-        self.open_url = open_url
-
-    def __call__(self, request: Request):
-        return self.open_url(request, timeout=20)
-
-
 def fetch_metadata(slug: str, *, open_url=urlopen) -> dict:
     if slug not in SOURCE_TITLES:
         raise MetadataError("Unknown allowlisted manga slug")
@@ -239,7 +229,7 @@ def fetch_metadata(slug: str, *, open_url=urlopen) -> dict:
                  "User-Agent": "Taiyou-Manga-Retriever/0.1 metadata-only (GitHub: RichardDaffern/Manga-Retriever)"},
     )
     try:
-        with open_url(request, timeout=20) as response:
+        with open_url(request, timeout=20) as response:  # noqa: S310 - fixed HTTPS API URL and redirect destination verified
             if response.status != 200 or response.geturl().split("?")[0] != f"{API_HOST}/manga/{manga_id}":
                 raise MetadataError("Unexpected MangaDex endpoint or redirect")
             raw = response.read(MAX_JSON_BYTES + 1)
