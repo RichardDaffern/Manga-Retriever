@@ -1,15 +1,14 @@
 """Offline tests: source-identity-locked manga metadata and cover-reference safety."""
 from __future__ import annotations
 
+import json
 import tempfile
+import unittest
 from pathlib import Path
 
 from PIL import Image
 
 from manga_retriever.importer import import_local, verify_export
-import json
-import unittest
-  
 from manga_retriever.publication_metadata import (
     SOURCE_TITLES,
     MetadataError,
