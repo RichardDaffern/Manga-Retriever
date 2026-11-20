@@ -1,0 +1,281 @@
+{
+  "schemaVersion": 1,
+  "sourceRepository": "RichardDaffern/Manga-Retriever",
+  "generatedAtUtc": "2026-11-20T16:00:00Z",
+  "description": "Existing GitHub Actions output IDs: owner-retained local recovery only. Historical artifact availability and rights must be re-checked at download time; this is not a complete-media certification.",
+  "notes": [
+    "Public repository does not guarantee legal permission to export or redistribute third-party artwork",
+    "Original media must never be re-uploaded as a new GitHub public artifact by this recovery utility",
+    "The Kainushi sets are partial and do not establish series completeness",
+    "The other chapter ranges are job output ranges, not independent series-completeness proof"
+  ],
+  "titles": {
+    "relife": {
+      "title": "ReLIFE",
+      "expectedRangeCoverage": 222,
+      "items": [
+        {
+          "range": "1-20",
+          "runId": 44547390262,
+          "artifactId": 14542310986,
+          "name": "ReLIFE-Original-Quality-Ch1-20",
+          "expiresAfterUtcDate": "2026-11-26"
+        },
+        {
+          "range": "21-40",
+          "runId": 44547390262,
+          "artifactId": 14542317129,
+          "name": "ReLIFE-Original-Quality-Ch21-40",
+          "expiresAfterUtcDate": "2026-11-26"
+        },
+        {
+          "range": "41-60",
+          "runId": 44547390262,
+          "artifactId": 14543023464,
+          "name": "ReLIFE-Original-Quality-Ch41-60",
+          "expiresAfterUtcDate": "2026-11-26"
+        },
+        {
+          "range": "61-80",
+          "runId": 44547390262,
+          "artifactId": 14543129455,
+          "name": "ReLIFE-Original-Quality-Ch61-80",
+          "expiresAfterUtcDate": "2026-11-26"
+        },
+        {
+          "range": "81-100",
+          "runId": 44547390262,
+          "artifactId": 14553409918,
+          "name": "ReLIFE-Original-Quality-Ch81-100",
+          "expiresAfterUtcDate": "2026-11-26"
+        },
+        {
+          "range": "101-120",
+          "runId": 44547390262,
+          "artifactId": 14546047811,
+          "name": "ReLIFE-Original-Quality-Ch101-120",
+          "expiresAfterUtcDate": "2026-11-26"
+        },
+        {
+          "range": "121-140",
+          "runId": 44547390262,
+          "artifactId": 14549836323,
+          "name": "ReLIFE-Original-Quality-Ch121-140",
+          "expiresAfterUtcDate": "2026-11-26"
+        },
+        {
+          "range": "141-160",
+          "runId": 44547390262,
+          "artifactId": 14548323655,
+          "name": "ReLIFE-Original-Quality-Ch141-160",
+          "expiresAfterUtcDate": "2026-11-26"
+        },
+        {
+          "range": "161-180",
+          "runId": 44547390262,
+          "artifactId": 14552042846,
+          "name": "ReLIFE-Original-Quality-Ch161-180",
+          "expiresAfterUtcDate": "2026-11-26"
+        },
+        {
+          "range": "181-200",
+          "runId": 44547390262,
+          "artifactId": 14551912076,
+          "name": "ReLIFE-Original-Quality-Ch181-200",
+          "expiresAfterUtcDate": "2026-11-26"
+        },
+        {
+          "range": "201-220",
+          "runId": 44547390262,
+          "artifactId": 14553201689,
+          "name": "ReLIFE-Original-Quality-Ch201-220",
+          "expiresAfterUtcDate": "2026-11-26"
+        },
+        {
+          "range": "221-222",
+          "runId": 44547390262,
+          "artifactId": 14552630278,
+          "name": "ReLIFE-Original-Quality-Ch221-222",
+          "expiresAfterUtcDate": "2026-11-26"
+        }
+      ]
+    },
+    "love-so-life": {
+      "title": "Love So Life",
+      "expectedRangeCoverage": 106,
+      "items": [
+        {
+          "range": "1-20",
+          "runId": 44597036262,
+          "artifactId": 14568855890,
+          "name": "LoveSoLife-Original-Ch1-20",
+          "expiresAfterUtcDate": "2026-11-26"
+        },
+        {
+          "range": "21-40",
+          "runId": 44597036262,
+          "artifactId": 14572896517,
+          "name": "LoveSoLife-Original-Ch21-40",
+          "expiresAfterUtcDate": "2026-11-26"
+        },
+        {
+          "range": "41-60",
+          "runId": 44597036262,
+          "artifactId": 14570084060,
+          "name": "LoveSoLife-Original-Ch41-60",
+          "expiresAfterUtcDate": "2026-11-26"
+        },
+        {
+          "range": "61-80",
+          "runId": 44597036262,
+          "artifactId": 14572956303,
+          "name": "LoveSoLife-Original-Ch61-80",
+          "expiresAfterUtcDate": "2026-11-26"
+        },
+        {
+          "range": "81-100",
+          "runId": 44597036262,
+          "artifactId": 14574302023,
+          "name": "LoveSoLife-Original-Ch81-100",
+          "expiresAfterUtcDate": "2026-11-26"
+        },
+        {
+          "range": "101-106",
+          "runId": 44597036262,
+          "artifactId": 14573629199,
+          "name": "LoveSoLife-Original-Ch101-106",
+          "expiresAfterUtcDate": "2026-11-26"
+        },
+        {
+          "range": "extras",
+          "runId": 44598620970,
+          "artifactId": 14566343319,
+          "name": "LoveSoLife-Five-Extras-Original-Quality",
+          "expiresAfterUtcDate": "2026-11-26"
+        }
+      ]
+    },
+    "last-game": {
+      "title": "Last Game",
+      "expectedRangeCoverage": 56,
+      "items": [
+        {
+          "range": "1-20",
+          "runId": 44587087000,
+          "artifactId": 14569420428,
+          "name": "Manga-last-game-Original-Ch1-20",
+          "expiresAfterUtcDate": "2026-11-26"
+        },
+        {
+          "range": "21-40",
+          "runId": 44587087000,
+          "artifactId": 14569510680,
+          "name": "Manga-last-game-Original-Ch21-40",
+          "expiresAfterUtcDate": "2026-11-26"
+        },
+        {
+          "range": "41-56",
+          "runId": 44587087000,
+          "artifactId": 14572861231,
+          "name": "Manga-last-game-Original-Ch41-56",
+          "expiresAfterUtcDate": "2026-11-26"
+        }
+      ]
+    },
+    "maid-sama": {
+      "title": "Kaichou wa Maid-sama!",
+      "expectedRangeCoverage": 85,
+      "items": [
+        {
+          "range": "1-20",
+          "runId": 44587087000,
+          "artifactId": 14563684545,
+          "name": "Manga-maid-sama-Original-Ch1-20",
+          "expiresAfterUtcDate": "2026-11-26"
+        },
+        {
+          "range": "21-40",
+          "runId": 44587087000,
+          "artifactId": 14563384395,
+          "name": "Manga-maid-sama-Original-Ch21-40",
+          "expiresAfterUtcDate": "2026-11-26"
+        },
+        {
+          "range": "41-60",
+          "runId": 44587087000,
+          "artifactId": 14565718930,
+          "name": "Manga-maid-sama-Original-Ch41-60",
+          "expiresAfterUtcDate": "2026-11-26"
+        },
+        {
+          "range": "61-80",
+          "runId": 44587087000,
+          "artifactId": 14572114625,
+          "name": "Manga-maid-sama-Original-Ch61-80",
+          "expiresAfterUtcDate": "2026-11-26"
+        },
+        {
+          "range": "81-85",
+          "runId": 44587087000,
+          "artifactId": 14565607210,
+          "name": "Manga-maid-sama-Original-Ch81-85",
+          "expiresAfterUtcDate": "2026-11-26"
+        }
+      ]
+    },
+    "onizuka-sawarida": {
+      "title": "Onizuka-chan and Sawarida-kun",
+      "expectedRangeCoverage": 49,
+      "items": [
+        {
+          "range": "1-20",
+          "runId": 44675324997,
+          "artifactId": 14601682680,
+          "name": "Onizuka-Original-Ch1-20",
+          "expiresAfterUtcDate": "2026-11-27"
+        },
+        {
+          "range": "21-40",
+          "runId": 44675324997,
+          "artifactId": 14602302471,
+          "name": "Onizuka-Original-Ch21-40",
+          "expiresAfterUtcDate": "2026-11-27"
+        },
+        {
+          "range": "41-49",
+          "runId": 44675324997,
+          "artifactId": 14602338397,
+          "name": "Onizuka-Original-Ch41-49",
+          "expiresAfterUtcDate": "2026-11-27"
+        }
+      ]
+    },
+    "kainushi-wa-akuma": {
+      "title": "Kainushi wa Akuma",
+      "expectedRangeCoverage": null,
+      "items": [
+        {
+          "range": "batch-1",
+          "runId": 44597755913,
+          "artifactId": 14567319481,
+          "name": "Kainushi-Available-English-Batch1",
+          "expiresAfterUtcDate": "2026-11-26"
+        },
+        {
+          "range": "batch-2",
+          "runId": 44597755913,
+          "artifactId": 14571105941,
+          "name": "Kainushi-Available-English-Batch2",
+          "expiresAfterUtcDate": "2026-11-26"
+        },
+        {
+          "range": "batch-3",
+          "runId": 44597755913,
+          "artifactId": 14572712520,
+          "name": "Kainushi-Available-English-Batch3",
+          "expiresAfterUtcDate": "2026-11-26"
+        }
+      ]
+    }
+  }
+}
