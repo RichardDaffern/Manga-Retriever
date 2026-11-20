@@ -1,0 +1,60 @@
+name: Five Manga Read-only Chapter Catalogue
+
+on:
+  push:
+    branches: [feature/five-manga-source-inventory-20261120]
+    paths:
+      - scripts/five_manga_catalogue.py
+      - tests/test_five_manga_catalogue.py
+      - .github/workflows/five-manga-catalogue.yml
+      - docs/FIVE_MANGA_CATALOGUE.md
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  catalogue:
+    name: Catalogue only - ${{ matrix.slug }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        slug:
+          - kimi-no-iru-machi
+          - love-hina
+          - lovely-complex
+          - mado-kara-madoka-chan
+          - nisekoi
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Validate catalogue parser without external sites
+        run: python -m unittest tests.test_five_manga_catalogue -v
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.26'
+          cache: false
+      - name: Install pinned chapter-list-only client
+        run: |
+          go install github.com/elboletaire/manga-downloader@v25.3.0
+      - name: Catalogue one exact manga series, never download images
+        env:
+          SLUG: ${{ matrix.slug }}
+        run: |
+          python scripts/five_manga_catalogue.py \
+            --slug "$SLUG" \
+            --client "$(go env GOPATH)/bin/manga-downloader" \
+            --output "reports/$SLUG.json"
+      - name: Upload metadata-only report (not manga files)
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: five-manga-catalogue-${{ matrix.slug }}
+          path: reports/${{ matrix.slug }}.json
+          retention-days: 7
+          if-no-files-found: warn
