@@ -31,3 +31,10 @@ Research date: **20 November 2026**. Covers the six titles left after the ReLIFE
 ### Love So Life live check (19 November 2026)
 
 The [Love So Life English MangaDex Metadata Probe](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44590570263) resolved the exact title `911a12ae-1022-448e-9219-b7b294d7fb3e` and found **119 English feed entries**, **106 distinct integer chapters without gaps 1–106**, **five decimal-numbered extras**, and **50 normal/original uploaded image paths** for the first numbered chapter. The total 119 feed entries includes alternate/duplicate releases; 106 + 5 = 111 distinct numbered/decimal labels **could account for the 111-chapter catalogue count**, but is not independent confirmation of the edition or completeness. No image bytes were downloaded.
+
+## Follow-up: MangaKatana chapter metadata (20 November 2026)
+
+A [five-title, metadata-only GitHub Actions check](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44679559853)
+used the pinned third-party CLI's `list --json` subcommand with exact known MangaKatana series URLs. All five listings returned matching series titles and complete **expected main chapter numbering**: Kimi no Iru Machi 261/261, Love Hina 120/120, Lovely Complex 66/66, Mado kara Madoka-chan 74/74, Nisekoi 229/229. Eleven decimal and one chapter-zero Nisekoi extras were catalogued separately. See [full breakdown](FIVE_MANGA_CATALOGUE.md).
+
+**Change in assessment:** The remaining five now have a technically promising **chapter-listing** route beyond MangaDex. This overturns the earlier *technical* assumption that there was no chapter inventory route, but **does not establish English page quality, permission to download, or authorised public GitHub Actions artefact redistribution**. No new CBZ jobs were triggered. Prior rights/download cautions remain in force.
