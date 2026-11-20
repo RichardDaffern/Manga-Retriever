@@ -162,6 +162,7 @@ def _audit_files(directory: Path) -> dict:
     audits += [p for p in directory.rglob("relife_quality_audit.json") if p.is_file()]
     if len(audits) > 1:
         raise RecoveryError("More than one source quality report in a single artifact")
+    verified_main_numbers: list[int] = []
     if audits:
         raw = audits[0].read_bytes()
         if len(raw) > 5_000_000:
@@ -173,7 +174,19 @@ def _audit_files(directory: Path) -> dict:
         if (type(source_audit.get("verifiedPages")) is int
                 and source_audit["verifiedPages"] != pages):
             raise RecoveryError("Source audit image count mismatch")
-    return {"verifiedCBZ": len(results), "verifiedPages": pages, "archives": results}
+        labels = source_audit.get("verifiedMainChapterNumbers")
+        if labels is not None:
+            if (not isinstance(labels, list) or any(type(n) is not int or not 1 <= n <= 3000
+                                                   for n in labels)
+                    or len(labels) != len(set(labels))
+                    or len(labels) > len(results)):
+                raise RecoveryError("Invalid main chapter labels in source report")
+            reported_count = source_audit.get("verifiedMainChapters")
+            if type(reported_count) is int and reported_count != len(labels):
+                raise RecoveryError("Reported main chapter label count mismatch")
+            verified_main_numbers = labels
+    return {"verifiedCBZ": len(results), "verifiedPages": pages,
+            "verifiedMainChapterNumbers": verified_main_numbers, "archives": results}
 
 
 def _verify_existing(directory: Path, item: dict) -> dict:
@@ -271,6 +284,29 @@ def recover_all(slugs: list[str], root: Path, *, workers: int = 3,
                                  "outcome": "failed", "error": str(exc)[:240]})
                 print(f"FAILED {slug}/{item['range']}: {exc}", file=sys.stderr, flush=True)
     outcomes.sort(key=lambda x: (x["slug"], x["range"]))
+    series_summaries = []
+    for slug in slugs:
+        items = [x for x in outcomes if x["slug"] == slug]
+        expected = document["titles"][slug].get("expectedRangeCoverage")
+        good = [x for x in items if x["outcome"] != "failed"]
+        numbers = [n for x in good for n in x.get("verifiedMainChapterNumbers", [])]
+        complete_range = (
+            len(good) == len(document["titles"][slug]["items"])
+            and type(expected) is int
+            and len(numbers) == expected
+            and set(numbers) == set(range(1, expected + 1))
+        )
+        series_summaries.append({
+            "slug": slug,
+            "title": document["titles"][slug].get("title"),
+            "verifiedArtifactCount": len(good),
+            "expectedArtifactCount": len(document["titles"][slug]["items"]),
+            "verifiedChapterLabels": len(set(numbers)),
+            "expectedMainChapterLabels": expected,
+            "allMainChapterLabelsVerified": complete_range,
+            "verifiedPages": sum(x.get("verifiedPages", 0) for x in good),
+            "completedEnglishEditionIndependentlyProven": False,
+        })
     result = {
         "schemaVersion": 1,
         "status": "all-artifacts-verified" if all(x["outcome"] != "failed" for x in outcomes)
@@ -280,6 +316,7 @@ def recover_all(slugs: list[str], root: Path, *, workers: int = 3,
         "verifiedImages": sum(x.get("verifiedPages", 0) for x in outcomes),
         "downloadedTo": str(root.resolve()),
         "completeSeriesIndependentlyProven": False,
+        "seriesSummaries": series_summaries,
         "results": outcomes,
     }
     fd, name = tempfile.mkstemp(prefix=".recovery-", suffix=".json", dir=root)
