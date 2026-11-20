@@ -6,7 +6,7 @@
 | --- | --- | --- | --- |
 | **Owner's folder of JPEG/PNG/WebP/AVIF images, ZIP or CBZ** | Local importer and verifier implemented | Synthetic Windows/Linux tests and full image/CBZ checks | Requires authorised source files; input ZIP and output path safety checks |
 | **Pepper&Carrot official Episode 26** | Fixed English, CC BY 4.0 licensed adaptor, page checkpoints, CBZ/ZIP/EPUB, approved Actions | Real six-image high-resolution licensed export and original SHA-256 validation | **Only Episode 26** is in the approved public bulk media-source allowlist; required attribution |
-| **MangaKatana** | Five pinned exact title URLs supported by local CLI, plus bounded two-worker parallel, resumable batches | [Five real Chapter 1 CBZs](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44755633296) totalled **246 verified images** | English page text needs review; remaining chapters and rights unverified; public CI deletes copyrighted files and retains **only JSON verification** |
+| **MangaKatana** | Six pinned exact title URLs supported by local CLI, plus bounded two-worker parallel, resumable batches | [Five real Chapter 1 CBZs](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44755633296) totalled **246 verified images** | English page text needs review; remaining chapters and rights unverified; public CI deletes copyrighted files and retains **only JSON verification** |
 | **MangaDex** | Read-only source and language feed probes; some local-only fixed-title wrappers (ReLIFE, selected works) | Historic fixed-title workflows; source manifest availability varies by chapter | Metadata-only feed entries often lead to **zero** hosted page paths; no generic public-authorised image archive source |
 | **Owner-supplied English fixed-layout image EPUB** | DRM-free EPUB importer implemented | Live six-image creator-licensed EPUB-to-CBZ sample verified | No encrypted/DRM, remote image, Japanese or mixed/unknown language support; no arbitrary ecommerce downloads |
 | **Creator-provided *Give My Regards to Black Jack* official PDF** | Offline PDF-to-PNG/CBZ converter implemented | Synthetic PDF regression tests | Must obtain official PDFs separately; creator terms are work-specific; Japanese original is not an English library edition |
@@ -17,13 +17,14 @@
 
 ## Explicit supported title URLs: local MangaKatana pilot
 
-The local URL downloader accepts exactly the following titles, **not arbitrary MangaKatana or arbitrary website URLs**:
+The local URL downloader accepts exactly the following six titles, **not arbitrary MangaKatana or arbitrary website URLs**:
 
 - `https://mangakatana.com/manga/kimi-no-iru-machi.2162`
 - `https://mangakatana.com/manga/love-hina.4545`
 - `https://mangakatana.com/manga/lovely-complex.6103`
 - `https://mangakatana.com/manga/mado-kara-madoka-chan.21642`
 - `https://mangakatana.com/manga/nisekoi.553`
+- `https://mangakatana.com/manga/the-fairytale-like-you-goes-on-the-assault.26322` (42 numbered chapters, fractional extras separate, 8-page Chapter 1 real image pilot passed, English not independently verified)
 
 For local Windows usage, title-specific flags, resume and status reports, see [LOCAL_URL_MANGA_DOWNLOAD.md](LOCAL_URL_MANGA_DOWNLOAD.md). Source permission acknowledgement is not an independent copyright clearance; **never** upload unlicensed media to public GitHub Actions.
 
