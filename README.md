@@ -1,6 +1,12 @@
 # Manga Retriever
 
-**Status: M1/M2 complete; M3 first authorised live-source adapter available for one explicitly licensed webcomic episode.** This toolkit imports manga pages you are authorised to possess, validates unmodified source image bytes, creates one CBZ per chapter, and exports a **local Controller v1 candidate**. It does **not** enable general manga-site scraping, arbitrary chapter URLs, cloud storage or Manga Reader integration. The initial Pepper&Carrot adapter supports only the creator-published high-resolution English pages of episode 26 under CC BY 4.0; larger source coverage, bulk resumable downloads and production release remain planned.
+**Purpose:** Acquire or import manga files the owner is authorised to retain, verify original image bytes, assemble per-chapter CBZs and produce **local Storage Controller candidate v1** packages. The Retriever is **not** the Manga Library UI or the private Hugging Face data controller.
+
+**Current capabilities (20 November 2026):** Local images/ZIP/CBZ, permitted DRM-free English EPUB and creator-supplied PDF imports; one licensed live-source adapter (Pepper&Carrot Episode 26); fixed-title MangaDex research/local wrappers; a bounded **five-title MangaKatana URL pilot** with resumable local batches. Five real MangaKatana Chapter 1 CBZs passed ephemeral image verification (246 pages total), but their English content, full-series coverage and export rights remain unverified. The **public GitHub Actions media allowlist is still restricted to approved licensed material**. There is no arbitrary-site downloader, private HF upload or live Reader integration.
+
+**Start here:** [Project handbook and current architecture](docs/PROJECT_HANDBOOK.md) | [Mandatory AI agent instructions](AGENTS.md) | [Source support matrix](docs/SUPPORTED_SOURCES.md) | [Windows URL download guide](docs/LOCAL_URL_MANGA_DOWNLOAD.md) | [Security](docs/SECURITY.md) | [Roadmap](docs/ROADMAP.md).
+
+> Status rule: a successful metadata or technical chapter-image pilot is **not** proof of a complete, retained English manga download or Controller upload. Check actual archive and run evidence.
 
 ## P0 manga request: Acquainted: Encounter Spin-Off
 
@@ -74,7 +80,7 @@ py -3.12 -m unittest discover -s tests -v
 py -3.12 -m compileall -q manga_retriever tests
 ```
 
-GitHub Actions CI runs 25 synthetic tests and a dependency/security check. No live-site test is claimed. See `docs/SOURCE_RESEARCH.md`, `docs/STORAGE_INTEGRATION.md` and `docs/ROADMAP.md`.
+GitHub Actions CI runs the current synthetic test suite on Windows and Linux, with lint and dependency/security checks. Live-source pilot runs are separate and must be verified using their specific run IDs. See `docs/SOURCE_RESEARCH.md`, `docs/STORAGE_INTEGRATION.md` and `docs/ROADMAP.md`.
 
 ## Responsibilities
 
