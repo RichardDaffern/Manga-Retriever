@@ -127,7 +127,17 @@ def check(slug: str, executable: str, *, runner=subprocess.run) -> dict:
             capture_output=True, timeout=180, check=False,
         )
         if response.returncode != 0:
-            raise ProbeError(f"Site listing unavailable, client exit code {response.returncode}")
+            diagnostic = response.stderr.decode("utf-8", "replace") if isinstance(response.stderr, bytes) else str(response.stderr or "")
+            # Do not publish raw stdout, HTML, cookies, local paths or challenge tokens.
+            matched = [label for label in
+                       ("unsupported site", "429", "403", "404", "timeout", "browser", "chromium",
+                        "cloudflare", "challenge", "no chapters", "empty", "certificate",
+                        "connection refused", "network", "rate limit")
+                       if label in diagnostic.casefold()]
+            raise ProbeError(
+                f"Site listing unavailable, client exit code {response.returncode}; "
+                f"recognised diagnostic categories: {matched or ['unknown']}"
+            )
         data = response.stdout
         if not isinstance(data, bytes) or len(data) > MAX_BYTES:
             raise ProbeError("Invalid or oversized response")
