@@ -7,9 +7,9 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+from scripts.five_manga_catalogue import SOURCES
 from scripts.local_url_manga_bulk import chunks, run_bulk
 from scripts.local_url_manga_download import ChapterPilotError
-from scripts.five_manga_catalogue import SOURCES
 
 
 class MangaBulkTests(unittest.TestCase):
