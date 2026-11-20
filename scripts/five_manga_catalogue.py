@@ -77,6 +77,7 @@ def summarise(slug: str, payload: dict) -> dict:
     decimals: set[str] = set()
     locked = 0
     unnumbered = 0
+    chapter_zero = 0
     bad = 0
     languages: set[str] = set()
     for chapter in chapters:
@@ -100,8 +101,11 @@ def summarise(slug: str, payload: dict) -> dict:
         except InvalidOperation:
             bad += 1
             continue
-        if not value.is_finite() or not (Decimal("0") < value < Decimal("10000")):
+        if not value.is_finite() or not (Decimal("0") <= value < Decimal("10000")):
             bad += 1
+            continue
+        if value == 0:
+            chapter_zero += 1
             continue
         if value == value.to_integral_value():
             if int(value) in numbered:
@@ -125,6 +129,7 @@ def summarise(slug: str, payload: dict) -> dict:
         "duplicateIntegerReleases": duplicates,
         "lockedEntries": locked,
         "unnumberedEntries": unnumbered,
+        "chapterZeroExtras": chapter_zero,
         "invalidEntries": bad,
         "languageTags": sorted(languages),
         "englishTranslationVerified": False,
@@ -184,6 +189,7 @@ def main(argv: list[str] | None = None) -> int:
             "extraDecimalCount": len(summary["decimalLabels"]),
             "lockedEntries": summary["lockedEntries"],
             "invalidEntries": summary["invalidEntries"],
+            "chapterZeroExtras": summary["chapterZeroExtras"],
             "duplicateIntegerReleases": summary["duplicateIntegerReleases"],
             "listedEntries": summary["listedEntries"],
         }, sort_keys=True), flush=True)
