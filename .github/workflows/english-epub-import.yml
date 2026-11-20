@@ -1,0 +1,72 @@
+name: English EPUB Download to Manga Controller Pilot
+
+on:
+  push:
+    branches: [feature/english-epub-import-actions-20261120]
+    paths:
+      - .github/workflows/english-epub-import.yml
+      - manga_retriever/epub_import.py
+      - tests/test_epub_import.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  licensed-english-epub:
+    name: Download real English pages, produce EPUB, reimport as CBZ
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install package
+        run: python -m pip install -e .
+      - name: Test encrypted EPUB, non-English editions, unsafe paths and image integrity
+        run: python -m unittest tests.test_epub_import -v
+      - name: Download official English creator-licensed high-resolution images
+        run: |
+          python -m manga_retriever peppercarrot --episode 26 \
+            --output source/peppercarrot-en-26 \
+            --registry .manga-retriever/source_ids.json
+      - name: Package real English images as a DRM-free EPUB
+        run: |
+          python -m manga_retriever.alternative_formats \
+            --export source/peppercarrot-en-26 \
+            --output staged/english-epub
+      - name: Import English EPUB directly into Controller candidate and CBZ
+        run: |
+          python -m manga_retriever.epub_import \
+            --source staged/english-epub/english-fixed-layout.epub \
+            --output imported/english-epub \
+            --registry .manga-retriever/imported_ids.json \
+            --series-title "Pepper and Carrot" \
+            --acknowledge-rights
+      - name: Independently verify original image byte hashes and Controller export
+        run: |
+          python -m manga_retriever verify --export imported/english-epub
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path("imported/english-epub")
+          source = json.loads(Path("source/peppercarrot-en-26/download_manifest.json").read_text())
+          expected = sorted(p["sha256"] for p in source["licensedSource"]["pages"])
+          manifest = next((root / "controller_candidate" / "manifests").glob("ch_*.json"))
+          imported = json.loads(manifest.read_text())
+          actual = sorted(p["sha256"] for p in imported["pages"])
+          assert expected == actual and len(actual) == 6, "Image hash mismatch"
+          assert len(list((root / "chapters").glob("*.cbz"))) == 1, "No verified CBZ"
+          print("Actual English EPUB reimport passed: 6 original images, 1 CBZ, 1 Controller candidate")
+          PY
+      - name: Publish licensed English EPUB reimport and validated CBZ artefacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: licensed-English-EPUB-to-CBZ-${{ github.run_id }}
+          path: |
+            staged/english-epub/english-fixed-layout.epub
+            imported/english-epub/
+          retention-days: 7
+          if-no-files-found: error
+          compression-level: 0
