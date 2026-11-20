@@ -382,6 +382,14 @@ def import_local(source: Path, output: Path, state: Path, *, rights_path: Path |
                     # Only publication fields are changed, never IDs or chapters.
                     if len(records) != 1:
                         raise ImportFailure("Publication metadata requires one source series")
+                    from .publication_metadata import SOURCE_TITLES, _key
+                    selected = next(
+                        (item for item in SOURCE_TITLES.values()
+                         if item["sourceId"] == candidate["match"]["sourceMangaId"]), None,
+                    )
+                    if selected is None or _key(titles[sid]) not in {
+                            _key(name) for name in selected["aliases"]}:
+                        raise ImportFailure("Metadata title does not match imported manga directory")
                     publication = candidate["metadata"]
                     entry["title"] = publication["title"]
                     for field in ("aliases", "creators", "tags"):
