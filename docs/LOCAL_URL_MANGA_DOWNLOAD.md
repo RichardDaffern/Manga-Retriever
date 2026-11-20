@@ -32,6 +32,23 @@ The other four reviewed URLs:
 - `https://mangakatana.com/manga/lovely-complex.6103`
 - `https://mangakatana.com/manga/mado-kara-madoka-chan.21642`
 
+## Confirmed live image-download pilots, 20 November 2026
+
+[Five real one-chapter image checks](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44755633296) **all passed**. These tests downloaded real source images in the ephemeral runner, produced five valid CBZ archives and verified original image content. Counts:
+
+| Title | Chapter | Real verified image pages |
+| --- | --- | ---: |
+| Kimi no Iru Machi | 1 | 43 |
+| Love Hina | 1 | 81 |
+| Lovely Complex | 1 | 53 |
+| Mado kara Madoka-chan | 1 | 14 |
+| Nisekoi | 1 | 55 |
+| **Total** | **5 chapters** | **246** |
+
+All five were marked `verified-image-files-needs-english-review`, because MangaKatana does not mark these chapters with an explicit English language field. The **technical** download path works, but this does **not** prove that every chapter is English, that all numbered/extras can be downloaded, that the source's images match publisher originals, or that the user has the copyright owner's permission to archive them.
+
+**None of the five CBZ archives was published or retained in the public GitHub Actions artefacts.** The image files were removed from the runners after verification. For files you can keep privately on Windows, use the CLI above after checking the relevant permissions.
+
 ## English-only requirement and publication status
 
 MangaKatana's chapter metadata may **lack an explicit language field**. In that case the report says `requiresManualEnglishReview: true` and labels the downloaded files `verified-image-files-needs-english-review`. This is a quarantine result, **not** a claim that the actual page text is English. Do not import Japanese/unknown-language pages into the English-only Manga Library. Inspect the real pages before marking them verified.
