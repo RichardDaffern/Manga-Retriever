@@ -9,7 +9,7 @@ import unittest
 import zipfile
 from pathlib import Path
 
-from manga_retriever.publication_metadata import MetadataError, SOURCE_TITLES, normalise
+from manga_retriever.publication_metadata import SOURCE_TITLES, MetadataError, normalise
 from scripts.package_publication_metadata import make_bundle
 from tests.test_publication_metadata import payload
 
