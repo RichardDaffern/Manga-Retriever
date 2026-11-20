@@ -19,6 +19,16 @@ The exact-ID MangaDex audit, not a fuzzy web title match, confirms:
 **This MangaDex URL is not an English chapter download source at present.**
 Do not trigger an empty CBZ job, silently download Korean, label metadata a download, or substitute a different title/edition.
 
+## Korean and every-language MangaDex availability (20 November 2026)
+
+A separate [live Korean availability audit](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44761569133) queried the **exact owner-selected title UUID**, filtered for `ko` and then for **all languages combined**, explicitly including all four supported MangaDex content-rating categories to avoid falsely excluding chapters.
+
+- Original work language: **Korean (`ko`)**
+- Hosted Korean chapter feed entries: **0**
+- Hosted chapter feed entries in **all languages**: **0**
+- Korean original-image paths and CBZ archives downloaded: **0**
+- **Conclusion:** MangaDex lists this title but does not host chapter uploads in Korean or any other language. Do not run an empty MangaDex media-downloader job. A Korean original-language tag is only bibliographic metadata.
+
 ## Official English alternative
 
 **[Tapas: Acquainted: Encounter Spin-Off](https://tapas.io/series/acquainted-encounter-spin-off/info)**

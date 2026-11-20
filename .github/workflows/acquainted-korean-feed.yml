@@ -1,0 +1,35 @@
+name: Priority Acquainted Korean Chapter Availability
+
+on:
+  push:
+    branches: [feature/acquainted-korean-feed-check-20261120]
+    paths:
+      - scripts/acquainted_korean_feed.py
+      - tests/test_acquainted_korean_feed.py
+      - .github/workflows/acquainted-korean-feed.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-korean-feed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Verify language identity, Korean chapter counts and fail-closed handling
+        run: python -m unittest tests.test_acquainted_korean_feed tests.test_source_probe_eight -v
+      - name: Check real Korean and all-language feeds (no image bytes)
+        run: python -m scripts.acquainted_korean_feed --output reports/acquainted-korean-availability.json
+      - name: Publish availability evidence only
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: acquainted-korean-mangadex-availability
+          path: reports/acquainted-korean-availability.json
+          retention-days: 7
+          if-no-files-found: warn
