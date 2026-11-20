@@ -54,8 +54,11 @@ def payload(slug: str, *, cover=True, status="completed") -> dict:
 
 
 class PublicationMetadataTests(unittest.TestCase):
-    def test_all_five_pinned_titles_return_valid_review_candidates(self):
-        self.assertEqual(len(SOURCE_TITLES), 5)
+    def test_all_eleven_pinned_titles_return_valid_review_candidates(self):
+        self.assertEqual(len(SOURCE_TITLES), 11)
+        self.assertEqual(len({item["sourceId"] for item in SOURCE_TITLES.values()}), 11)
+        self.assertEqual(SOURCE_TITLES["lovely-complex"]["sourceId"],
+                         "7a1c6e41-6c2d-401e-90fe-baccb637a63e")
         for slug, record in SOURCE_TITLES.items():
             with self.subTest(slug=slug):
                 out = normalise(slug, payload(slug), checked_at="2026-11-20T00:00:00+00:00")
