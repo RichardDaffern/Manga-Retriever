@@ -200,7 +200,7 @@ def _folder_name(value: str) -> str:
 
 
 def import_epubs(source: Path, output: Path, registry: Path, *, series_title: str | None = None,
-                 acknowledge_rights: bool = False) -> dict:
+                 acknowledge_rights: bool = False, metadata_path: Path | None = None) -> dict:
     """Import local English, DRM-free EPUBs as volume-labelled image chapters."""
     if not acknowledge_rights:
         raise ImportFailure("Confirm you are authorised to import and retain these EPUB files")
@@ -230,7 +230,8 @@ def import_epubs(source: Path, output: Path, registry: Path, *, series_title: st
             result = extract_images(path, chapter_folder)
             if not result["pages"]:
                 raise ImportFailure("Empty volume")
-        report = import_local(input_root, output, registry, direction="rtl")
+        report = import_local(input_root, output, registry, direction="rtl",
+                              metadata_path=metadata_path)
         if verify_export(output) != report or report["chapters"] != len(inputs):
             raise ImportFailure("Imported English EPUBs failed Controller export verification")
         return {"status": "verified", "format": "epub", "language": "en", **report}
@@ -244,11 +245,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--registry", type=Path, required=True)
     parser.add_argument("--series-title")
+    parser.add_argument("--metadata-json", type=Path, help="Reviewed metadata sidecar for one series")
     parser.add_argument("--acknowledge-rights", action="store_true")
     args = parser.parse_args(argv)
     try:
         report = import_epubs(args.source, args.output, args.registry, series_title=args.series_title,
-                              acknowledge_rights=args.acknowledge_rights)
+                              acknowledge_rights=args.acknowledge_rights,
+                              metadata_path=args.metadata_json)
     except (ImportFailure, OSError, KeyError, ValueError, TypeError) as exc:
         print(f"EPUB import failed: {exc}", file=sys.stderr)
         return 1

@@ -290,7 +290,7 @@ def _locked_registry(path: Path) -> Iterator[dict[str, str]]:
 
 
 def import_local(source: Path, output: Path, state: Path, *, rights_path: Path | None = None,
-                 direction: str = "rtl") -> dict:
+                 direction: str = "rtl", metadata_path: Path | None = None) -> dict:
     """Build a new, verified candidate bundle and chapter CBZ set, never overwrite."""
     if direction not in {"rtl", "ltr", "vertical"}:
         raise ImportFailure("Unsupported reading direction")
@@ -300,6 +300,13 @@ def import_local(source: Path, output: Path, state: Path, *, rights_path: Path |
     if output.exists() or output.is_symlink():
         raise ImportFailure("Destination already exists. Refusing to replace data")
     rights = _read_rights(rights_path)
+    candidate = None
+    if metadata_path is not None:
+        from .publication_metadata import MetadataError, validate_local_candidate
+        try:
+            candidate = validate_local_candidate(metadata_path)
+        except MetadataError as exc:
+            raise ImportFailure(f"Unsafe publication metadata: {exc}") from exc
     output.parent.mkdir(parents=True, exist_ok=True)
     with _locked_registry(state) as ids:
         stage = Path(tempfile.mkdtemp(prefix=".manga-retriever-", dir=output.parent))
@@ -366,10 +373,32 @@ def import_local(source: Path, output: Path, state: Path, *, rights_path: Path |
                 for sequence, item in enumerate(chapters):
                     chapter_records.append({k: v for k, v in {**item, "sequence": sequence}.items()
                                             if v is not None})
-                catalogue.append({"kind": "manga", "id": sid, "title": titles[sid],
-                                  "aliases": [], "creators": [], "tags": [],
-                                  "publicationStatus": "unknown", "direction": direction,
-                                  "chapters": chapter_records})
+                entry = {"kind": "manga", "id": sid, "title": titles[sid],
+                         "aliases": [], "creators": [], "tags": [],
+                         "publicationStatus": "unknown", "direction": direction,
+                         "chapters": chapter_records}
+                if candidate is not None:
+                    # The user explicitly selects one pinned-title candidate.
+                    # Only publication fields are changed, never IDs or chapters.
+                    if len(records) != 1:
+                        raise ImportFailure("Publication metadata requires one source series")
+                    from .publication_metadata import SOURCE_TITLES, _key
+                    selected = next(
+                        (item for item in SOURCE_TITLES.values()
+                         if item["sourceId"] == candidate["match"]["sourceMangaId"]), None,
+                    )
+                    if selected is None or _key(titles[sid]) not in {
+                            _key(name) for name in selected["aliases"]}:
+                        raise ImportFailure("Metadata title does not match imported manga directory")
+                    publication = candidate["metadata"]
+                    entry["title"] = publication["title"]
+                    for field in ("aliases", "creators", "tags"):
+                        if publication[field]:
+                            entry[field] = publication[field]
+                    if publication["synopsis"]:
+                        entry["synopsis"] = publication["synopsis"]
+                    entry["publicationStatus"] = publication["publicationStatus"]
+                catalogue.append(entry)
             bundle = stage / "controller_candidate"
             _write_json(bundle / "catalogue.json", catalogue)
             inventory = {"controllerCandidateVersion": 1, "mediaKind": "manga",
@@ -380,11 +409,20 @@ def import_local(source: Path, output: Path, state: Path, *, rights_path: Path |
             _write_json(bundle / "inventory.json", inventory)
             if rights is not None:
                 _write_json(bundle / "rights.json", rights)
-            _write_json(stage / "download_manifest.json", {"schemaVersion": 1,
-                        "sourceType": "authorised-local-import", "publicationStatus": "unknown",
-                        "rightsDeclared": rights is not None, "series": len(catalogue),
-                        "chapters": chapters_total, "pages": pages_total,
-                        "sha256Format": "lowercase", "warnings": warnings_list})
+            summary = {"schemaVersion": 1, "sourceType": "authorised-local-import",
+                       "publicationStatus": "unknown", "rightsDeclared": rights is not None,
+                       "series": len(catalogue), "chapters": chapters_total,
+                       "pages": pages_total, "sha256Format": "lowercase",
+                       "warnings": warnings_list}
+            if candidate is not None:
+                summary["publicationMetadata"] = {
+                    "source": "MangaDex",
+                    "sourceMangaId": candidate["match"]["sourceMangaId"],
+                    "operatorSelected": True,
+                    "coverCandidate": candidate["coverCandidate"],
+                    "coverDownloaded": False,
+                }
+            _write_json(stage / "download_manifest.json", summary)
             result = verify_export(stage)
             if output.exists() or output.is_symlink():
                 raise ImportFailure("Destination appeared during import; refusing overwrite")
