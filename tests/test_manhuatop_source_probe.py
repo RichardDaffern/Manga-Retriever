@@ -5,7 +5,7 @@ import json
 import subprocess
 import unittest
 
-from scripts.manhuatop_source_probe import SOURCES, ProbeError, evaluate, check, validate_source
+from scripts.manhuatop_source_probe import SOURCES, ProbeError, check, evaluate, validate_source
 
 
 class ManhuaTopProbeTests(unittest.TestCase):
