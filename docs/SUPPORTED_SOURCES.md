@@ -1,17 +1,44 @@
-# Supported sources
+# Supported source and input matrix
 
-**Implemented:** local folders, ZIP and CBZ archives supplied by the owner. Supported image formats PNG/JPEG/WebP and AVIF if Pillow supports the codec. This does not confirm ownership or licence.
+**Status:** 20 November 2026. This is an **implementation and evidence matrix**, not a claim that every listed website grants download or redistribution rights. Read the [full project handbook](PROJECT_HANDBOOK.md) and [agent policy](../AGENTS.md) for trust boundaries.
 
-**Proposed / not implemented:** Pepper&Carrot licensed web acquisition, MangaDex metadata-only research, selected NDL public-domain media and individually licensed creator archives. See [source research](SOURCE_RESEARCH.md). No arbitrary website or API URL can be downloaded using this version.
+| Input/site | Implementation | Actual media verification | Limitations |
+| --- | --- | --- | --- |
+| **Owner's folder of JPEG/PNG/WebP/AVIF images, ZIP or CBZ** | Local importer and verifier implemented | Synthetic Windows/Linux tests and full image/CBZ checks | Requires authorised source files; input ZIP and output path safety checks |
+| **Pepper&Carrot official Episode 26** | Fixed English, CC BY 4.0 licensed adaptor, page checkpoints, CBZ/ZIP/EPUB, approved Actions | Real six-image high-resolution licensed export and original SHA-256 validation | **Only Episode 26** is in the approved public bulk media-source allowlist; required attribution |
+| **MangaKatana** | Five pinned exact title URLs supported by local CLI, plus bounded two-worker parallel, resumable batches | [Five real Chapter 1 CBZs](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44755633296) totalled **246 verified images** | English page text needs review; remaining chapters and rights unverified; public CI deletes copyrighted files and retains **only JSON verification** |
+| **MangaDex** | Read-only source and language feed probes; some local-only fixed-title wrappers (ReLIFE, selected works) | Historic fixed-title workflows; source manifest availability varies by chapter | Metadata-only feed entries often lead to **zero** hosted page paths; no generic public-authorised image archive source |
+| **Owner-supplied English fixed-layout image EPUB** | DRM-free EPUB importer implemented | Live six-image creator-licensed EPUB-to-CBZ sample verified | No encrypted/DRM, remote image, Japanese or mixed/unknown language support; no arbitrary ecommerce downloads |
+| **Creator-provided *Give My Regards to Black Jack* official PDF** | Offline PDF-to-PNG/CBZ converter implemented | Synthetic PDF regression tests | Must obtain official PDFs separately; creator terms are work-specific; Japanese original is not an English library edition |
+| **Comizy** | Not integrated | Listing/reader page researched; direct image retrieval not successfully verified | No general adapter or permission evidence |
+| **Weeb Central** | Not integrated | Reader/index research only | No verified approved portable export |
+| **Tapas** | Not integrated for export | Official reader and in-app offline option researched | App-only offline, not an independently exportable CBZ source |
+| **Other publisher/reader sites** | Research only | Title, purchase or app listing evidence | Must separately verify edition-specific DRM-free portable files and authorisation |
 
-## Implemented licensed webcomic pilot
+## Explicit supported title URLs: local MangaKatana pilot
 
-Pepper&Carrot Episode 26 (English high-resolution 6 pages) uses a fixed official source-page/URL allowlist and CC BY 4.0 licence check. All other episodes and websites remain unimplemented. The resulting package records exact URL/hash per page in `download_manifest.json` and preserves required attribution. No unofficial manga source has download support.
+The local URL downloader accepts exactly the following titles, **not arbitrary MangaKatana or arbitrary website URLs**:
 
-## Local creator-authorised PDF manga
+- `https://mangakatana.com/manga/kimi-no-iru-machi.2162`
+- `https://mangakatana.com/manga/love-hina.4545`
+- `https://mangakatana.com/manga/lovely-complex.6103`
+- `https://mangakatana.com/manga/mado-kara-madoka-chan.21642`
+- `https://mangakatana.com/manga/nisekoi.553`
 
-The creator-published [*Give My Regards to Black Jack*](https://densho810.com/free/) PDF volumes can now be imported offline using `python -m manga_retriever.blackjack_pdf` after you download originals manually and explicitly declare `--official-source`. The converter produces rasterised PNG pages, CBZs and a Controller candidate. **It does not independently authenticate the PDFs, fetch them from the website or authorise publishing them to e-book stores or public GitHub Actions.** Attribution and the original owner's terms apply. [Guide](BLACKJACK_PDF_IMPORT.md).
+For local Windows usage, title-specific flags, resume and status reports, see [LOCAL_URL_MANGA_DOWNLOAD.md](LOCAL_URL_MANGA_DOWNLOAD.md). Source permission acknowledgement is not an independent copyright clearance; **never** upload unlicensed media to public GitHub Actions.
 
-## ReLIFE private local quality pilot (not a production source)
+## Highest-priority owner-selected source
 
-A **local-only** opt-in wrapper for the third-party `mangadex-downloader` client is available in [the ReLIFE guide](RELIFE_DOWNLOAD.md). It fixes the title and English language, avoids MangaDex compressed `data-saver` images, and audits CBZ pages and hashes offline. The public bulk workflow's source allowlist **is unchanged**. MangaDex upload provenance does not prove re-archival permission; no remote title-level adapter is included in GitHub Actions, and no source images are committed. Only an end-user with suitable permission should enable downloads. The original, officially distributed *ReLIFE* is a 15-volume full-colour Japanese edition; English third-party scans are not guaranteed to match master quality.
+**Acquainted: Encounter Spin-Off**: [MangaDex title UUID](https://mangadex.org/title/90f7c7a6-b759-4afb-b1cb-1af4660df307). Original work language Korean, but [exact MangaDex source audit](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44761569133) found **0 hosted chapters across every language/content rating**. The official English Tapas edition is readable in-app; an authorised portable file source has not been demonstrated. **No download should be claimed or attempted from that empty MangaDex feed.** See [priority report](PRIORITY_ACQUAINTED_ENCOUNTER_SPIN_OFF.md).
+
+## Interpret success correctly
+
+- **Catalogue listing**: the title/chapter numbers may exist; no page bytes necessarily exist.
+- **Original image manifest**: a source reported paths, but a page has not necessarily downloaded.
+- **Technical image pilot**: actual page bytes passed validation temporarily, but language/rights/full coverage and permanent storage may remain unverified.
+- **Verified retained export**: complete intended chapters exist in an authorised private local folder or explicitly permitted licence-approved artefact, with page counts and checksums.
+- **Controller accepted/uploaded**: this separate step requires the Controller's actual validator and an owner-approved operation.
+
+The public media allowlist remains `peppercarrot:26`; this is **different** from local fixed URL technical pilots and metadata research. If a future source is added, document its exact work/host allowlist, licence, page/volume/chapter coverage, rate limits, output contract, tests and rights status here.
+
+Additional context: [source research](SOURCE_RESEARCH.md), [remaining works feasibility](REMAINING_MANGA_FEASIBILITY.md), [download guide](DOWNLOAD_GUIDE.md), [architecture](ARCHITECTURE.md).
