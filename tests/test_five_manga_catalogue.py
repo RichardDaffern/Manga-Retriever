@@ -27,7 +27,7 @@ def listing(slug: str, count: int, *, extra=None) -> dict:
 
 class FiveMangaCatalogueTests(unittest.TestCase):
     def test_fixed_exact_source_urls(self):
-        self.assertEqual(len(SOURCES), 5)
+        self.assertEqual(len(SOURCES), 6)
         for slug, source in SOURCES.items():
             with self.subTest(slug=slug):
                 self.assertTrue(source["url"].startswith("https://mangakatana.com/manga/"))
