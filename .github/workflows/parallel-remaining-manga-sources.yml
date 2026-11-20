@@ -1,0 +1,90 @@
+name: Parallel English Manga Source Investigation
+
+on:
+  push:
+    branches: [feature/parallel-remaining-source-audits-20261120]
+    paths:
+      - .github/workflows/parallel-remaining-manga-sources.yml
+      - scripts/kainushi_gap_audit.py
+      - tests/test_kainushi_gap_audit.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  five-source-tracks:
+    name: Parallel source check - ${{ matrix.slug }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        slug: [kimi-no-iru-machi, love-hina, lovely-complex, mado-kara-madoka-chan, nisekoi]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install metadata tools and Python dependencies
+        run: python -m pip install -e .
+      - name: Run isolated source parser and metadata tests
+        run: python -m unittest tests.test_five_manga_catalogue tests.test_publication_metadata -v
+      - name: Retrieve pinned third-party chapter catalogue client
+        run: |
+          curl --fail --location --silent --show-error --retry 2 \
+            --output "$RUNNER_TEMP/manga-downloader.tar.gz" \
+            https://github.com/elboletaire/manga-downloader/releases/download/v25.3.0/manga-downloader-v25.3.0-linux-amd64.tar.gz
+          echo "2ff911436f853457aef21ed3c1a86425d0f380dc26235d47777e362a260fdf34  $RUNNER_TEMP/manga-downloader.tar.gz" | sha256sum --check
+          mkdir -p "$RUNNER_TEMP/manga-cli"
+          tar -xzf "$RUNNER_TEMP/manga-downloader.tar.gz" -C "$RUNNER_TEMP/manga-cli"
+          BIN_PATH="$(find "$RUNNER_TEMP/manga-cli" -type f -name manga-downloader -print -quit)"
+          test -n "$BIN_PATH"
+          chmod +x "$BIN_PATH"
+          printf 'MANGA_DOWNLOADER_BIN=%s\n' "$BIN_PATH" >> "$GITHUB_ENV"
+      - name: Investigate exact chapter listing (metadata only)
+        env:
+          SLUG: ${{ matrix.slug }}
+        run: |
+          python scripts/five_manga_catalogue.py \
+            --slug "$SLUG" --client "$MANGA_DOWNLOADER_BIN" \
+            --output "reports/$SLUG-chapter-catalogue.json"
+      - name: Investigate independent publication metadata source
+        env:
+          SLUG: ${{ matrix.slug }}
+        run: |
+          python -m manga_retriever.publication_metadata \
+            --slug "$SLUG" --output "reports/$SLUG-publication-metadata.json"
+      - name: Publish independently evaluated results for this manga
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: parallel-source-track-${{ matrix.slug }}
+          path: reports/
+          retention-days: 7
+          if-no-files-found: warn
+
+  kainushi-gaps:
+    name: Kainushi English chapter gap track
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install metadata parser dependencies
+        run: python -m pip install -e .
+      - name: Verify metadata gap analysis offline
+        run: python -m unittest tests.test_kainushi_gap_audit tests.test_source_probe_eight -v
+      - name: Check entire English MangaDex feed without image retrieval
+        run: python -m scripts.kainushi_gap_audit --output reports/kainushi-english-gap-audit.json
+      - name: Publish independently evaluated Kainushi gap report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: parallel-source-track-kainushi-wa-akuma
+          path: reports/
+          retention-days: 7
+          if-no-files-found: warn
