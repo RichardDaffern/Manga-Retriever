@@ -59,6 +59,68 @@ SOURCE_TITLES = {
 }
 
 
+def validate_local_candidate(source: Path) -> dict:
+    """Validate one explicitly selected public metadata candidate before local import.
+
+    This never proves cover rights or matches existing private IDs; it only
+    permits a user-selected, source-identity-pinned sidecar to populate a newly
+    generated single-series Controller candidate.
+    """
+    if source.is_symlink() or not source.is_file() or source.stat().st_size > MAX_JSON_BYTES:
+        raise MetadataError("Metadata candidate missing, linked or oversized")
+    try:
+        candidate = json.loads(source.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, ValueError) as exc:
+        raise MetadataError("Metadata candidate is not valid JSON") from exc
+    if not isinstance(candidate, dict) or candidate.get("schemaVersion") != 1 or candidate.get("mediaKind") != "manga":
+        raise MetadataError("Unsupported publication metadata candidate version")
+    if candidate.get("candidateType") != "publication-metadata":
+        raise MetadataError("Expected review-only publication metadata candidate")
+    match = candidate.get("match")
+    meta = candidate.get("metadata")
+    provenance = candidate.get("provenance")
+    if not isinstance(match, dict) or not isinstance(meta, dict) or not isinstance(provenance, dict):
+        raise MetadataError("Missing metadata candidate identity or provenance")
+    approved = [value for value in SOURCE_TITLES.values()
+                if (match.get("sourceMangaId") == value["sourceId"]
+                    and match.get("canonicalTitle") == value["name"])]
+    if (len(approved) != 1 or match.get("source") != "MangaDex"
+            or provenance.get("operatorReviewRequired") is not True
+            or provenance.get("replaceManualMetadata") is not False
+            or provenance.get("sourceEditionMatched") is not True):
+        raise MetadataError("Unverified or unauthorised metadata source selection")
+    for name, cap, limit in (("aliases", 24, 120), ("creators", 24, 120), ("tags", 32, 120)):
+        val = meta.get(name)
+        if (not isinstance(val, list) or len(val) > cap
+                or any(not isinstance(s, str) or not s.strip() or len(s) > limit or
+                       any(ord(c) < 32 or ord(c) == 127 for c in s)
+                       for s in val)):
+            raise MetadataError("Invalid metadata " + name)
+        if len({_key(s) for s in val}) != len(val):
+            raise MetadataError("Duplicate metadata " + name)
+    if (meta.get("title") != approved[0]["name"]
+            or meta.get("publicationStatus") not in {"unknown", "completed", "ongoing", "hiatus"}):
+        raise MetadataError("Invalid metadata title or publication status")
+    synopsis = meta.get("synopsis")
+    if synopsis is not None and (not isinstance(synopsis, str) or
+                                 not synopsis.strip() or len(synopsis) > 2000):
+        raise MetadataError("Invalid English synopsis")
+    cover = candidate.get("coverCandidate")
+    if cover is not None:
+        if (not isinstance(cover, dict)
+                or cover.get("assetDownloaded") is not False
+                or cover.get("rightsClearedForRedistribution") is not False
+                or cover.get("status") != "reference-only"
+                or not isinstance(cover.get("sourceUrl"), str)
+                or not cover["sourceUrl"].startswith(
+                    f"https://uploads.mangadex.org/covers/{match['sourceMangaId']}/")):
+            raise MetadataError("Untrusted or downloaded cover candidate")
+        filename = cover["sourceUrl"].rsplit("/", 1)[-1]
+        if not COVER_FILENAME.fullmatch(filename):
+            raise MetadataError("Unsafe cover source filename")
+    return candidate
+
+
 class MetadataError(ValueError):
     """A metadata source could not be safely reconciled to a fixed title."""
 
