@@ -74,6 +74,8 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
+      - name: Install metadata parser dependencies
+        run: python -m pip install -e .
       - name: Verify metadata gap analysis offline
         run: python -m unittest tests.test_kainushi_gap_audit tests.test_source_probe_eight -v
       - name: Check entire English MangaDex feed without image retrieval
