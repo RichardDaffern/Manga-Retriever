@@ -2,6 +2,12 @@
 
 **Status: M1/M2 complete; M3 first authorised live-source adapter available for one explicitly licensed webcomic episode.** This toolkit imports manga pages you are authorised to possess, validates unmodified source image bytes, creates one CBZ per chapter, and exports a **local Controller v1 candidate**. It does **not** enable general manga-site scraping, arbitrary chapter URLs, cloud storage or Manga Reader integration. The initial Pepper&Carrot adapter supports only the creator-published high-resolution English pages of episode 26 under CC BY 4.0; larger source coverage, bulk resumable downloads and production release remain planned.
 
+## Five-series URL-based chapter download pilot
+
+The [local MangaKatana URL downloader](docs/LOCAL_URL_MANGA_DOWNLOAD.md) now accepts **five exact requested manga URLs** and one to twenty chapters per batch. It uses the independent Manga Downloader CLI, preserves original page bytes, verifies CBZ image integrity and stores files on your own Windows computer. Source pages lacking reliable English labels are **quarantined for manual English-page verification**.
+
+[GitHub Actions technical pilots](.github/workflows/five-real-chapter-download-pilots.yml) attempt one real chapter for each series, but **never publish copyrighted CBZs or pages** to the public repository. Only image-verification JSON reports may be uploaded. This is **not** an end-to-end cloud delivery of the requested manga.
+
 ## English manga metadata enrichment (11 titles)
 
 [English Manga Publication Metadata Audit](.github/workflows/publication-metadata.yml) obtains creator/artist credits, English synopsis, genres, publication status and a **cover reference** for 11 source-identity-verified titles. The workflow produces a single `manga-publication-metadata-11-review` artefact with a CSV completeness report and per-title JSON records, for the Storage Controller to review and reconcile without downloading chapters again. The Retriever does **not** download cover artwork or write to Hugging Face. [Full Controller and Library integration handover](docs/METADATA_ENRICHMENT_HANDOVER.md).
