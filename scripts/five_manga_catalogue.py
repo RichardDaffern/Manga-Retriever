@@ -174,7 +174,19 @@ def main(argv: list[str] | None = None) -> int:
     exit_code = 0
     try:
         result["catalogue"] = list_with_client(args.slug, args.client)
-        print(f"{args.slug}: {result['catalogue']['catalogueStatus']}", flush=True)
+        summary = result["catalogue"]
+        print(json.dumps({
+            "series": args.slug,
+            "catalogueStatus": summary["catalogueStatus"],
+            "foundMain": summary["distinctExpectedMain"],
+            "expectedMain": summary["expectedMainCount"],
+            "missingMain": summary["missingMainChapters"],
+            "extraDecimalCount": len(summary["decimalLabels"]),
+            "lockedEntries": summary["lockedEntries"],
+            "invalidEntries": summary["invalidEntries"],
+            "duplicateIntegerReleases": summary["duplicateIntegerReleases"],
+            "listedEntries": summary["listedEntries"],
+        }, sort_keys=True), flush=True)
     except CatalogueError as exc:
         result["error"] = str(exc)
         result["catalogueStatus"] = "unverified"
