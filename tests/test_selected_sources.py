@@ -88,6 +88,7 @@ class SourcesTests(unittest.TestCase):
     def test_chapter_labels_exclude_decimal_extras(self):
         self.assertEqual(number_from_cbz("Vol. 1 Ch. 12.cbz"), 12)
         self.assertIsNone(number_from_cbz("Vol. 1 Ch. 12.5.cbz"))
+        self.assertIsNone(number_from_cbz("Ch. 0 Oneshot.cbz"))
         self.assertIsNone(number_from_cbz("cover.cbz"))
 
     def test_valid_range_full_sha_and_export(self):
@@ -111,6 +112,18 @@ class SourcesTests(unittest.TestCase):
         self.cbz(1, extra=".5")
         with self.assertRaisesRegex(SelectedSourceError, "Missing numbered chapters"):
             audit("last-game", 1, 2, self.data)
+
+    def test_chapter_zero_oneshot_is_verified_extra_without_masking_missing_main(self):
+        self.cbz(1)
+        oneshot = self.data / "Ch. 0 Oneshot.cbz"
+        with zipfile.ZipFile(oneshot, "w") as archive:
+            archive.writestr("0001.png", png(2))
+        report = audit("onizuka-sawarida", 1, 1, self.data)
+        self.assertEqual(report["verifiedMainChapterNumbers"], [1])
+        self.assertEqual(report["verifiedArchives"], 2)
+        self.assertEqual(report["extraChapterArchivePaths"], ["Ch. 0 Oneshot.cbz"])
+        with self.assertRaisesRegex(SelectedSourceError, "Missing numbered chapters"):
+            audit("onizuka-sawarida", 1, 2, self.data)
 
     def test_duplicate_chapter_rejected(self):
         self.cbz(1)

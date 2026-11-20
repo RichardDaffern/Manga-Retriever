@@ -4,6 +4,7 @@ on:
   workflow_run:
     workflows:
       - Three Manga English Original-Quality Downloads
+      - Onizuka Manga Original-Quality Recovery Downloads
     types: [completed]
 
 permissions:

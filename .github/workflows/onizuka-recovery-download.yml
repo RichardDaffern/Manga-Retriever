@@ -1,0 +1,56 @@
+name: Onizuka Manga Original-Quality Recovery Downloads
+
+on:
+  push:
+    branches: [fix/onizuka-oneshot-retry-20261120]
+    paths:
+      - .github/workflows/onizuka-recovery-download.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: onizuka-recovery-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  download-onizuka:
+    name: Onizuka-chan chapters ${{ matrix.start }}-${{ matrix.end }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        include:
+          - {start: 1, end: 20}
+          - {start: 21, end: 40}
+          - {start: 41, end: 49}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install pinned MangaDex downloader and image auditor
+        run: |
+          python -m pip install -e .
+          python -m pip install 'mangadex-downloader==3.1.4'
+      - name: Fetch only Onizuka's verified English source-original chapters
+        env:
+          START: ${{ matrix.start }}
+          END: ${{ matrix.end }}
+        run: |
+          python -m manga_retriever.selected_sources \
+            --slug onizuka-sawarida --start "$START" --end "$END" \
+            --output "downloads/onizuka-sawarida" \
+            --verified-output "verified/onizuka-sawarida-$START-$END" \
+            --acknowledge-rights
+      - name: Upload only independently verified CBZ files and image audit
+        uses: actions/upload-artifact@v7
+        with:
+          name: Onizuka-Original-Ch${{ matrix.start }}-${{ matrix.end }}
+          path: verified/
+          retention-days: 7
+          if-no-files-found: error
+          compression-level: 0
