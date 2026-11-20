@@ -2,7 +2,7 @@
 
 **Purpose:** Acquire or import manga files the owner is authorised to retain, verify original image bytes, assemble per-chapter CBZs and produce **local Storage Controller candidate v1** packages. The Retriever is **not** the Manga Library UI or the private Hugging Face data controller.
 
-**Current capabilities (20 November 2026):** Local images/ZIP/CBZ, permitted DRM-free English EPUB and creator-supplied PDF imports; one licensed live-source adapter (Pepper&Carrot Episode 26); fixed-title MangaDex research/local wrappers; a bounded **five-title MangaKatana URL pilot** with resumable local batches. Five real MangaKatana Chapter 1 CBZs passed ephemeral image verification (246 pages total), but their English content, full-series coverage and export rights remain unverified. The **public GitHub Actions media allowlist is still restricted to approved licensed material**. There is no arbitrary-site downloader, private HF upload or live Reader integration.
+**Current capabilities (20 November 2026):** Local images/ZIP/CBZ, permitted DRM-free English EPUB and creator-supplied PDF imports; one licensed live-source adapter (Pepper&Carrot Episode 26); fixed-title MangaDex research/local wrappers; a bounded **six-title MangaKatana URL pilot** with resumable local batches. Five previously supported title Chapter 1 CBZs passed ephemeral image verification (246 pages total); the newly added Fairytale-like You title passed a separate real first-chapter test (8 pages), but their English content, full-series coverage and export rights remain unverified. The **public GitHub Actions media allowlist is still restricted to approved licensed material**. There is no arbitrary-site downloader, private HF upload or live Reader integration.
 
 **Start here:** [Project handbook and current architecture](docs/PROJECT_HANDBOOK.md) | [Mandatory AI agent instructions](AGENTS.md) | [Source support matrix](docs/SUPPORTED_SOURCES.md) | [Windows URL download guide](docs/LOCAL_URL_MANGA_DOWNLOAD.md) | [Security](docs/SECURITY.md) | [Roadmap](docs/ROADMAP.md).
 
@@ -11,6 +11,10 @@
 ## P0 manga request: Acquainted: Encounter Spin-Off
 
 The user's [exact MangaDex title ID](https://mangadex.org/title/90f7c7a6-b759-4afb-b1cb-1af4660df307) has **zero English chapters** in the verified MangaDex feed. An official completed English edition of **50 episodes** exists on [Tapas](https://tapas.io/series/acquainted-encounter-spin-off/info), but [Tapas's in-app offline policy](https://help.tapas.io/hc/en-us/articles/115000415034-Read-offline) does not permit external archive export. Consequently **no CBZ was downloaded or published**. The title is now tracked as highest priority for a legitimate DRM-free English export or rights-holder permission. [Exact audit and next steps](docs/PRIORITY_ACQUAINTED_ENCOUNTER_SPIN_OFF.md).
+
+## Download six NEW requested manga on your Windows computer
+
+Use `Download-New-Manga.cmd "C:\\Manga\\New" pilot` to download one real chapter from each of the six new titles and verify image integrity. After checking source permissions and that their page text is English, run `Download-New-Manga.cmd "C:\\Manga\\New" full` to start verified, resumable 20-chapter local batches. **These new-title downloads never recover previously downloaded ReLIFE, Love So Life, Maid-sama!, Last Game, Onizuka or Kainushi.** The sixth title is *The Fairytale-like You Goes on the Assault* (42 numbered chapters, plus unhandled fractional extras). [One-chapter live check](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44789220759) verified 8 actual image pages. No new series is yet proven to be wholly English or complete, and no copyrighted files are delivered through public GitHub Actions.
 
 ## Recover 33 existing manga artifacts before 26-27 November 2026
 
