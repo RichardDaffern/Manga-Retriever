@@ -61,6 +61,21 @@ For private, owner-authorised local retention of those five series after checkin
 
 This downloads in bounded 20-chapter batches, resumes verified batches and records per-title failures. Confirm exact rights, language and chapter coverage before importing a resulting candidate into the Manga Storage Controller.
 
+## Live 15-job technical verification result (20 November 2026)
+
+[**All 15 actual image-download jobs passed**](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44783810968). Each job downloaded and opened **two image-containing chapter CBZ files**: 30 independently verified CBZ archives, **786 decoded image pages** across five requested titles and three chapter positions each.
+
+| Title | Beginning | Middle | End | Verified page total |
+| --- | --- | --- | --- | ---: |
+| Kimi no Iru Machi | 2-3 (60 pages) | 130-131 (38) | 260-261 (51) | 149 |
+| Love Hina | 2-3 (44) | 60-61 (49) | 119-120 (42) | 135 |
+| Lovely Complex | 2-3 (92) | 33-34 (98) | 65-66 (117) | 307 |
+| Mado kara Madoka-chan | 2-3 (20) | 37-38 (20) | 73-74 (20) | 60 |
+| Nisekoi | 2-3 (50) | 114-115 (40) | 228-229 (45) | 135 |
+| **Total** | | | | **786** |
+
+All 15 receipts were marked `englishReviewRequired=true` because the source listing did not label the downloaded page text. **The 30 CBZ image files were deleted from public runners**, not retained for the owner's download. The successful last-chapter probes do not prove that every intervening chapter or complete English publication exists. The local Windows bulk downloader remains the owner-retention path where permitted.
+
 ## Copyright, access and identity safeguards
 
 This local recovery helper only retrieves files already published by the existing GitHub Actions runs. It does **not** authorise or perform new republication of copyrighted chapter files. Original media, user permissions and personal IDs remain outside Git. No DRM/paywall/anti-bot bypass is supported. Korean or unverified-language files must not be silently imported into the English Manga Library. A title's full main-chapter-job range requires actual file coverage verification before being called complete.
