@@ -16,5 +16,4 @@
 
 Downloaded media is permitted only for an explicitly approved source and never committed to the public repository. A full Controller/Reader integration is not claimed.
 
- 
 For the most current source-specific evidence, follow [project handbook](PROJECT_HANDBOOK.md), [supported sources](SUPPORTED_SOURCES.md) and the linked GitHub Actions run IDs rather than inferring success from a roadmap milestone alone.
