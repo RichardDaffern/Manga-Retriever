@@ -32,6 +32,24 @@ The other four reviewed URLs:
 - `https://mangakatana.com/manga/lovely-complex.6103`
 - `https://mangakatana.com/manga/mado-kara-madoka-chan.21642`
 
+## Run five series in parallel and retain your files on Windows
+
+Create your private output folder first, outside the repository, for example `C:\\Manga\\Downloads`. From the cloned Manga Retriever directory, after installing the [pinned downloader CLI](https://github.com/elboletaire/manga-downloader/releases/tag/v25.3.0), launch **all five first chapters simultaneously across two source workers**:
+
+```powershell
+py -3.12 -m scripts.local_url_manga_bulk --mode pilot --slugs all --workers 2 --output-root "C:\Manga\Downloads" --acknowledge-local-rights
+```
+
+The five real, verified chapter CBZs remain in private local subfolders. Inspect their page text to confirm English. **Only after reviewing the actual English pages** and source download terms, run all numbered chapters in **resumable 20-chapter batches**, across two independent series:
+
+```powershell
+py -3.12 -m scripts.local_url_manga_bulk --mode full --slugs all --workers 2 --output-root "C:\Manga\Downloads" --acknowledge-local-rights --confirm-english-reviewed
+```
+
+Progress is recorded as `manga-bulk-status.json`. On retry, previously verified folders are checked and skipped; incomplete/failed titles do **not** block the other titles. Existing files are never overwritten. This may consume substantial disk space and take considerable time. Expected main chapter counts from the metadata catalogues are 261, 120, 66, 74 and 229 respectively, but those figures do not establish that every chapter's actual image files are reachable.
+
+No GitHub Actions workflow saves these full copyrighted chapters. This local-only command is the way to **retain** them privately, subject to applicable permissions.
+
 ## Confirmed live image-download pilots, 20 November 2026
 
 [Five real one-chapter image checks](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44755633296) **all passed**. These tests downloaded real source images in the ephemeral runner, produced five valid CBZ archives and verified original image content. Counts:
