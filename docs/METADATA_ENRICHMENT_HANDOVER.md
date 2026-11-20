@@ -10,7 +10,7 @@
 
 ## Retriever now supplies (review-only, no private writes)
 
-`manga_retriever/publication_metadata.py` produces **one JSON per selected title** from fixed, verified MangaDex metadata endpoints. It fails closed if the source ID/title differs from the approved title. Five pinned works:
+`manga_retriever/publication_metadata.py` produces **one JSON per selected title** from fixed, verified MangaDex metadata endpoints. It fails closed if the source ID/title differs from the approved title. Eleven pinned works:
 
 | Key | Title |
 | --- | --- |
@@ -19,10 +19,16 @@
 | `last-game` | Last Game |
 | `love-so-life` | Love So Life |
 | `onizuka-sawarida` | Onizuka-chan and Sawarida-kun |
+| `kainushi-wa-akuma` | Kainushi wa Akuma |
+| `kimi-no-iru-machi` | Kimi no Iru Machi |
+| `love-hina` | Love Hina |
+| `lovely-complex` | Lovely Complex, **standard edition** |
+| `mado-kara-madoka-chan` | Mado kara Madoka-chan |
+| `nisekoi` | Nisekoi |
 
-[LIVE ACTIONS: Five source-identity checks passed, 20 November 2026](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44701899805).
+[LIVE ACTIONS: All 11 metadata source checks passed, 20 November 2026](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44703786128).
 
-Every title returned **at least one creator, an English synopsis, English genre/theme tags and a cover reference**. Author/artist relationships are recorded with their roles. Publication status is a source-declared candidate only and can be wrong. The summary includes missing field names and does not invent missing values.
+All 11 titles returned **at least one creator, an English synopsis, English genre/theme tags and a cover reference** in the verified live audit. *Lovely Complex* resolves to the previously audited standard edition, not the separate digital-colour edition. Author/artist relationships are recorded with their roles. Publication status is a source-declared candidate only and can be wrong. The summary includes missing field names and does not invent missing values.
 
 **Important:** The cover is a URL/reference record with `assetDownloaded: false` and `rightsClearedForRedistribution: false`. It is **not an image**, and no image byte rights or permitted HF storage have been established by this audit. The metadata job does not download or publish artwork.
 
@@ -70,6 +76,24 @@ Every title returned **at least one creator, an English synopsis, English genre/
 
 **This example is illustrative**: use the actual exact JSON artefacts, not example names or source IDs.
 
+### Combined 11-title review package for Storage Controller
+
+The [publication metadata workflow](../.github/workflows/publication-metadata.yml) now runs **11 source-identity-pinned jobs** and packages the results into a single download: `manga-publication-metadata-11-review`. Inside its ZIP is `manga-publication-metadata.zip`, containing:
+
+- `candidates/<slug>.json`: one review-only metadata record per title
+- `metadata-review.csv`: author/tag counts, synopsis/cover-reference availability, publication status, missing fields and source IDs
+- `manifest.json`: required review flag, missing-titles report, original JSON SHA-256s and confirmation **zero cover images downloaded**
+
+The Controller should extract this package **after verifying the manifest**, match each source ID to the correct existing private manga ID, preview field-level changes, and never blindly replace manual metadata. This is **not** a private-HF migration script and not an actual cover ZIP.
+
+Recreate a bundle from your downloaded 11 JSON files:
+
+```powershell
+py -3.12 -m scripts.package_publication_metadata --source metadata-candidates --output manga-publication-metadata.zip
+```
+
+**Source ID research:** [six additional exact-title probes](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44703483358) established five unique MangaDex IDs; Lovely Complex matched two editions, so the standard edition was selected only after comparison with the [previous edition audit](EIGHT_MANGA_SOURCES.md). No pages or cover images were downloaded by these probes.
+
 ### Generate review records (GitHub Actions preferred)
 
 Use [English Manga Publication Metadata Audit](../.github/workflows/publication-metadata.yml) and select **Run workflow**. Its five jobs independently write `metadata-review-<slug>` artefacts with seven-day retention. To generate one locally:
@@ -112,7 +136,7 @@ The command validates the pinned source ID and the imported title, and inserts s
 
 ## Definition of done
 
-- At least the five previously retrieved English titles have creator, synopsis, tags and publication-status candidates available for review.
+- At least the eleven user-requested titles have creator, synopsis, tags and publication-status candidates available for review.
 - Controller can safely attach correctly matched source metadata to existing entries in `data/library.json` without moving any chapter/media files or changing IDs.
 - Legitimately stored covers display correctly in Library, with private access and graceful fallbacks.
 - User-edited fields never get erased, and catalogue updates are previewable, backed up and revision guarded.
