@@ -1,7 +1,7 @@
 """Offline tests: source-identity-locked manga metadata and cover-reference safety."""
 from __future__ import annotations
 
- import tempfile
+import tempfile
 from pathlib import Path
 
 from PIL import Image
