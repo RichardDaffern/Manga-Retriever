@@ -76,7 +76,10 @@ def number_from_cbz(filename: str) -> int | None:
     match = CHAPTER_LABEL.search(Path(filename).stem)
     if match is None or match.group(2) is not None:
         return None
-    return int(match.group(1))
+    chapter_number = int(match.group(1))
+    # MangaDex can include a chapter 0 oneshot even when requesting 1..N.
+    # Treat it as a verified extra, never as a numbered main chapter.
+    return chapter_number if chapter_number > 0 else None
 
 
 def audit(slug: str, start: int, end: int, folder: Path) -> dict:
