@@ -81,7 +81,7 @@ class AlternativeFormatsTests(unittest.TestCase):
             self.assertEqual(epub.getinfo("mimetype").compress_type, zipfile.ZIP_STORED)
             for name in epub.namelist():
                 if name.endswith((".xml", ".opf", ".xhtml")):
-                    ElementTree.fromstring(epub.read(name))
+                    ElementTree.fromstring(epub.read(name))  # noqa: S314 - locally generated XML only
             for n in range(1, 7):
                 self.assertEqual(epub.read(f"EPUB/images/p{n:04d}.jpg"), self.original[n])
             self.assertIn("Creative Commons", epub.read("EPUB/ATTRIBUTION.txt").decode())
