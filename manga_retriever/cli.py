@@ -17,6 +17,8 @@ def main(argv: list[str] | None = None) -> int:
     ingest.add_argument("--output", type=Path, required=True)
     ingest.add_argument("--registry", type=Path, default=Path(".manga-retriever/ids.json"))
     ingest.add_argument("--rights-json", type=Path)
+    ingest.add_argument("--metadata-json", type=Path,
+                        help="Reviewed MangaDex metadata sidecar for one series")
     ingest.add_argument("--direction", choices=["rtl", "ltr", "vertical"], default="rtl")
     verify = commands.add_parser("verify", help="Verify candidate assets and chapter CBZs")
     verify.add_argument("--export", type=Path, required=True)
@@ -28,7 +30,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.command == "import":
             result = import_local(args.source, args.output, args.registry,
-                                  rights_path=args.rights_json, direction=args.direction)
+                                  rights_path=args.rights_json, direction=args.direction,
+                                  metadata_path=args.metadata_json)
         elif args.command == "verify":
             result = verify_export(args.export)
         else:
