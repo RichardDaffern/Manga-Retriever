@@ -6,6 +6,8 @@ on:
     paths:
       - manga_retriever/publication_metadata.py
       - tests/test_publication_metadata.py
+      - scripts/package_publication_metadata.py
+      - tests/test_publication_metadata_bundle.py
       - .github/workflows/publication-metadata.yml
   workflow_dispatch:
 
@@ -46,3 +48,35 @@ jobs:
           path: metadata-candidates/${{ matrix.slug }}.json
           retention-days: 7
           if-no-files-found: warn
+
+  package-review:
+    name: Bundle all 11 publication metadata candidates for Controller
+    needs: [metadata]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install validation tools
+        run: python -m pip install -e .
+      - name: Download all 11 metadata-only JSON records from this run
+        uses: actions/download-artifact@v7
+        with:
+          pattern: metadata-review-*
+          path: metadata-candidates/
+          merge-multiple: true
+      - name: Verify all source IDs and produce one review-only ZIP
+        run: |
+          python -m unittest tests.test_publication_metadata_bundle -v
+          python -m scripts.package_publication_metadata \
+            --source metadata-candidates \
+            --output review/manga-publication-metadata.zip
+      - name: Publish combined metadata report (no images)
+        uses: actions/upload-artifact@v7
+        with:
+          name: manga-publication-metadata-11-review
+          path: review/manga-publication-metadata.zip
+          retention-days: 7
+          if-no-files-found: error
