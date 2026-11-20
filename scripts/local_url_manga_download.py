@@ -207,7 +207,7 @@ def run_pilot(
     try:
         argv = planned_command(executable, url, selection, stage)
         result = runner(argv, capture_output=True, text=True,
-                        check=False, timeout=420)
+                        check=False, timeout=max(420, selected_count * 150))
         if result.returncode != 0:
             raise ChapterPilotError("Downloader failed; no completed CBZ published")
         media = inspect_media(stage, max_archives=MAX_OUTPUT_ARCHIVES)
