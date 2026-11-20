@@ -1,6 +1,6 @@
 """Parallel, resumable private Windows manga batch downloader.
 
-Uses only five pinned MangaKatana URLs with the chapter-CBZ validator.
+Uses only six pinned MangaKatana URLs with the chapter-CBZ validator.
 Does not upload private manga pages to public Actions or Hugging Face.
 """
 from __future__ import annotations
@@ -159,7 +159,7 @@ def run_bulk(
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Download real manga CBZs locally in parallel")
     parser.add_argument("--slugs", default="all",
-                        help="Comma-separated source keys or 'all' for the five approved manga")
+                        help="Comma-separated source keys or 'all' for the six approved manga")
     parser.add_argument("--output-root", type=Path, required=True)
     parser.add_argument("--mode", choices=["pilot", "full"], default="pilot")
     parser.add_argument("--workers", type=int, default=2)
