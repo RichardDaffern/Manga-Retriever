@@ -8,7 +8,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from manga_retriever.importer import import_local, verify_export
+from manga_retriever.importer import ImportFailure, import_local, verify_export
 from manga_retriever.publication_metadata import (
     SOURCE_TITLES,
     MetadataError,
@@ -148,7 +148,7 @@ class PublicationMetadataTests(unittest.TestCase):
     def test_opt_in_metadata_populates_catalogue_without_changing_chapters(self):
         with tempfile.TemporaryDirectory() as temp:
             base = Path(temp)
-            input_dir = base / "source" / "SampleFolder" / "Chapter 1"
+            input_dir = base / "source" / "ReLIFE" / "Chapter 1"
             input_dir.mkdir(parents=True)
             original = input_dir / "0001.jpg"
             Image.new("RGB", (24, 32), "orange").save(original, "JPEG")
@@ -172,7 +172,7 @@ class PublicationMetadataTests(unittest.TestCase):
             before, after = catalogue(out_plain), catalogue(out_enriched)
             self.assertEqual(before["id"], after["id"])
             self.assertEqual(before["chapters"], after["chapters"])
-            self.assertEqual(before["title"], "SampleFolder")
+            self.assertEqual(before["title"], "ReLIFE")
             self.assertEqual(after["title"], "ReLIFE")
             self.assertEqual(after["creators"], ["Example Writer", "Example Artist"])
             self.assertEqual(after["tags"], ["Romance", "School Life"])
@@ -186,6 +186,20 @@ class PublicationMetadataTests(unittest.TestCase):
                 original.read_bytes(),
                 next((out_enriched / "controller_candidate" / "assets").rglob("*.jpg")).read_bytes(),
             )
+
+    def test_unrelated_folder_must_not_receive_metadata(self):
+        with tempfile.TemporaryDirectory() as temp:
+            base = Path(temp)
+            folder = base / "source" / "Different Series" / "Chapter 1"
+            folder.mkdir(parents=True)
+            Image.new("RGB", (24, 32), "blue").save(folder / "0001.jpg", "JPEG")
+            candidate = base / "source-metadata.json"
+            candidate.write_text(json.dumps(normalise("relife", payload("relife"))))
+            with self.assertRaisesRegex(ImportFailure, "does not match"):
+                import_local(base / "source", base / "export", base / "ids.json",
+                             metadata_path=candidate)
+            self.assertFalse((base / "export").exists())
+            self.assertFalse((base / "ids.json").exists())
 
     def test_metadata_rejected_when_identity_cannot_be_verified(self):
         with tempfile.TemporaryDirectory() as temp:
