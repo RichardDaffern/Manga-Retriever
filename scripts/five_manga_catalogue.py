@@ -135,6 +135,8 @@ def summarise(slug: str, payload: dict) -> dict:
         "englishTranslationVerified": False,
         "imageFidelityVerified": False,
         "downloadOrRedistributionRightsVerified": False,
+        "eligibleForAutomatedDownload": False,
+        "downloadBlockers": ["English artwork not verified", "Permitted export and public-artefact rights not verified"],
         "imagesDownloaded": 0,
         "archivesCreated": 0,
     }

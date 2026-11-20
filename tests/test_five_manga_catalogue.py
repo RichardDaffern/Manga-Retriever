@@ -41,6 +41,8 @@ class FiveMangaCatalogueTests(unittest.TestCase):
                 self.assertEqual(report["missingMainChapters"], [])
                 self.assertFalse(report["downloadOrRedistributionRightsVerified"])
                 self.assertFalse(report["englishTranslationVerified"])
+                self.assertFalse(report["eligibleForAutomatedDownload"])
+                self.assertTrue(report["downloadBlockers"])
                 self.assertFalse(report["imageFidelityVerified"])
                 self.assertEqual(report["archivesCreated"], 0)
 
