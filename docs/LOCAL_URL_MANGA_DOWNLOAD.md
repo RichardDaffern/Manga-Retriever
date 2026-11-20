@@ -1,6 +1,6 @@
-# Actual URL-based manga chapter downloads: five-title pilot
+# Actual URL-based manga chapter downloads: six-title pilot
 
-**20 November 2026.** The site [MangaKatana](https://mangakatana.com/) displays a **Read offline** link on each of these five series pages, and the third-party [Manga Downloader v25.3.0](https://github.com/elboletaire/manga-downloader/releases/tag/v25.3.0) implements their chapter URL format.
+**20 November 2026.** The site [MangaKatana](https://mangakatana.com/) displays a **Read offline** link on each of these six series pages, and the third-party [Manga Downloader v25.3.0](https://github.com/elboletaire/manga-downloader/releases/tag/v25.3.0) implements their chapter URL format.
 
 This feature is a **local-only, owner-run downloader** with independent CBZ image verification. It does NOT transfer copyrighted manga pages to public GitHub Actions artefacts or Hugging Face. Neither an online listing nor a downloader supporting the site establishes the copyright owner's permission to copy or redistribute a work; check source terms and your local use rights first.
 
@@ -26,27 +26,27 @@ py -3.12 -m scripts.local_url_manga_download --url "https://mangakatana.com/mang
 
 Each batch is **at most 20 numbered chapters**, in a new output folder. The script refuses to overwrite folders, download all hundreds at once, or add hidden site credentials, DRM bypass or challenge-solving. It preserves JPEG/PNG/WebP/AVIF original bytes where possible, validates real pages in each CBZ, checks archive hashes, and publishes a `download-report.json` alongside downloaded CBZs only after the entire selected batch passes validation.
 
-The other four reviewed URLs:
+Other reviewed URLs:
 - `https://mangakatana.com/manga/kimi-no-iru-machi.2162`
 - `https://mangakatana.com/manga/love-hina.4545`
 - `https://mangakatana.com/manga/lovely-complex.6103`
 - `https://mangakatana.com/manga/mado-kara-madoka-chan.21642`
 
-## Run five series in parallel and retain your files on Windows
+## Run six series in parallel and retain your files on Windows
 
-Create your private output folder first, outside the repository, for example `C:\\Manga\\Downloads`. From the cloned Manga Retriever directory, after installing the [pinned downloader CLI](https://github.com/elboletaire/manga-downloader/releases/tag/v25.3.0), launch **all five first chapters simultaneously across two source workers**:
+Create your private output folder first, outside the repository, for example `C:\\Manga\\Downloads`. From the cloned Manga Retriever directory, after installing the [pinned downloader CLI](https://github.com/elboletaire/manga-downloader/releases/tag/v25.3.0), launch **all six first chapters simultaneously across two source workers**:
 
 ```powershell
 py -3.12 -m scripts.local_url_manga_bulk --mode pilot --slugs all --workers 2 --output-root "C:\Manga\Downloads" --acknowledge-local-rights
 ```
 
-The five real, verified chapter CBZs remain in private local subfolders. Inspect their page text to confirm English. **Only after reviewing the actual English pages** and source download terms, run all numbered chapters in **resumable 20-chapter batches**, across two independent series:
+The five earlier real, verified chapter CBZs remain in private local subfolders. Inspect their page text to confirm English. **Only after reviewing the actual English pages** and source download terms, run all numbered chapters in **resumable 20-chapter batches**, across two independent series:
 
 ```powershell
 py -3.12 -m scripts.local_url_manga_bulk --mode full --slugs all --workers 2 --output-root "C:\Manga\Downloads" --acknowledge-local-rights --confirm-english-reviewed
 ```
 
-Progress is recorded as `manga-bulk-status.json`. On retry, previously verified folders are checked and skipped; incomplete/failed titles do **not** block the other titles. Existing files are never overwritten. This may consume substantial disk space and take considerable time. Expected main chapter counts from the metadata catalogues are 261, 120, 66, 74 and 229 respectively, but those figures do not establish that every chapter's actual image files are reachable.
+Progress is recorded as `manga-bulk-status.json`. On retry, previously verified folders are checked and skipped; incomplete/failed titles do **not** block the other titles. Existing files are never overwritten. This may consume substantial disk space and take considerable time. Expected main chapter counts from the metadata catalogues are 261, 120, 66, 74, 229 and 42 respectively, but those figures do not establish that every chapter's actual image files are reachable.
 
 No GitHub Actions workflow saves these full copyrighted chapters. This local-only command is the way to **retain** them privately, subject to applicable permissions.
 
