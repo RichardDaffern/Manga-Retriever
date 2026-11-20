@@ -10,7 +10,6 @@ from __future__ import annotations
 import argparse
 import json
 import posixpath
-import re
 import shutil
 import stat
 import sys
@@ -20,7 +19,7 @@ from pathlib import Path, PurePosixPath
 from urllib.parse import unquote, urlsplit
 from xml.etree import ElementTree as ET
 
-from .importer import ImportFailure, MAX_IMAGE, MIME, _validate_image, import_local, verify_export
+from .importer import MAX_IMAGE, MIME, ImportFailure, _validate_image, import_local, verify_export
 
 MAX_EPUB_BYTES = 1_000_000_000
 MAX_UNCOMPRESSED = 2_000_000_000
@@ -224,7 +223,7 @@ def import_epubs(source: Path, output: Path, registry: Path, *, series_title: st
     try:
         input_root = stage / "input"
         name = _folder_name(series_title or source.stem)
-        for index, path in enumerate(inputs, 1):
+        for path in inputs:
             chapter_folder = input_root / name / _folder_name(path.stem)
             if chapter_folder.exists():
                 raise ImportFailure("Duplicate EPUB volume labels")
