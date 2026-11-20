@@ -1,17 +1,21 @@
 """Offline tests: source-identity-locked manga metadata and cover-reference safety."""
 from __future__ import annotations
 
-import io
+ import tempfile
+from pathlib import Path
+
+from PIL import Image
+
+from manga_retriever.importer import import_local, verify_export
 import json
 import unittest
-from types import SimpleNamespace
-from unittest.mock import Mock
-
+  
 from manga_retriever.publication_metadata import (
     SOURCE_TITLES,
     MetadataError,
     fetch_metadata,
     normalise,
+    validate_local_candidate,
 )
 
 
@@ -141,6 +145,58 @@ class PublicationMetadataTests(unittest.TestCase):
             "https://api.mangadex.org/manga/" + SOURCE_TITLES["relife"]["sourceId"] + "?"
         ))
         self.assertIn("includes", calls[0])
+
+    def test_opt_in_metadata_populates_catalogue_without_changing_chapters(self):
+        with tempfile.TemporaryDirectory() as temp:
+            base = Path(temp)
+            input_dir = base / "source" / "SampleFolder" / "Chapter 1"
+            input_dir.mkdir(parents=True)
+            original = input_dir / "0001.jpg"
+            Image.new("RGB", (24, 32), "orange").save(original, "JPEG")
+            candidate = normalise("relife", payload("relife"))
+            metadata = base / "relife-metadata.json"
+            metadata.write_text(json.dumps(candidate), encoding="utf-8")
+            self.assertEqual(validate_local_candidate(metadata)["metadata"]["title"], "ReLIFE")
+            registry = base / "ids.json"
+            out_plain = base / "plain"
+            out_enriched = base / "enriched"
+            self.assertEqual(
+                import_local(base / "source", out_plain, registry),
+                {"series": 1, "chapters": 1, "pages": 1},
+            )
+            self.assertEqual(
+                import_local(base / "source", out_enriched, registry, metadata_path=metadata),
+                {"series": 1, "chapters": 1, "pages": 1},
+            )
+            def catalogue(path):
+                return json.loads((path / "controller_candidate" / "catalogue.json").read_text())[0]
+            before, after = catalogue(out_plain), catalogue(out_enriched)
+            self.assertEqual(before["id"], after["id"])
+            self.assertEqual(before["chapters"], after["chapters"])
+            self.assertEqual(before["title"], "SampleFolder")
+            self.assertEqual(after["title"], "ReLIFE")
+            self.assertEqual(after["creators"], ["Example Writer", "Example Artist"])
+            self.assertEqual(after["tags"], ["Romance", "School Life"])
+            self.assertEqual(after["synopsis"], "A short English synopsis")
+            self.assertEqual(after["publicationStatus"], "completed")
+            self.assertEqual(verify_export(out_enriched), {"series": 1, "chapters": 1, "pages": 1})
+            summary = json.loads((out_enriched / "download_manifest.json").read_text())
+            self.assertFalse(summary["publicationMetadata"]["coverDownloaded"])
+            self.assertTrue(summary["publicationMetadata"]["coverCandidate"]["sourceUrl"])
+            self.assertEqual(
+                original.read_bytes(),
+                next((out_enriched / "controller_candidate" / "assets").rglob("*.jpg")).read_bytes(),
+            )
+
+    def test_metadata_rejected_when_identity_cannot_be_verified(self):
+        with tempfile.TemporaryDirectory() as temp:
+            base = Path(temp)
+            doc = normalise("last-game", payload("last-game"))
+            doc["match"]["sourceMangaId"] = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"
+            candidate = base / "wrong.json"
+            candidate.write_text(json.dumps(doc), encoding="utf-8")
+            with self.assertRaises(MetadataError):
+                validate_local_candidate(candidate)
 
     def test_api_redirect_and_oversized_data_rejected(self):
         doc = payload("relife")
