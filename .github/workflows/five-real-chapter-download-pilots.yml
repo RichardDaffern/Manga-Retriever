@@ -1,0 +1,97 @@
+name: Five Real English Manga Chapter Download Pilots
+
+on:
+  push:
+    branches: [feature/url-based-english-chapter-pilot-20261120]
+    paths:
+      - scripts/local_url_manga_download.py
+      - tests/test_local_url_manga_download.py
+      - .github/workflows/five-real-chapter-download-pilots.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  one-chapter-technical-pilot:
+    name: Actual chapter 1 CBZ test - ${{ matrix.slug }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        include:
+          - slug: kimi-no-iru-machi
+            url: https://mangakatana.com/manga/kimi-no-iru-machi.2162
+          - slug: love-hina
+            url: https://mangakatana.com/manga/love-hina.4545
+          - slug: lovely-complex
+            url: https://mangakatana.com/manga/lovely-complex.6103
+          - slug: mado-kara-madoka-chan
+            url: https://mangakatana.com/manga/mado-kara-madoka-chan.21642
+          - slug: nisekoi
+            url: https://mangakatana.com/manga/nisekoi.553
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install local manga validators
+        run: python -m pip install -e .
+      - name: Validate bounded source URLs and synthetic real CBZ bytes
+        run: python -m unittest tests.test_local_url_manga_download -v
+      - name: Install publisher-independent CLI with verified checksum
+        run: |
+          curl --fail --location --silent --show-error --retry 2 \
+            --output "$RUNNER_TEMP/manga-downloader.tar.gz" \
+            https://github.com/elboletaire/manga-downloader/releases/download/v25.3.0/manga-downloader-v25.3.0-linux-amd64.tar.gz
+          echo "2ff911436f853457aef21ed3c1a86425d0f380dc26235d47777e362a260fdf34  $RUNNER_TEMP/manga-downloader.tar.gz" | sha256sum --check
+          mkdir -p "$RUNNER_TEMP/manga-cli"
+          tar -xzf "$RUNNER_TEMP/manga-downloader.tar.gz" -C "$RUNNER_TEMP/manga-cli"
+          BIN_PATH="$(find "$RUNNER_TEMP/manga-cli" -type f -name manga-downloader -print -quit)"
+          test -n "$BIN_PATH"
+          chmod +x "$BIN_PATH"
+          printf 'MANGA_DOWNLOADER_BIN=%s\n' "$BIN_PATH" >> "$GITHUB_ENV"
+      - name: Download actual one-chapter images and validate CBZ locally
+        env:
+          SERIES_URL: ${{ matrix.url }}
+          MANGA_SLUG: ${{ matrix.slug }}
+          MANGA_DOWNLOADER_NO_UPDATE_CHECK: '1'
+        run: |
+          mkdir -p "$RUNNER_TEMP/ephemeral-manga"
+          python -m scripts.local_url_manga_download \
+            --client "$MANGA_DOWNLOADER_BIN" \
+            --url "$SERIES_URL" \
+            --chapters 1 \
+            --output "$RUNNER_TEMP/ephemeral-manga/$MANGA_SLUG" \
+            --acknowledge-local-rights
+          mkdir -p reports
+          cp "$RUNNER_TEMP/ephemeral-manga/$MANGA_SLUG/download-report.json" \
+            "reports/$MANGA_SLUG.json"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          results = sorted(Path("reports").glob("*.json"))
+          assert len(results) == 1
+          r = json.loads(results[0].read_text())
+          assert r["verifiedPages"] > 0 and r["verifiedArchiveCount"] > 0
+          print("ACTUAL CHAPTER IMAGE CHECK:", json.dumps({
+              "slug": r["slug"],
+              "verifiedArchiveCount": r["verifiedArchiveCount"],
+              "verifiedPages": r["verifiedPages"],
+              "requiresManualEnglishReview": r["requiresManualEnglishReview"],
+              "mediaPublished": False,
+          }))
+          PY
+      - name: Securely remove downloaded copyrighted media from public runner
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/ephemeral-manga"
+      - name: Upload only verification metadata, NOT copyrighted pages or CBZ
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: chapter-image-verification-only-${{ matrix.slug }}
+          path: reports/${{ matrix.slug }}.json
+          if-no-files-found: warn
+          retention-days: 3
