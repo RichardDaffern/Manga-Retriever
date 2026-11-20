@@ -2,6 +2,16 @@
 
 **Status: M1/M2 complete; M3 first authorised live-source adapter available for one explicitly licensed webcomic episode.** This toolkit imports manga pages you are authorised to possess, validates unmodified source image bytes, creates one CBZ per chapter, and exports a **local Controller v1 candidate**. It does **not** enable general manga-site scraping, arbitrary chapter URLs, cloud storage or Manga Reader integration. The initial Pepper&Carrot adapter supports only the creator-published high-resolution English pages of episode 26 under CC BY 4.0; larger source coverage, bulk resumable downloads and production release remain planned.
 
+## English DRM-free manga EPUB import
+
+The new [English EPUB importer](docs/ENGLISH_EPUB_IMPORT.md) accepts owner-supplied **DRM-free English image EPUBs** (one or many volumes), verifies their images, and creates the existing manga Controller candidate and chapter CBZ format without transcoding images. It rejects DRM/encryption metadata and non-English language metadata.
+
+```powershell
+py -3.12 -m manga_retriever.epub_import --source "C:\Manga\English Volume.epub" --output "C:\Manga\verified" --registry "C:\Manga\ids.json" --series-title "English Manga" --acknowledge-rights
+```
+
+A [successful English-only GitHub Actions EPUB pilot](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44693718612) validated real creator-licensed images, original hashes and the resulting CBZ. It does **not** claim the five requested commercial manga are downloadable or licensed for public artefacts.
+
 ## Windows quick start
 
 ```powershell
