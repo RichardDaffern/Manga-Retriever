@@ -22,9 +22,13 @@ def _feed(client: MangaDexMetadata, *, language: str | None) -> tuple[int, list[
     records = []
     total = None
     for offset in range(0, MAX_CHAPTERS, 100):
-        params = {"limit": 100, "offset": offset}
+        params = [
+            ("limit", 100), ("offset", offset),
+            *[("contentRating[]", rating)
+              for rating in ("safe", "suggestive", "erotica", "pornographic")],
+        ]
         if language is not None:
-            params["translatedLanguage[]"] = language
+            params.append(("translatedLanguage[]", language))
         payload = client.request(f"/manga/{MANGA_ID}/feed?{urlencode(params)}")
         entries = payload.get("data")
         if not isinstance(entries, list):
@@ -71,6 +75,7 @@ def audit(client: MangaDexMetadata) -> dict:
         "sourceUrl": URL,
         "mangaDexId": MANGA_ID,
         "originalLanguage": original_language,
+        "sourceContentRating": attributes.get("contentRating"),
         "koreanFeedEntries": korean_count,
         "koreanCoverage": coverage,
         "sampleKoreanChapterId": chapter_id,
