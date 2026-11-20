@@ -1,4 +1,4 @@
-"""Bounded, metadata-only catalogue audit for five requested manga.
+"""Bounded, metadata-only catalogue audit for six requested manga.
 
 The external client is only invoked with its "list --json" subcommand, which
 does not download chapter pages. No source URL is accepted from the command line.
@@ -48,6 +48,15 @@ SOURCES = {
         "aliases": ("Nisekoi", "Nisekoi: False Love"),
         "url": "https://mangakatana.com/manga/nisekoi.553",
         "expectedMain": 229,
+    },
+    "fairytale-like-you": {
+        "title": "The Fairytale-like You Goes on the Assault",
+        "aliases": (
+            "The Fairytale-like You Goes on the Assault",
+            "Hakanai Kimi wa Moukou wo Hajimeru",
+        ),
+        "url": "https://mangakatana.com/manga/the-fairytale-like-you-goes-on-the-assault.26322",
+        "expectedMain": 42,
     },
 }
 
@@ -163,7 +172,7 @@ def list_with_client(slug: str, executable: str, *, run=subprocess.run) -> dict:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Read-only five-manga source listing (no images)")
+    parser = argparse.ArgumentParser(description="Read-only six-manga source listing (no images)")
     parser.add_argument("--slug", required=True, choices=sorted(SOURCES))
     parser.add_argument("--client", required=True, help="Path to pinned manga-downloader CLI")
     parser.add_argument("--output", type=Path, required=True)

@@ -1,0 +1,109 @@
+name: New Manga Fairytale Source and Real Chapter Check
+
+on:
+  push:
+    branches: [feature/new-titles-only-20261120]
+    paths:
+      - .github/workflows/new-fairytale-manga-pilot.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  new-title-source-and-real-page-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install image validators
+        run: python -m pip install -e .
+      - name: Fetch pinned and SHA-verified downloader
+        shell: bash
+        run: |
+          curl --fail --location --silent --show-error --retry 2 \
+            --output "$RUNNER_TEMP/manga-downloader.tar.gz" \
+            https://github.com/elboletaire/manga-downloader/releases/download/v25.3.0/manga-downloader-v25.3.0-linux-amd64.tar.gz
+          echo "2ff911436f853457aef21ed3c1a86425d0f380dc26235d47777e362a260fdf34  $RUNNER_TEMP/manga-downloader.tar.gz" | sha256sum --check
+          mkdir -p "$RUNNER_TEMP/manga-cli"
+          tar -xzf "$RUNNER_TEMP/manga-downloader.tar.gz" -C "$RUNNER_TEMP/manga-cli"
+          BIN_PATH="$(find "$RUNNER_TEMP/manga-cli" -type f -name manga-downloader -print -quit)"
+          test -n "$BIN_PATH"
+          chmod +x "$BIN_PATH"
+          printf 'MANGA_DOWNLOADER_BIN=%s\n' "$BIN_PATH" >> "$GITHUB_ENV"
+      - name: Inspect new title actual chapter ranges, including fractional releases
+        env:
+          MANGA_DOWNLOADER_NO_UPDATE_CHECK: '1'
+        shell: bash
+        run: |
+          mkdir -p reports
+          "$MANGA_DOWNLOADER_BIN" list --json \
+            "https://mangakatana.com/manga/the-fairytale-like-you-goes-on-the-assault.26322" \
+            > reports/fairytale-new-manga-chapters.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data=json.loads(Path("reports/fairytale-new-manga-chapters.json").read_text())
+          title=data.get("title")
+          entries=data.get("chapters")
+          assert isinstance(title, str) and title.casefold().strip() in (
+              "the fairytale-like you goes on the assault",
+              "hakanai kimi wa moukou wo hajimeru",
+          ), "Wrong title or edition"
+          assert isinstance(entries, list) and entries, "Missing new manga chapters"
+          ints=sorted({int(x["number"]) for x in entries if isinstance(x.get("number"),(int,float))
+                       and not isinstance(x["number"],bool) and x["number"]>0 and int(x["number"])==x["number"]})
+          decimals=sorted({str(x["number"]) for x in entries if isinstance(x.get("number"),(int,float))
+                           and not isinstance(x["number"],bool) and int(x["number"])!=x["number"]})
+          summary={"title":title,"chapterEntries":len(entries),"integerChapterLabels":ints,
+                   "fractionalChapterLabels":decimals,
+                   "hasChapter1":1 in ints,"mediaDownloaded":False}
+          Path("reports/fairytale-summary.json").write_text(json.dumps(summary,indent=2))
+          print("NEW MANGA CATALOGUE:",json.dumps({k:summary[k] for k in (
+              "title","chapterEntries","hasChapter1")}),"integerChapterCount",len(ints),
+              "highestIntegerChapter",max(ints) if ints else None,
+              "fractionalCount",len(decimals))
+          assert 1 in ints, "Cannot attempt chapter1 without verified source label"
+          PY
+      - name: Actual new-title chapter 1 CBZ download and image integrity check
+        env:
+          MANGA_DOWNLOADER_NO_UPDATE_CHECK: '1'
+        shell: bash
+        run: |
+          "$MANGA_DOWNLOADER_BIN" --format cbz --convert-images none \
+            --language en --concurrency 1 --concurrency-pages 2 \
+            --output-dir "$RUNNER_TEMP/fairytale-chapter1" \
+            "https://mangakatana.com/manga/the-fairytale-like-you-goes-on-the-assault.26322" 1
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          from manga_retriever.relife import _inspect_cbz
+          files=list(Path(os.environ["RUNNER_TEMP"]).joinpath("fairytale-chapter1").rglob("*.cbz"))
+          assert files, "No actual new manga CBZ downloaded"
+          audits=[_inspect_cbz(f) for f in files]
+          assert all(x["verifiedPageCount"] > 0 for x in audits)
+          data={"status":"verified-actual-cbz-images-language-review-required",
+                "title":"The Fairytale-like You Goes on the Assault",
+                "verifiedCBZ":len(files),
+                "verifiedImagePages":sum(x["verifiedPageCount"] for x in audits),
+                "userOwnedFilesRetained":False,
+                "rightsToPublishMediaIndependentlyVerified":False}
+          Path("reports/fairytale-media-result.json").write_text(json.dumps(data,indent=2))
+          print("NEW MANGA REAL CHAPTER RESULT:",json.dumps(data))
+          PY
+      - name: Delete copyrighted media from publicly hosted Actions runner
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/fairytale-chapter1"
+      - name: Publish source checks and image-count report, no artwork
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: new-fairytale-chapter-report-only
+          path: |
+            reports/fairytale-summary.json
+            reports/fairytale-media-result.json
+          retention-days: 7
+          if-no-files-found: warn

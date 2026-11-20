@@ -12,7 +12,7 @@ Manga Retriever is the **acquisition, validation and packaging** component in a 
 
 The desired end-to-end user experience is: provide a series URL or owned portable file; identify the exact work and edition; discover accessible chapters and their languages; verify source-specific downloading/export rights; retrieve permitted pages or import an existing file; validate every image and chapter; create ordered CBZs and a Controller candidate; then hand the local result to the separate Storage Controller for inspection and any owner-approved private upload.
 
-**That full experience is a product goal, not a statement of current completion.** The working URL downloader has only five pinned MangaKatana titles, not arbitrary websites; source support and full-series coverage are not guaranteed. The public CI is primarily a code/test and licence-approved pilot environment, not a warehouse for personal manga files.
+**That full experience is a product goal, not a statement of current completion.** The working URL downloader has only six pinned MangaKatana titles, not arbitrary websites; source support and full-series coverage are not guaranteed. The public CI is primarily a code/test and licence-approved pilot environment, not a warehouse for personal manga files.
 
 ### The three-repository responsibility split
 
@@ -74,6 +74,8 @@ The table deliberately separates implemented code, a successful **limited** pilo
 **Approved licensed live-media examples:** [English media format pilot](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44686201935) and [DRM-free English EPUB import pilot](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44693718612), both using licensed Pepper&Carrot content. These establish code-path behaviour, not permissions or completeness for unrelated manga.
 
 **Historical manga downloads:** Other named title workflows and earlier user-visible reports may refer to completed ReLIFE, Maid-sama!, Last Game, Love So Life and Onizuka operations. The tracked `downloaded_manga.json` may be empty because it is a registry of a particular approved artefact pipeline, not an inventory of the owner's private files. An agent must locate the exact successful action/artefact or owner's local archive and validate its content before making a present-tense completeness claim.
+
+**Newly enabled sixth source, 20 November:** *The Fairytale-like You Goes on the Assault*, also called *Hakanai Kimi wa Moukou wo Hajimeru*, is available for **local-only fixed URL** acquisition from `https://mangakatana.com/manga/the-fairytale-like-you-goes-on-the-assault.26322`. Live GitHub technical test [44789220759](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44789220759) found 72 chapter records, 42 integer-numbered main chapters and 29 fractional labels and downloaded a real **8-image Chapter 1 CBZ**. That copyrighted test CBZ was intentionally deleted from the public runner, so the user has **not** received a new series file. Fractional extras are not yet covered by the integer-only local bulk runner. The new `Download-New-Manga.cmd` targets **only the six not-yet-delivered titles**, not the six previously acquired titles. It must run on the owner's Windows computer to keep private files.
 
 ### Highest-priority outstanding request
 
@@ -171,7 +173,7 @@ Install and independently review the supported [Manga Downloader v25.3.0](https:
 py -3.12 -m scripts.local_url_manga_download --url "https://mangakatana.com/manga/nisekoi.553" --chapters 1 --output "C:\Manga\Nisekoi\Pilot-1" --acknowledge-local-rights
 ```
 
-This is **not a universal domain adapter**; only five pinned URLs are accepted. If the source lacks reliable language labels, inspect the downloaded page text before claiming English.
+This is **not a universal domain adapter**; only six pinned URLs are accepted. If the source lacks reliable language labels, inspect the downloaded page text before claiming English.
 
 ### Run all five approved URL pilots in parallel
 

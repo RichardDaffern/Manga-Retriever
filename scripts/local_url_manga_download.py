@@ -39,7 +39,7 @@ def source_for_url(url: str) -> tuple[str, dict]:
     if (target.scheme != "https" or target.netloc != "mangakatana.com"
             or target.query or target.fragment or target.username or target.password
             or target.port is not None or url.endswith("/download")):
-        raise ChapterPilotError("Only five exact, publicly listed MangaKatana series URLs are enabled")
+        raise ChapterPilotError("Only six reviewed, exact MangaKatana series URLs are enabled")
     for slug, source in SOURCES.items():
         if url == source["url"]:
             return slug, source
