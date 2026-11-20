@@ -4,7 +4,7 @@ M4 (implemented): Pepper&Carrot Episode 26 uses a persistent, private page check
 
 The checkpoint directory is generated scratch media and is deleted **only after** the verified export is published. The verified export and private identity registry are never overwritten. Files stranded between page write and index commit are treated as untrusted and fetched again, not marked completed. Back up the private `ids.json` before renaming/moving input paths. Run `python -m manga_retriever verify --export DIR` before trusting a completed export.
 
-M5 bulk scheduling and metadata-only registries are planned. No unsupported source or cloud upload is activated.
+M5 approved-source bulk scheduling and metadata-only registries are implemented. The approved **public media** source list is still restricted to `peppercarrot:26`. Separately, five pinned MangaKatana titles have a **local-only** 20-chapter-batch runner with per-batch verification. See [URL download guide](LOCAL_URL_MANGA_DOWNLOAD.md) and [project handbook](PROJECT_HANDBOOK.md). No unsupported source or cloud upload is activated.
 
 ## M5 batch recovery
 
