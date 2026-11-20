@@ -24,6 +24,10 @@ Use [the verified private Windows recovery guide](docs/HISTORICAL_MANGA_ARTIFACT
 
 Fifteen additional [real original-image chapter checks](.github/workflows/fifteen-manga-image-coverage-checks.yml) are available for five other requested series, covering early, middle and final chapters. These are **ephemeral technical tests**, not retained full-series downloads.
 
+## ManhuaTop: investigated, not yet a working download source
+
+A [real four-title ManhuaTop GitHub Actions investigation](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44803983855) attempted exact series chapter listings through the upstream pinned downloader and **all four failed** with browser/Chromium/network errors (one reported HTTP 403). **No new manga images or archives were downloaded.** The website has not established rights to export copyrighted artwork. See [full source feasibility and next steps](docs/MANHUATOP_VIABILITY_20261121.md). Existing completed manga are explicitly excluded from this source investigation.
+
 ## Five-series URL-based chapter download pilot
 
 The [local MangaKatana URL downloader](docs/LOCAL_URL_MANGA_DOWNLOAD.md) now accepts **five exact requested manga URLs** and one to twenty chapters per batch. It uses the independent Manga Downloader CLI, preserves original page bytes, verifies CBZ image integrity and stores files on your own Windows computer. Source pages lacking reliable English labels are **quarantined for manual English-page verification**.
