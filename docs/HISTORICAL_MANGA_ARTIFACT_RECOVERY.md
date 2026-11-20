@@ -76,6 +76,10 @@ This downloads in bounded 20-chapter batches, resumes verified batches and recor
 
 All 15 receipts were marked `englishReviewRequired=true` because the source listing did not label the downloaded page text. **The 30 CBZ image files were deleted from public runners**, not retained for the owner's download. The successful last-chapter probes do not prove that every intervening chapter or complete English publication exists. The local Windows bulk downloader remains the owner-retention path where permitted.
 
+## Real recovery tool integration test
+
+[**Licensed real GitHub artefact recovery test**](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44785614388) succeeded: the new recovery command fetched an *existing* creator-licensed Pepper&Carrot GitHub artefact using its exact unique GitHub artefact ID, extracted it safely and independently decoded **1 real CBZ archive containing 6 actual image pages**. The runner deleted the media after verifying it and published no copies. This validates the download-and-verify mechanism using legal sample media; the six commercial series still require private local retrieval by the owner to verify their complete sets.
+
 ## Copyright, access and identity safeguards
 
 This local recovery helper only retrieves files already published by the existing GitHub Actions runs. It does **not** authorise or perform new republication of copyrighted chapter files. Original media, user permissions and personal IDs remain outside Git. No DRM/paywall/anti-bot bypass is supported. Korean or unverified-language files must not be silently imported into the English Manga Library. A title's full main-chapter-job range requires actual file coverage verification before being called complete.
