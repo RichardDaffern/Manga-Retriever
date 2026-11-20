@@ -157,7 +157,8 @@ def inspect_media(folder: Path, *, max_archives: int) -> dict:
     archives = [p for p in files if p.is_file() and p.suffix.casefold() == ".cbz"]
     if not archives or len(archives) > max_archives:
         raise ChapterPilotError("No CBZ files or an excessive number of chapters")
-    if any(p.is_file() and p.suffix.casefold() != ".cbz" for p in files):
+    if any(p.is_file() and p.suffix.casefold() != ".cbz"
+           and p.name != "download-report.json" for p in files):
         raise ChapterPilotError("Unexpected files mixed with downloaded chapters")
     checks = []
     try:
