@@ -2,6 +2,12 @@
 
 **Status: M1/M2 complete; M3 first authorised live-source adapter available for one explicitly licensed webcomic episode.** This toolkit imports manga pages you are authorised to possess, validates unmodified source image bytes, creates one CBZ per chapter, and exports a **local Controller v1 candidate**. It does **not** enable general manga-site scraping, arbitrary chapter URLs, cloud storage or Manga Reader integration. The initial Pepper&Carrot adapter supports only the creator-published high-resolution English pages of episode 26 under CC BY 4.0; larger source coverage, bulk resumable downloads and production release remain planned.
 
+## English manga metadata enrichment (11 titles)
+
+[English Manga Publication Metadata Audit](.github/workflows/publication-metadata.yml) obtains creator/artist credits, English synopsis, genres, publication status and a **cover reference** for 11 source-identity-verified titles. The workflow produces a single `manga-publication-metadata-11-review` artefact with a CSV completeness report and per-title JSON records, for the Storage Controller to review and reconcile without downloading chapters again. The Retriever does **not** download cover artwork or write to Hugging Face. [Full Controller and Library integration handover](docs/METADATA_ENRICHMENT_HANDOVER.md).
+
+When importing existing locally held chapters, pass a reviewed title-matched JSON record using `--metadata-json`; opaque manga/chapter/page IDs and original media bytes remain unchanged.
+
 ## English DRM-free manga EPUB import
 
 The new [English EPUB importer](docs/ENGLISH_EPUB_IMPORT.md) accepts owner-supplied **DRM-free English image EPUBs** (one or many volumes), verifies their images, and creates the existing manga Controller candidate and chapter CBZ format without transcoding images. It rejects DRM/encryption metadata and non-English language metadata.

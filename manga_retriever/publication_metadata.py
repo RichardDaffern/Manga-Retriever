@@ -1,4 +1,4 @@
-"""MangaDex publication metadata enrichment for five pre-identified English manga.
+"""MangaDex publication metadata enrichment for pinned manga titles.
 
 Outputs *review-only* metadata candidates for the Manga Storage Controller.
 Never changes chapter IDs, catalogue, private datasets, covers or image bytes.
@@ -55,6 +55,39 @@ SOURCE_TITLES = {
         "name": SELECTED["onizuka-sawarida"]["title"],
         "aliases": ["Onizuka-chan and Sawarida-kun", "Onizuka-chan to Sawarida-kun"],
         "sourceId": SELECTED["onizuka-sawarida"]["id"],
+    },
+    # Fixed after exact-title, metadata-only Actions discovery, 20 Nov 2026.
+    "kainushi-wa-akuma": {
+        "name": "Kainushi wa Akuma",
+        "aliases": ["Kainushi wa Akuma"],
+        "sourceId": "2f46b87a-00dd-4cd3-bf47-68126fb05793",
+    },
+    "kimi-no-iru-machi": {
+        "name": "Kimi no Iru Machi",
+        "aliases": ["Kimi no Iru Machi", "A Town Where You Live"],
+        "sourceId": "8f6c0971-2add-4a63-b238-74c033064502",
+    },
+    "love-hina": {
+        "name": "Love Hina",
+        "aliases": ["Love Hina"],
+        "sourceId": "b3fe7c22-0045-439a-9b74-82d43a19eeb4",
+    },
+    "lovely-complex": {
+        "name": "Lovely Complex",
+        "aliases": ["Lovely Complex", "Love Com", "LoveCom", "Lovely★Complex"],
+        # Exact-title search is ambiguous. Explicitly select the previously
+        # audited STANDARD edition, not Digital Colored Comics.
+        "sourceId": "7a1c6e41-6c2d-401e-90fe-baccb637a63e",
+    },
+    "mado-kara-madoka-chan": {
+        "name": "Mado kara Madoka-chan",
+        "aliases": ["Mado kara Madoka-chan", "Madoka from the Window"],
+        "sourceId": "1d8d129f-8566-49b8-8d81-feda6444cc7b",
+    },
+    "nisekoi": {
+        "name": "Nisekoi",
+        "aliases": ["Nisekoi", "Nisekoi: False Love"],
+        "sourceId": "ce16b1c3-d6bb-41e0-8671-d8b065248ba2",
     },
 }
 
