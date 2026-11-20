@@ -1,0 +1,64 @@
+name: Five Manga Read-only Chapter Catalogue
+
+on:
+  push:
+    branches: [feature/five-manga-source-inventory-20261120]
+    paths:
+      - scripts/five_manga_catalogue.py
+      - tests/test_five_manga_catalogue.py
+      - .github/workflows/five-manga-catalogue.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  catalogue:
+    name: Catalogue only - ${{ matrix.slug }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        slug:
+          - kimi-no-iru-machi
+          - love-hina
+          - lovely-complex
+          - mado-kara-madoka-chan
+          - nisekoi
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Validate catalogue parser without external sites
+        run: python -m unittest tests.test_five_manga_catalogue -v
+      - name: Install published Linux CLI with pinned SHA-256
+        run: |
+          curl --fail --location --silent --show-error --retry 2 \
+            --output "$RUNNER_TEMP/manga-downloader.tar.gz" \
+            https://github.com/elboletaire/manga-downloader/releases/download/v25.3.0/manga-downloader-v25.3.0-linux-amd64.tar.gz
+          echo "2ff911436f853457aef21ed3c1a86425d0f380dc26235d47777e362a260fdf34  $RUNNER_TEMP/manga-downloader.tar.gz" | sha256sum --check
+          mkdir -p "$RUNNER_TEMP/manga-cli"
+          tar -xzf "$RUNNER_TEMP/manga-downloader.tar.gz" -C "$RUNNER_TEMP/manga-cli"
+          BIN_PATH="$(find "$RUNNER_TEMP/manga-cli" -type f -name manga-downloader -print -quit)"
+          test -n "$BIN_PATH"
+          chmod +x "$BIN_PATH"
+          printf 'MANGA_DOWNLOADER_BIN=%s\n' "$BIN_PATH" >> "$GITHUB_ENV"
+      - name: Catalogue one exact manga series, never download images
+        env:
+          SLUG: ${{ matrix.slug }}
+        run: |
+          python scripts/five_manga_catalogue.py \
+            --slug "$SLUG" \
+            --client "$MANGA_DOWNLOADER_BIN" \
+            --output "reports/$SLUG.json"
+      - name: Upload metadata-only report (not manga files)
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: five-manga-catalogue-${{ matrix.slug }}
+          path: reports/${{ matrix.slug }}.json
+          retention-days: 7
+          if-no-files-found: warn
