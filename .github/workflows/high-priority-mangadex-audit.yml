@@ -1,0 +1,38 @@
+name: High Priority MangaDex English Source Verification
+
+on:
+  push:
+    branches: [feature/high-priority-mangadex-90f7c7a6-20261120]
+    paths:
+      - scripts/priority_mangadex_title_audit.py
+      - tests/test_priority_mangadex_title_audit.py
+      - .github/workflows/high-priority-mangadex-audit.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-title-metadata:
+    name: Confirm selected MangaDex title and English original-page availability
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Verify fixed UUID and pagination safeguards
+        run: python -m unittest tests.test_priority_mangadex_title_audit tests.test_source_probe_eight -v
+      - name: Check real title English feed and first image manifest (zero media bytes)
+        run: |
+          python -m scripts.priority_mangadex_title_audit \
+            --output reports/priority-mangadex-90f7c7a6.json
+      - name: Publish source data and English-coverage report only
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: priority-manga-90f7c7a6-metadata
+          path: reports/priority-mangadex-90f7c7a6.json
+          retention-days: 7
+          if-no-files-found: warn
