@@ -2,7 +2,7 @@ name: English Manga Publication Metadata Audit
 
 on:
   push:
-    branches: [feature/metadata-enrichment-candidates-20261120]
+    branches: [feature/metadata-coverage-review-20261120]
     paths:
       - manga_retriever/publication_metadata.py
       - tests/test_publication_metadata.py
@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
       max-parallel: 2
       matrix:
-        slug: [relife, maid-sama, last-game, love-so-life, onizuka-sawarida]
+        slug: [relife, maid-sama, last-game, love-so-life, onizuka-sawarida, kainushi-wa-akuma, kimi-no-iru-machi, love-hina, lovely-complex, mado-kara-madoka-chan, nisekoi]
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
