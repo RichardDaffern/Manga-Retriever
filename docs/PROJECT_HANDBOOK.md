@@ -45,7 +45,7 @@ The Controller and Reader have their **own** changing contracts. Their source mu
 ## 2. Core principles and product requirements
 
 1. **Exact identity:** Pin a source title ID and edition. A search match, translated title, similarly named sequel or spin-off must not silently substitute for the requested work.
-2. **English-only by default:** The owner's personal manga library requires English page text. Language tags on a title are not proof of chapter text language. A specifically requested Korean-language investigation is an exception **for research**, not permission to relabel Korean manga as English or import it into the English catalogue.
+2. **English-only by default:** The owner's personal manga library requires English page text. Language tags on a title are not proof of chapter text language. A specifically requested Korean-language investigation or download may be handled as an **explicit owner exception**, provided the requested media is actually available and retrieval is permitted. Keep any non-English files separate; never relabel them as English or import them into the English catalogue without an explicit policy change.
 3. **Permissions before publication:** Public access, an API, a site's "Read offline" option, a rights declaration or a third-party downloader supporting a domain do not themselves prove the copyright owner's permission to export or redistribute the images.
 4. **Preserve original image bytes** for supported raster sources, without re-encoding or data-saver conversion. PDF rasterisation is an explicitly documented exception and is not byte-for-byte equivalent to source page images.
 5. **No false completeness:** Count *verified real media pages and archives*, compare expected main chapters and extras, record gaps and fail incomplete batches closed.
@@ -248,7 +248,7 @@ A third-party downloader advertising hundreds of domains is only a **compatibili
 
 **P2**: UI/controller integration is separate work; coordinate through documented contract handovers rather than editing those repos directly.
 
-**Documentation debt identified as of this snapshot:** Earlier `README.md`, `ARCHITECTURE.md`, `SECURITY.md`, `ROADMAP.md` and `SUPPORTED_SOURCES.md` contain historical milestone narratives that can appear to contradict later source-specific pilots. **Use this handbook, current `AGENTS.md), actual code, latest successful run IDs and more recent title-specific documents for present capability.** Treat stale "not implemented" lines as historical context, not the sole status source; update those documents when changing affected features.
+**Documentation consistency:** Historical milestone sections across this repository may describe earlier capabilities; introductory status in the README, source matrix, architecture, security and roadmap is maintained alongside this handbook. **Use this handbook, current `AGENTS.md`, actual code, latest successful run IDs and more recent title-specific documents for present capability.** Treat stale "not implemented" lines as historical context, not the sole status source; update those documents when changing affected features.
 
 ### Decision log and documentation precedence
 
