@@ -57,6 +57,14 @@ class FiveMangaCatalogueTests(unittest.TestCase):
         self.assertEqual(summary["missingMainChapters"], [66])
         self.assertEqual(summary["decimalLabels"], ["65.5"])
 
+    def test_chapter_zero_extra_does_not_count_as_main_or_invalid(self):
+        source = listing("nisekoi", 229, extra=[{"number": 0, "title": "One-shot"}])
+        summary = summarise("nisekoi", source)
+        self.assertEqual(summary["chapterZeroExtras"], 1)
+        self.assertEqual(summary["invalidEntries"], 0)
+        self.assertEqual(summary["distinctExpectedMain"], 229)
+        self.assertEqual(summary["catalogueStatus"], "complete-numbered-metadata")
+
     def test_wrong_series_never_marked_complete(self):
         source = listing("nisekoi", 229)
         source["title"] = "Nisekoi Fake Edition"
