@@ -1,0 +1,48 @@
+name: Remaining Manga Metadata Source Discovery
+
+on:
+  push:
+    branches: [feature/metadata-coverage-review-20261120]
+    paths:
+      - scripts/probe_publication_ids.py
+      - tests/test_publication_id_probe.py
+      - .github/workflows/remaining-publication-source-probe.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-discovery:
+    name: Exact source metadata - ${{ matrix.slug }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        slug:
+          - kainushi-wa-akuma
+          - kimi-no-iru-machi
+          - love-hina
+          - lovely-complex
+          - mado-kara-madoka-chan
+          - nisekoi
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Test exact matching and ambiguous ID safeguards
+        run: python -m unittest tests.test_publication_id_probe -v
+      - name: Query only source metadata, never chapter images
+        env:
+          SLUG: ${{ matrix.slug }}
+        run: python -m scripts.probe_publication_ids --slug "$SLUG" --output "source-candidates/$SLUG.json"
+      - name: Publish candidate report for human review
+        uses: actions/upload-artifact@v7
+        with:
+          name: source-id-review-${{ matrix.slug }}
+          path: source-candidates/${{ matrix.slug }}.json
+          retention-days: 7
+          if-no-files-found: error
