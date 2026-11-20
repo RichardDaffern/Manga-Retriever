@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import subprocess
 import sys
 import unicodedata
@@ -74,6 +73,7 @@ def summarise(slug: str, payload: dict) -> dict:
     title_match = normalise(title) in {normalise(a) for a in source["aliases"]}
     expected = source["expectedMain"]
     numbered: set[int] = set()
+    duplicates = 0
     decimals: set[str] = set()
     locked = 0
     unnumbered = 0
@@ -104,6 +104,8 @@ def summarise(slug: str, payload: dict) -> dict:
             bad += 1
             continue
         if value == value.to_integral_value():
+            if int(value) in numbered:
+                duplicates += 1
             numbered.add(int(value))
         else:
             decimals.add(format(value, "f"))
@@ -120,6 +122,7 @@ def summarise(slug: str, payload: dict) -> dict:
         "additionalIntegerLabels": sorted(n for n in numbered if n > expected),
         "decimalLabels": sorted(decimals),
         "listedEntries": len(chapters),
+        "duplicateIntegerReleases": duplicates,
         "lockedEntries": locked,
         "unnumberedEntries": unnumbered,
         "invalidEntries": bad,
