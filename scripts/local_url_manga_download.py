@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import re
 import shutil
 import subprocess
@@ -144,7 +143,8 @@ def planned_command(client: str, url: str, chapters: str, output: Path) -> list[
     return [
         client, "--format", "cbz", "--convert-images", "none",
         "--skip-existing", "--language", "en",
-        "--output", str(output), url, selection,
+        "--output-dir", str(output), "--concurrency", "1",
+        "--concurrency-pages", "2", url, selection,
     ]
 
 
@@ -163,10 +163,10 @@ def inspect_media(folder: Path, *, max_archives: int) -> dict:
     try:
         for cbz in sorted(archives):
             inspection = _inspect_cbz(cbz)
-            if inspection["pages"] <= 0:
+            if inspection["verifiedPageCount"] <= 0:
                 raise ChapterPilotError("Downloaded chapter contained zero valid image pages")
             checks.append({
-                "filename": cbz.name, "pages": inspection["pages"],
+                "filename": cbz.name, "pages": inspection["verifiedPageCount"],
                 "bytes": cbz.stat().st_size, "sha256": inspection["sha256"],
             })
     except (ReLIFEError, OSError, KeyError, TypeError) as exc:
@@ -224,13 +224,14 @@ def run_pilot(
             "huggingFaceUploaded": False,
             "retrievedAt": datetime.now(UTC).isoformat(),
         }
-        # Report stays outside media folder; archive names untouched.
+        # Report is inside this new staging folder, so publication is atomic.
+        (stage / "download-report.json").write_text(
+            json.dumps(report, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        if destination.exists() or destination.is_symlink():
+            raise ChapterPilotError("Output appeared during download")
         stage.replace(destination)
-        report_path = destination.parent / (destination.name + ".download-report.json")
-        if report_path.exists() or report_path.is_symlink():
-            raise ChapterPilotError("Report path already exists")
-        report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n",
-                               encoding="utf-8")
         return report
     finally:
         if stage.exists():
