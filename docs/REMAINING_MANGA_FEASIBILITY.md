@@ -55,7 +55,7 @@ This check is limited to **Kimi no Iru Machi, Love Hina, Lovely Complex, Mado ka
 | **Nisekoi: False Love** | VIZ lists the complete English series, 25 volumes and its chapter catalogue. | VIZ's web reader and retailer purchases are not a verified archival export. Kobo's English EPUB3 listing specifies Adobe DRM. The 19 November MangaDex audit found only 5 English feed entries and 0 hosted original-page paths in the sample. |
 | **The Fairytale-like You Goes on the Assault** | The original is creator-posted Japanese work by Hazano Kazutake. | OniSaga currently lists 77 English community-translated chapters out of 78; this is not an official publisher edition or an export licence. No exact MangaDex title ID or authorised English export was verified. The existing MangaKatana first-chapter pilot's 8 pages still have unverified language and rights. |
 
-The Love Hina Humble Bundle is the only newly verified English publisher-announced downloadable-file route among these six; **DRM status and owner entitlement remain unverified**. It is conditional on an existing purchase rather than a currently purchasable offer. Manga Library Z separately lists all 14 original Japanese Love Hina volumes as official-work PDFs, but that edition is Japanese and does not satisfy the English requirement.
+The Love Hina Humble Bundle is the only newly verified English publisher-announced downloadable-file route among these six; **DRM status and owner entitlement remain unverified**. It is conditional on an existing purchase rather than a currently purchasable offer. Manga Library Z historically distributed all 14 original Japanese Love Hina volumes as author-authorised PDFs, but this is no longer a live acquisition route. Its operator's official closure notice states that the internet distribution service was stopped and gives 26 November 2024 as the planned shutdown date. The historical Japanese edition does not satisfy the English requirement.
 
 ### Technical source evidence and retained outputs
 
@@ -109,3 +109,16 @@ Upstream [Manga Downloader v25.3.0](https://github.com/elboletaire/manga-downloa
 ### Decision
 
 No newly discovered source passed the required gates of explicit rights, English page content, complete chapter coverage, original-page integrity and a lawful portable retention route. No source adapter, image test, download batch or media artefact was created. Existing MangaDex, MangaKatana and ManhuaTop evidence remains unchanged. The conditional Love Hina Humble entitlement remains the only plausible publisher-announced portable-file route, pending proof that the owner purchased it and inspection of the actual download terms/files.
+
+
+## Follow-up: Love Hina legacy J-Comi / Manga Library Z route status (22 November 2026)
+
+A further check resolved an ambiguity in the earlier Love Hina research:
+
+- The original J-Comi service did distribute all 14 Japanese *Love Hina* volumes as free PDF files in its November 2010 beta. The contemporaneous Japanese technology report records high- and low-resolution PDF downloads. This was a historical, creator-led release, not an English edition. See [INTERNET Watch's 26 November 2010 report](https://internet.watch.impress.co.jp/docs/news/409632.html).
+- Manga Library Z's operator later published an [official service-closure notice](https://closing.mangaz.com/). It says the internet e-book distribution service would stop and identifies 26 November 2024 at 12:00 as the planned stop time. Its [5 November 2024 payment notice](https://closing.mangaz.com/info/2113/index.html) records the end of premium registration and changes to PDF-purchase payment methods.
+- Therefore, Manga Library Z/J-Comi is **historical evidence of an author-authorised Japanese PDF distribution**, not a currently usable download source. Do not treat old URLs, search results, mirrors or cached listings as a current export route.
+- This does not change the conditional English route: the 2020 Kodansha Humble Bundle remains the only publisher-announced English CBZ/PDF/ePub lead found for Love Hina. The offer ended 10 June 2020; the owner's entitlement and the actual file's DRM/terms remain unverified.
+- No file was downloaded, no account was accessed, and no media retrieval was attempted.
+
+The upstream Manga Downloader review remains unchanged: v25.3.0 is the latest checked release (18 November 2026), with 584 supported sites. Its new site additions do not identify an authorised source for any of the six targets. The failed ManhuaTop run 44803983855 remains closed; no identical probe was repeated.
