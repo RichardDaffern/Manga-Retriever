@@ -110,6 +110,8 @@ Upstream [Manga Downloader v25.3.0](https://github.com/elboletaire/manga-downloa
 
 No newly discovered source passed the required gates of explicit rights, English page content, complete chapter coverage, original-page integrity and a lawful portable retention route. No source adapter, image test, download batch or media artefact was created. Existing MangaDex, MangaKatana and ManhuaTop evidence remains unchanged. The conditional Love Hina Humble entitlement remains the only plausible publisher-announced portable-file route, pending proof that the owner purchased it and inspection of the actual download terms/files.
 
+For the exact retained report artefact IDs, expiry timestamps, per-title sample ranges, image-page counts, CBZ byte counts and all 35 temporary-archive SHA-256 receipts from the follow-up audit, see [the 22 November new-manga pilot evidence ledger](NEW_MANGA_PILOT_EVIDENCE_20261122.md).
+
 
 ## Follow-up: Love Hina legacy J-Comi / Manga Library Z route status (22 November 2026)
 
