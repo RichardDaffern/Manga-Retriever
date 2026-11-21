@@ -127,6 +127,17 @@ Current official retailer listings reinforce the lack of a portable DRM-free Eng
 
 No DRM removal, account download, image extraction or source test was attempted. A DRM-protected retailer EPUB is not a DRM-free export and must not be bypassed. The official English VIZ editions remain usable for ordinary licensed reading, but no portable archive permission was established.
 
+## Private-retention route audit (22 November 2026)
+
+The current repository workflows do **not** provide an approved private destination for these targets:
+
+- The single-download workflow is restricted to the explicitly licensed Pepper & Carrot episode 26 and runs on GitHub-hosted ubuntu-latest.
+- The bulk workflow has max-parallel 3, but its selection allowlist currently contains only peppercarrot:26. It also runs on GitHub-hosted ubuntu-latest and publishes seven-day Actions artefacts.
+- The English ZIP/EPUB and EPUB-import pilots are likewise restricted to creator-licensed Pepper & Carrot episode 26, use GitHub-hosted ubuntu-latest and publish short-lived Actions artefacts.
+- No self-hosted private runner or private target-title storage destination is configured in these workflows.
+
+The repository therefore has a bounded parallel batch mechanism for its one explicitly licensed allowlisted source, but **no authorised private retention route for the six requested targets**. Do not dispatch the public workflows for MangaKatana or community-reader material. A target-specific rights grant and an owner-controlled secure runner or approved local Windows destination are required before any target batch can run.
+
 ## Current repository and automation state
 
 - PR [#43](https://github.com/RichardDaffern/Manga-Retriever/pull/43) corrected the Love Hina J-Comi status and was merged.
