@@ -203,3 +203,17 @@ These retained files are small JSON receipts, not chapter images or CBZ archives
 ### Decision
 
 Love Hina is now the strongest acquisition path, but only if the owner's existing Humble entitlement can be confirmed. The exact blocker is access to the owner's Humble purchase history or local files. The Gmail connector could not be queried without interactive input, and this environment cannot operate the owner's Windows machine. If the purchase cannot be confirmed, the remaining five titles still have no verified authorised DRM-free English export. No image batch or source adapter was launched. Manga Storage Controller and Manga Library were not modified.
+
+
+## Follow-up: Crunchyroll Manga relaunch and current Kimi no Iru Machi check (22 November 2026)
+
+The old Crunchyroll Manga service and the current Crunchyroll Manga product must not be conflated:
+
+- Crunchyroll's new Manga app launched in the United States and Canada on **9 October 2025**. Its official launch announcement described in-app offline chapter downloads, not a portable CBZ/EPUB export.
+- On **7 October 2026**, Crunchyroll announced expansion to India, the UK, Ireland, Australia, New Zealand and other English-speaking markets, with more than 250 English-language titles in the expanded catalogue.
+- The current official catalogue announcements and exact-title searches did not surface **A Town Where You Live / Kimi no Iru Machi** as a title in the new Manga product. The matching Crunchyroll series page is an anime listing, not a manga product. The historical 2013–2023 Crunchyroll manga licence therefore remains historical evidence only; it is not a verified current English manga entitlement or export route.
+- The new app's offline-reading feature is app-managed. No official CBZ, PDF or DRM-free EPUB export was documented, so it does not satisfy Manga Retriever's file-import requirement even for titles that are available in the app.
+
+Sources: [Crunchyroll Manga launch announcement (25 September 2025)](https://www.crunchyroll.com/news/announcements/2025/9/25/crunchyroll-manga-sets-october-9-launch-one-piece-jujutsu-kaisen-more), [international expansion announcement (7 October 2026)](https://www.crunchyroll.com/pl/news/announcements/2026/10/7/crunchyroll-manga-international-expansion), [official Manga catalogue guide](https://www.crunchyroll.com/id/news/guides/2025/10/9/crunchyroll-manga-full-list), [Crunchyroll Manga help and offline-reading information](https://help.crunchyroll.com/article/crunchyroll-manga-everything-you-need-to-know), and [the matching A Town Where You Live anime page](https://www.crunchyroll.com/id/series/G6X0QVDMY/a-town-where-you-live).
+
+Decision: this is a meaningful platform change worth recording, but it does **not** create an authorised, portable English acquisition source for any of the six targets. No app data, chapter images or access-controlled content was accessed.
