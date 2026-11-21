@@ -74,3 +74,38 @@ No new source met all four gates: English page content, complete chapter/volume 
 The next actionable path is **Love Hina only if the owner already purchased the 2020 Kodansha Humble Bundle**: download the five English Omnibus files from that existing account entitlement onto the owner's Windows machine, then run the Retriever's local import and verification workflow. The automation cannot inspect the owner's Humble account, operate the owner's Windows machine, or access an approved private runner. Public GitHub Actions and private Hugging Face are not acceptable destinations for unlicensed manga pages. If there is no existing Humble entitlement, the remaining blocker is title-specific rights-holder permission or a newly offered English DRM-free edition.
 
 Manga Storage Controller and Manga Library were not modified.
+
+
+## Follow-up: creator-rights and alternative-source audit (22 November 2026)
+
+This check did not authorise any new image retrieval. It records newly surfaced reader indexes and upstream changes so that technical availability is not mistaken for export permission.
+
+### Newly surfaced non-authorised reader indexes
+
+- [OniSaga's A Town Where You Live index](https://onisaga.com/title/a-town-where-you-live) advertises 293 English chapter records.
+- [OniSaga's Love Hina index](https://onisaga.com/title/love-hina) advertises 144 English records; the page itself says coverage is unknown and includes fractional/extra labels.
+- [OniSaga's Love★Com index](https://onisaga.com/manga/love-com) advertises 100 English records, including split chapters and extras; this is not a verified 66-chapter main-series mapping.
+- [OniSaga's Fairytale index](https://onisaga.com/title/hakanai-kimi-wa-moukou-wo-hajimeru) advertises 77 English chapters out of 78.
+- Search-indexed OniSaga pages also expose English-labelled Nisekoi chapter pages, but a reliable complete English inventory was not established. No Mado kara Madoka-chan English index was verified.
+
+These are community-reader/catalogue observations only. Direct page opening for the OniSaga title pages returned HTTP 403 during this check, so reader image access and chapter integrity were not independently tested. No 403, browser challenge or access restriction was bypassed. No image requests or downloads were made.
+
+### Fairytale creator's explicit reuse restriction
+
+Hazano Kazutake's public creator profile for **@TEIGI_3** states that reposting is prohibited. The creator's indexed Pixiv profile text further says the work is posted only on the creator's Pixiv, X, Bluesky and personal homepage, and asks that translations not be posted on overseas sites. See the creator-profile index [here](https://sakuria.syarolia.com/artworks/131219914) and the creator's [X profile](https://x.com/TEIGI_3). The profile restriction is incompatible with treating third-party English reader uploads as an authorised export. **Do not download or archive the community English chapters unless the creator supplies explicit written permission or an authorised English edition.**
+
+### Upstream downloader change review
+
+Upstream [Manga Downloader v25.3.0](https://github.com/elboletaire/manga-downloader/releases/tag/v25.3.0), released 18 November 2026, advertises 584 supported sites and adds chikari.moe, manhuaplus.top and manhuaplus.org, alongside volume handling and fixes. These additions are not publisher/creator export grants and none was established as an authorised source for the six targets. The release notes do not report a ManhuaTop fix; the four failed ManhuaTop probes from run 44803983855 therefore remain closed and were not repeated.
+
+### Official publisher position rechecked
+
+- Kodansha's official [2020 Humble Bundle announcement](https://kodansha.us/2020/05/20/get-over-1500-worth-of-award-winning-manga-for-20-with-this-humble-manga-bundle-ends-69/) confirms all five English Love Hina Omnibus volumes were included and that the bundle supplied CBZ, PDF and ePub formats. The offer ended 10 June 2020; the announcement does not state DRM status. Existing purchaser entitlement and the actual download-file restrictions remain unverified.
+- [Omoi's Love Hina page](https://www.omoi.com/series/love-hina) shows licensed volume purchases. Omoi's [FAQ](https://www.omoi.com/faq) says app offline reading is not the same as export; DRM-free volume files are only available where the volume page explicitly advertises ePub availability. No such notice was found for Love Hina.
+- Kodansha's [Support Center](https://kodansha.us/support-center/) says Reader Portal digital content is website-only and is not offered in downloadable formats.
+- VIZ continues to list official English digital volumes for [Love★Com](https://www.viz.com/love-com) and [Nisekoi](https://www.viz.com/nisekoi-false-love), but its reader/retailer listings do not establish a portable CBZ/PDF/EPUB export right.
+- No current official English edition or permitted English export was found for Kimi no Iru Machi, Mado kara Madoka-chan or The Fairytale-like You Goes on the Assault.
+
+### Decision
+
+No newly discovered source passed the required gates of explicit rights, English page content, complete chapter coverage, original-page integrity and a lawful portable retention route. No source adapter, image test, download batch or media artefact was created. Existing MangaDex, MangaKatana and ManhuaTop evidence remains unchanged. The conditional Love Hina Humble entitlement remains the only plausible publisher-announced portable-file route, pending proof that the owner purchased it and inspection of the actual download terms/files.
