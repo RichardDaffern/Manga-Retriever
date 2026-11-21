@@ -112,6 +112,21 @@ Do not rerun these identical probes unless there is a meaningful upstream site/c
 - **Mado kara Madoka-chan:** Kodansha's completed five-volume edition is Japanese; no official English edition was found.
 - **The Fairytale-like You Goes on the Assault:** the creator's reuse restriction rules out treating third-party English translations as an authorised acquisition source.
 
+## Retailer file-format checks (22 November 2026)
+
+Current official retailer listings reinforce the lack of a portable DRM-free English export:
+
+| Target | Official English retailer evidence | Format / result |
+| --- | --- | --- |
+| Kimi no Iru Machi | Pika lists French digital volumes, including [volume 1](https://www.pika.fr/livre/town-where-you-live-t01-9782811624569/) and [volume 23](https://www.pika.fr/livre/town-where-you-live-t23-9782811628246/). Kobo's [volume 7 listing](https://www.kobo.com/ca/en/ebook/a-town-where-you-live-t07) identifies French language and Adobe DRM. | No English edition or export found. French EPUB3 is Adobe DRM. |
+| Love Hina | Kobo's [English Omnibus 1 listing](https://www.kobo.com/ww/en/ebook/love-hina-omnibus-1-1) identifies Kodansha Comics, English language and EPUB3 with Adobe DRM. | Current retail EPUB is not DRM-free. The expired 2020 Kodansha Humble Bundle remains conditional on prior owner entitlement and inspection of the actual files. |
+| Lovely Complex / Love★Com | Kobo's [English Love★Com Vol. 17 listing](https://www.kobo.com/us/en/ebook/love-com-vol-17) identifies VIZ Media and EPUB3 with Adobe DRM. | Official English edition exists, but the sampled retailer export is DRM-protected. |
+| Mado kara Madoka-chan | Kodansha Japan's original five-volume edition remains Japanese. No English publisher or retailer edition was found. | No English export route. |
+| Nisekoi | Kobo's [English Vol. 1 listing](https://www.kobo.com/in/en/ebook/nisekoi-false-love-vol-1) identifies VIZ Media and EPUB3 with Adobe DRM. | Official English edition exists, but the sampled retailer export is DRM-protected. |
+| The Fairytale-like You Goes on the Assault | The creator's own public profile and terms restrict reposting and overseas translation uploads. | No creator-authorised English export. Do not use third-party English reader uploads. |
+
+No DRM removal, account download, image extraction or source test was attempted. A DRM-protected retailer EPUB is not a DRM-free export and must not be bypassed. The official English VIZ editions remain usable for ordinary licensed reading, but no portable archive permission was established.
+
 ## Current repository and automation state
 
 - PR [#43](https://github.com/RichardDaffern/Manga-Retriever/pull/43) corrected the Love Hina J-Comi status and was merged.
