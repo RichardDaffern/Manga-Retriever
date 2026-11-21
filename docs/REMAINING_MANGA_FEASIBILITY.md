@@ -55,7 +55,7 @@ This check is limited to **Kimi no Iru Machi, Love Hina, Lovely Complex, Mado ka
 | **Nisekoi: False Love** | VIZ lists the complete English series, 25 volumes and its chapter catalogue. | VIZ's web reader and retailer purchases are not a verified archival export. Kobo's English EPUB3 listing specifies Adobe DRM. The 19 November MangaDex audit found only 5 English feed entries and 0 hosted original-page paths in the sample. |
 | **The Fairytale-like You Goes on the Assault** | The original is creator-posted Japanese work by Hazano Kazutake. | OniSaga currently lists 77 English community-translated chapters out of 78; this is not an official publisher edition or an export licence. No exact MangaDex title ID or authorised English export was verified. The existing MangaKatana first-chapter pilot's 8 pages still have unverified language and rights. |
 
-The Love Hina Humble Bundle is the only newly verified English publisher-announced downloadable-file route among these six; **DRM status and owner entitlement remain unverified**. It is conditional on an existing purchase rather than a currently purchasable offer. Manga Library Z historically distributed all 14 original Japanese Love Hina volumes as author-authorised PDFs, but this is no longer a live acquisition route. Its operator's official closure notice states that the internet distribution service was stopped and gives 26 November 2024 as the planned shutdown date. The historical Japanese edition does not satisfy the English requirement.
+The Love Hina Humble Bundle is the only newly verified English publisher-authorised **DRM-free downloadable-file route** among these six. It is conditional on an existing purchase at the $20 tier rather than a currently purchasable offer; the owner's entitlement remains unverified. Manga Library Z historically distributed all 14 original Japanese Love Hina volumes as author-authorised PDFs, but this is no longer a live acquisition route. Its operator's official closure notice states that the internet distribution service was stopped and gives 26 November 2024 as the planned shutdown date. The historical Japanese edition does not satisfy the English requirement.
 
 ### Technical source evidence and retained outputs
 
@@ -100,10 +100,10 @@ Upstream [Manga Downloader v25.3.0](https://github.com/elboletaire/manga-downloa
 
 ### Official publisher position rechecked
 
-- Kodansha's official [2020 Humble Bundle announcement](https://kodansha.us/2020/05/20/get-over-1500-worth-of-award-winning-manga-for-20-with-this-humble-manga-bundle-ends-69/) confirms all five English Love Hina Omnibus volumes were included and that the bundle supplied CBZ, PDF and ePub formats. The offer ended 10 June 2020; the announcement does not state DRM status. Existing purchaser entitlement and the actual download-file restrictions remain unverified.
+- Kodansha's official [2020 Humble Bundle announcement](https://kodansha.us/2020/05/20/get-over-1500-worth-of-award-winning-manga-for-20-with-this-humble-manga-bundle-ends-69/) confirms all five English Love Hina Omnibus volumes and CBZ, PDF and ePub formats. The contemporaneous [Comic Book Legal Defense Fund campaign announcement](https://cbldf.org/2020/05/support-cbldf-get-award-winning-manga-from-kodansha-in-new-humble-bundle/) explicitly describes the bundle downloads as **DRM-free** and lists Omnibus volumes 1–5 across the $1, $8, $15, $18 and $20 tiers. Together, the publisher and campaign-partner records establish a publisher-authorised DRM-free file route for the complete English series at the $20 tier. The offer ended 10 June 2020; the owner's purchase entitlement remains unverified.
 - [Omoi's Love Hina page](https://www.omoi.com/series/love-hina) shows licensed volume purchases. Omoi's [FAQ](https://www.omoi.com/faq) says app offline reading is not the same as export; DRM-free volume files are only available where the volume page explicitly advertises ePub availability. No such notice was found for Love Hina.
 - Kodansha's [Support Center](https://kodansha.us/support-center/) says Reader Portal digital content is website-only and is not offered in downloadable formats.
-- VIZ continues to list official English digital volumes for [Love★Com](https://www.viz.com/love-com) and [Nisekoi](https://www.viz.com/nisekoi-false-love), but its reader/retailer listings do not establish a portable CBZ/PDF/EPUB export right.
+- VIZ continues to list official English digital volumes for [Love★Com](https://www.viz.com/love-com) and [Nisekoi](https://www.viz.com/nisekoi-false-love), but its reader/retailer listings do not establish a portable CBZ/PDF/EPUB export right. Kobo's English [Love Hina Omnibus 1](https://www.kobo.com/us/en/ebook/love-hina-omnibus-1-1), [Love★Com Vol. 1](https://www.kobo.com/de/de/ebook/love-com-vol-1) and [Nisekoi Vol. 1](https://www.kobo.com/us/en/ebook/nisekoi-false-love-vol-1) listings specify EPUB3 with Adobe DRM, so these retail files are not equivalent to the Humble bundle's DRM-free export.
 - No current official English edition or permitted English export was found for Kimi no Iru Machi, Mado kara Madoka-chan or The Fairytale-like You Goes on the Assault.
 
 ### Decision
@@ -145,7 +145,7 @@ No image tests were run against MangaDex, WeebCentral or MangaFire. The source m
 
 GlobalComix's [official FAQ](https://globalcomix.com/support/faq) distinguishes DRM-free PDF Downloads, which provide a permanent downloadable file, from Collection Unlocks, which grant a reading licence; offline reading of Collection Unlocks requires GlobalComix Gold. The current [Love Hina Omnibus 5 release page](https://globalcomix.com/c/love-hina-omnibus/r/4e3b7e1e-67ee-4a13-8a17-ad25b93efcb7) exposes Preview and Buy ($14.99), not a Buy PDF option. The current GlobalComix listing therefore does **not** establish a DRM-free Love Hina export. No purchase or file download was attempted.
 
-Kodansha's [official Love Hina Omnibus series page](https://kodansha.us/series/love-hina-omnibus/) currently lists all five digital volumes, but does not expose a portable file export. The historical [2020 Kodansha Humble Bundle announcement](https://kodansha.us/2020/05/20/get-over-1500-worth-of-award-winning-manga-for-20-with-this-humble-manga-bundle-ends-69/) remains the only publisher-announced English CBZ/PDF/ePub route found. The sale ended 10 June 2020; the owner's purchase entitlement and actual file DRM/terms remain unknown. The Gmail entitlement search could not run in this non-interactive check because the connector required user input.
+Kodansha's [official Love Hina Omnibus series page](https://kodansha.us/series/love-hina-omnibus/) currently lists all five digital volumes, but does not expose a portable file export. The historical [2020 Kodansha Humble Bundle announcement](https://kodansha.us/2020/05/20/get-over-1500-worth-of-award-winning-manga-for-20-with-this-humble-manga-bundle-ends-69/) remains the only publisher-authorised English CBZ/PDF/ePub route found. The contemporaneous [CBLDF campaign announcement](https://cbldf.org/2020/05/support-cbldf-get-award-winning-manga-from-kodansha-in-new-humble-manga-bundle/) independently confirms that the bundle comics were DRM-free. The sale ended 10 June 2020; the owner's purchase entitlement is still unknown. The Gmail entitlement search was attempted during this non-interactive run but the connector required user input, so no mailbox result was available.
 
 ### Actions and retained-output spot check
 
@@ -169,3 +169,37 @@ Downloaded and inspected three retained ZIPs: `14655881240`, `14651384279` and `
 No new source passed the required rights, English-language, completeness, integrity and lawful-retention gates. No source adapter, image test or media batch was launched. The 35 previously verified temporary MangaKatana CBZs and 1,032 pages remain ephemeral evidence only; their 35 SHA-256 receipts are documented in the evidence ledger. No new title or chapter is claimed as retained.
 
 Exact blockers remain: no title-specific archival permission for the reader sources; unknown Humble Bundle entitlement and file terms for Love Hina; no owner-controlled Windows execution in this environment; and no approved private runner or persistent destination. The minimal route is an owner-controlled Windows staging folder or secure self-hosted runner, plus a verified licensed file/export for the selected title. Do not use public Actions artefacts or Hugging Face for these manga pages.
+
+
+## Follow-up: DRM-free Love Hina export and current acquisition audit (22 November 2026)
+
+### Love Hina bundle status corrected
+
+The earlier uncertainty about the 2020 Humble bundle's DRM status is resolved by two contemporaneous sources:
+
+- Kodansha's [publisher announcement](https://kodansha.us/2020/05/20/get-over-1500-worth-of-award-winning-manga-for-20-with-this-humble-manga-bundle-ends-69/) confirms that the bundle included *Love Hina* Omnibus volumes 1–5, supplied CBZ, PDF and ePub formats, and ended on 10 June 2020. The complete five-volume set was included at the $20 tier.
+- The [Comic Book Legal Defense Fund announcement dated 20 May 2020](https://cbldf.org/2020/05/support-cbldf-get-award-winning-manga-from-kodansha-in-new-humble-manga-bundle/) explicitly calls the bundle downloads DRM-free and lists the same five-volume tier progression.
+
+This is now a **verified historical publisher-authorised DRM-free English export route**, conditional on the owner having purchased the $20 tier. It is not a current sale. No Humble account, purchase history or local files were accessed. A Gmail search for the entitlement was attempted, but the connected mailbox tool required interactive user input and could not run in this scheduled session. The minimal next step is to locate the original Humble receipt or the five volume files in the owner's own account/device. Do not substitute current Kobo EPUB3 purchases: Kobo labels Love Hina, Love★Com and Nisekoi English editions as Adobe DRM.
+
+### Additional catalogue-only leads
+
+- [OniSaga's A Town Where You Live entry](https://onisaga.com/title/a-town-where-you-live?tab=details) currently reports 293 English chapter entries and identifies the historical Crunchyroll English licence. The page could not be opened for direct inspection (HTTP 403); this is an index observation only, not proof of image retrieval, completeness, export rights or a current licence.
+- [DonOtaku's Mado kara Madoka-chan entry](https://donotaku.com/en/manga/mado-kara-madoka-chan) confirms catalogue metadata of 74 chapters and five volumes, but does not establish an English edition or an authorised file export.
+- The latest upstream [Manga Downloader release](https://github.com/elboletaire/manga-downloader/releases/tag/v25.3.0) remains v25.3.0, published 18 November 2026. It lists 584 supported sites and adds chikari.moe, manhuaplus.top and manhuaplus.org. None of these release notes establishes a working, authorised export for the six requested titles. No MangaDex or ManhuaTop image tests were repeated; no meaningful upstream change was identified for the failed ManhuaTop checks.
+
+### Repository and retained-output check
+
+- Main commit: `65bfcd0f356cde32092952f365d76bdc8e6a440f`.
+- Latest PR: [#45](https://github.com/RichardDaffern/Manga-Retriever/pull/45), merged. No open PRs were found before this documentation update.
+- Latest main CI [44950511968](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44950511968) passed and has no artefacts. PR CI [44950440413](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44950440413) also passed and has no artefacts.
+- First-chapter run [44755633296](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44755633296) still retains five JSON receipts only: `14638010391`, `14636799475`, `14638046053`, `14639050165`, `14638515660`. They expire 23 November 2026 between 14:41 and 14:43 UTC.
+- Early/middle/final run [44783810968](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44783810968) still retains 15 JSON receipts only: `14654400804`, `14654255723`, `14654231139`, `14654045872`, `14653491084`, `14653381723`, `14653336170`, `14653227821`, `14653221916`, `14653018945`, `14652799592`, `14652709036`, `14651384279`, `14651294597`, `14650959950`. They expire 27 November 2026 between 17:30 and 17:38 UTC.
+- Fairytale run [44789220759](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44789220759) retains report-only artefact `14655881240` (804 bytes), expiring 27 November 2026 18:04:13 UTC.
+- ManhuaTop run [44803983855](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44803983855) retains four diagnostic JSON artefacts only: `14662650937`, `14661628427`, `14660409466`, `14659944929`. They expire 27 November 2026 at approximately 19:38 UTC. All four checks failed; do not repeat them without a meaningful upstream change.
+
+These retained files are small JSON receipts, not chapter images or CBZ archives. The 35 temporary MangaKatana CBZs and 1,032 decoded pages remain ephemeral evidence only. No persistent destination, retained chapter hashes or new authorised media batch exists.
+
+### Decision
+
+Love Hina is now the strongest acquisition path, but only if the owner's existing Humble entitlement can be confirmed. The exact blocker is access to the owner's Humble purchase history or local files. The Gmail connector could not be queried without interactive input, and this environment cannot operate the owner's Windows machine. If the purchase cannot be confirmed, the remaining five titles still have no verified authorised DRM-free English export. No image batch or source adapter was launched. Manga Storage Controller and Manga Library were not modified.
