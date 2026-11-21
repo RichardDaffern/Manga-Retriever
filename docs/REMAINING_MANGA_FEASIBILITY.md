@@ -152,7 +152,7 @@ Kodansha's [official Love Hina Omnibus series page](https://kodansha.us/series/l
 Repository state at this check:
 
 - Main: `0710898b2679a885a4d66283f91251ae66385cd8`.
-- Latest PR: [#44](https://github.com/RichardDaffern/Manga-Retriever/pull/44); open PR count: 0.
+- At audit start, [PR #44](https://github.com/RichardDaffern/Manga-Retriever/pull/44) was the latest merged PR and there were no open PRs.
 - Latest main CI [44947163318](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44947163318) and PR CI [44947010247](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44947010247) both passed and produced no artefacts.
 
 The retained acquisition artefacts remain reports, not manga files:
