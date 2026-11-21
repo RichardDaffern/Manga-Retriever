@@ -124,3 +124,48 @@ A further check resolved an ambiguity in the earlier Love Hina research:
 - No file was downloaded, no account was accessed, and no media retrieval was attempted.
 
 The upstream Manga Downloader review remains unchanged: v25.3.0 is the latest checked release (18 November 2026), with 584 supported sites. Its new site additions do not identify an authorised source for any of the six targets. The failed ManhuaTop run 44803983855 remains closed; no identical probe was repeated.
+
+
+## Follow-up: supported alternative readers and retention recheck (22 November 2026)
+
+### New technical alternatives, not authorised export sources
+
+The latest upstream [Manga Downloader v25.3.0](https://github.com/elboletaire/manga-downloader/releases/tag/v25.3.0), released 18 November 2026, remains the newest release checked and advertises 584 supported sites. Its source at commit [b7c87ef](https://github.com/elboletaire/manga-downloader/tree/b7c87ef24a8c7a96574fb0c6862858ca00356800) contains dedicated MangaDex, WeebCentral and MangaFire grabbers, as well as MangaKatana support. Its `list --json` command can inspect chapter metadata, languages and groups without downloading pages. These integrations establish technical client support only, not image retrieval for a particular title or archival permission.
+
+Newly surfaced exact-title indexes:
+
+- [WeebCentral: Kimi no Iru Machi](https://weebcentral.com/series/01J76XY7F049Y3WQ1WM57D8VGD/Kimi-No-Iru-Machi) marks the series complete, lists chapters 1–261 and explicitly says **Official Translation: No**. This is a community-reader listing, not an authorised export.
+- [WeebCentral: Love Hina](https://weebcentral.com/series/01J76XY7Z542X29BECZC50JKY1/Love-Hina) marks the series complete and **Official Translation: Yes**, with fractional labels including 118.5–118.8. That field describes the translation, not the site's right to distribute page images or our right to archive them. No portable export permission is stated.
+- MangaFire's indexed [Love Hina](https://mangafire.to/title/20w5-love-hinaa), [Lovely Complex](https://mangafire.to/title/6wrz-lovelycomplex) and [Nisekoi](https://mangafire.to/title/l326-nisekoi-false-love) pages are labelled English. Its indexed Lovely Complex listing identifies chapter 66 as the final chapter; Love Hina surfaces chapters 123 and 124. These are reader-index observations, not verified full inventories or publisher exports. Direct page opens returned no readable lines, so no image retrieval or completeness test was performed.
+- No English Mado kara Madoka-chan listing was found in these checks. The Fairytale creator restriction recorded above still rules out treating third-party English reader uploads as authorised.
+
+No image tests were run against MangaDex, WeebCentral or MangaFire. The source material surfaced through community-reader listings, and no rights grant or authorised portable export was established. No CAPTCHA, login, paywall or browser challenge was accessed or bypassed. The existing MangaDex metadata audit remains the only title-specific MangaDex evidence in this repository.
+
+### GlobalComix export distinction rechecked
+
+GlobalComix's [official FAQ](https://globalcomix.com/support/faq) distinguishes DRM-free PDF Downloads, which provide a permanent downloadable file, from Collection Unlocks, which grant a reading licence; offline reading of Collection Unlocks requires GlobalComix Gold. The current [Love Hina Omnibus 5 release page](https://globalcomix.com/c/love-hina-omnibus/r/4e3b7e1e-67ee-4a13-8a17-ad25b93efcb7) exposes Preview and Buy ($14.99), not a Buy PDF option. The current GlobalComix listing therefore does **not** establish a DRM-free Love Hina export. No purchase or file download was attempted.
+
+Kodansha's [official Love Hina Omnibus series page](https://kodansha.us/series/love-hina-omnibus/) currently lists all five digital volumes, but does not expose a portable file export. The historical [2020 Kodansha Humble Bundle announcement](https://kodansha.us/2020/05/20/get-over-1500-worth-of-award-winning-manga-for-20-with-this-humble-manga-bundle-ends-69/) remains the only publisher-announced English CBZ/PDF/ePub route found. The sale ended 10 June 2020; the owner's purchase entitlement and actual file DRM/terms remain unknown. The Gmail entitlement search could not run in this non-interactive check because the connector required user input.
+
+### Actions and retained-output spot check
+
+Repository state at this check:
+
+- Main: `0710898b2679a885a4d66283f91251ae66385cd8`.
+- Latest PR: [#44](https://github.com/RichardDaffern/Manga-Retriever/pull/44); open PR count: 0.
+- Latest main CI [44947163318](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44947163318) and PR CI [44947010247](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44947010247) both passed and produced no artefacts.
+
+The retained acquisition artefacts remain reports, not manga files:
+
+- First-chapter run [44755633296](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44755633296): five JSON receipts, IDs `14638010391`, `14636799475`, `14638046053`, `14639050165`, `14638515660`; each expires 23 November 2026 between 14:41 and 14:43 UTC.
+- Early/middle/final coverage run [44783810968](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44783810968): 15 JSON receipts, IDs and individual SHA-256 values are recorded in [the evidence ledger](NEW_MANGA_PILOT_EVIDENCE_20261122.md); they expire 27 November 2026 between 17:30 and 17:38 UTC.
+- Fairytale run [44789220759](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44789220759): artefact `14655881240` (804 bytes), expiring 27 November 2026 18:04:13 UTC.
+- ManhuaTop run [44803983855](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44803983855): diagnostic artefacts `14662650937`, `14661628427`, `14660409466`, `14659944929`; all expire 27 November 2026 around 19:38 UTC. These four failed probes were not repeated.
+
+Downloaded and inspected three retained ZIPs: `14655881240`, `14651384279` and `14638010391`. They contain JSON reports only. The Fairytale receipt reports one temporary CBZ and eight decoded pages, but `userOwnedFilesRetained=false` and `rightsToPublishMediaIndependentlyVerified=false`. The two Kimi receipts report temporary chapter files with 60 and 43 pages respectively, no explicit English source label, manual language review required, and `publicCIArtifactPermitted=false`. The CBZ bytes were not in the ZIPs and are not retained. No persistent destination or retained media hashes exist.
+
+### Decision
+
+No new source passed the required rights, English-language, completeness, integrity and lawful-retention gates. No source adapter, image test or media batch was launched. The 35 previously verified temporary MangaKatana CBZs and 1,032 pages remain ephemeral evidence only; their 35 SHA-256 receipts are documented in the evidence ledger. No new title or chapter is claimed as retained.
+
+Exact blockers remain: no title-specific archival permission for the reader sources; unknown Humble Bundle entitlement and file terms for Love Hina; no owner-controlled Windows execution in this environment; and no approved private runner or persistent destination. The minimal route is an owner-controlled Windows staging folder or secure self-hosted runner, plus a verified licensed file/export for the selected title. Do not use public Actions artefacts or Hugging Face for these manga pages.
