@@ -247,3 +247,17 @@ VIZ's [official Love★Com series page](https://www.viz.com/love-com) and [VIZ M
 Kobo's English listings explicitly identify the VIZ volumes as **EPUB3 (Adobe DRM)**, including [volume 1](https://www.kobo.com/de/de/ebook/love-com-vol-1), [volume 10](https://www.kobo.com/de/de/ebook/love-com-vol-10), [volume 13](https://www.kobo.com/de/de/ebook/love-com-vol-13), [volume 17](https://tw.kobo.com/us/en/ebook/love-com-vol-17), and several intervening volumes. This confirms an official English digital-reading route but not a DRM-free file export. Do not attempt to remove or bypass the DRM.
 
 Decision: Lovely Complex remains a publisher-quality English purchase option, but it does not currently provide a verified portable archive for Manga Retriever. No ebook was purchased or downloaded.
+
+
+## Follow-up: private retention and workflow-scope audit (22 November 2026)
+
+The current repository workflow definitions were inspected for a lawful persistent destination before considering another image batch:
+
+- Every relevant source, image-pilot, import and batch workflow uses GitHub-hosted `ubuntu-latest`; none uses a self-hosted runner.
+- The [bulk batch workflow](../.github/workflows/bulk-manga.yml) has an explicit allowlist containing only `peppercarrot:26`, runs at most three approved jobs in parallel, and uploads chapter archives as seven-day GitHub Actions artefacts. It is not a private target-title destination.
+- The [English EPUB import workflow](../.github/workflows/english-epub-import.yml) is hard-coded to the creator-authorised CC BY Pepper & Carrot episode 26 and uploads the resulting EPUB/CBZ artefacts for seven days. It is not a general import or private storage route for the six targets.
+- The [parallel remaining-source workflow](../.github/workflows/parallel-remaining-manga-sources.yml), [publication metadata probe](../.github/workflows/remaining-publication-source-probe.yml) and [MangaDex audit](../.github/workflows/high-priority-mangadex-audit.yml) produce metadata reports only; they do not retain chapter images.
+- The five-title and fifteen-chapter MangaKatana workflows did retrieve image files, but their outputs were temporary runner files and short-lived repository artefacts. They do not establish an authorised source or private persistence.
+- No Hugging Face token, private object-storage secret or other private destination is configured in these candidate workflows. No target-title batch was triggered.
+
+Decision: there is currently **no authorised private retention route** for any of the six target titles. A new batch must wait for (1) an authorised English export and (2) an owner-controlled private destination or self-hosted Windows runner. Do not repurpose public Actions artefacts for unlicensed manga.
