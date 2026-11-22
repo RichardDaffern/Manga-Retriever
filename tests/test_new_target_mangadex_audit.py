@@ -82,7 +82,7 @@ class NewTargetMangaDexAuditTests(unittest.TestCase):
         result = audit_target(TARGETS[0], client)
         self.assertEqual(result["status"], "not-found")
         self.assertFalse(client.feed_calls)
-        self.assertIsNone(result["englishFeedEntries"] if "englishFeedEntries" in result else None)
+        self.assertIsNone(result["mangaDexId"])
 
     def test_ambiguous_exact_editions_are_inspected_without_automatic_selection(self):
         first = candidate(title="Lovely★Complex")
