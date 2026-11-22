@@ -11,11 +11,11 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 
-from scripts.source_probe_eight import MangaDexMetadata, UUID, normalise, summarise
+from scripts.source_probe_eight import MangaDexMetadata, normalise, summarise
 
 MANGA_ID = "ce16b1c3-d6bb-41e0-8671-d8b065248ba2"
 MANGA_URL = f"https://mangadex.org/title/{MANGA_ID}"
-EXPECTED_ENGLISH_TITLES = {"nisekoi", "nisekoi false love"}
+EXPECTED_ENGLISH_TITLES = {normalise("Nisekoi"), normalise("Nisekoi: False Love")}
 EXPECTED_MAIN_CHAPTERS = 229
 
 
