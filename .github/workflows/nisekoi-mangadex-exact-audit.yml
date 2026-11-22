@@ -1,0 +1,37 @@
+name: Nisekoi MangaDex Exact-ID Metadata Audit
+
+on:
+  push:
+    branches: [feature/mangadex-nisekoi-exact-metadata-20261122]
+    paths:
+      - scripts/nisekoi_mangadex_audit.py
+      - tests/test_nisekoi_mangadex_audit.py
+      - .github/workflows/nisekoi-mangadex-exact-audit.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-title-metadata:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install
+        run: python -m pip install -e .
+      - name: Run offline safeguards
+        run: python -m unittest tests.test_nisekoi_mangadex_audit -v
+      - name: Query exact MangaDex title, English feed and one image manifest only
+        run: python -m scripts.nisekoi_mangadex_audit --output reports/nisekoi-mangadex-metadata.json
+      - name: Publish metadata-only report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: nisekoi-mangadex-metadata-only
+          path: reports/nisekoi-mangadex-metadata.json
+          retention-days: 7
+          if-no-files-found: warn
