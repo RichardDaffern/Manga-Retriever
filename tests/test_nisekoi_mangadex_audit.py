@@ -1,4 +1,4 @@
-"""Offline regression tests for the exact Nisekoi MangaDex metadata audit."""
+"""Offline regression tests for the exact MangaDex Nisekoi-ID audit."""
 from __future__ import annotations
 
 import unittest
@@ -13,6 +13,7 @@ class FakeClient:
         self.correct_id = correct_id
         self.count = count
         self.original_paths = original_paths
+        self.feed_called = False
 
     def request(self, path):
         return {
@@ -29,6 +30,7 @@ class FakeClient:
         }
 
     def feed(self, manga_id):
+        self.feed_called = True
         assert manga_id == MANGA_ID
         rows = [
             {"id": f"12345678-1234-4234-8234-{n:012d}",
@@ -51,6 +53,7 @@ class NisekoiMangaDexAuditTests(unittest.TestCase):
         self.assertEqual(report["sourceMangaId"], MANGA_ID)
         self.assertEqual(report["sourceUrl"], MANGA_URL)
         self.assertEqual(report["canonicalEnglishTitle"], "Nisekoi: False Love")
+        self.assertTrue(report["englishTitleMatchesNisekoi"])
         self.assertEqual(report["englishFeedEntries"], 229)
         self.assertTrue(report["numberedMainCoverageComplete"])
         self.assertEqual(report["sampleOriginalQualityManifest"]["originalPagePaths"], 20)
@@ -59,12 +62,16 @@ class NisekoiMangaDexAuditTests(unittest.TestCase):
         self.assertFalse(report["eligibleForMediaDownload"])
 
     def test_wrong_uuid_fails_closed(self):
-        with self.assertRaisesRegex(ValueError, "exact Nisekoi UUID"):
+        with self.assertRaisesRegex(ValueError, "supplied UUID"):
             audit(FakeClient(correct_id=False))
 
-    def test_wrong_english_title_fails_closed(self):
-        with self.assertRaisesRegex(ValueError, "does not exactly identify Nisekoi"):
-            audit(FakeClient(title="Nisekoi Doumei"))
+    def test_wrong_english_title_is_reported_without_feed_query(self):
+        client = FakeClient(title="Nisekoi Doumei")
+        report = audit(client)
+        self.assertEqual(report["status"], "title-id-mismatch")
+        self.assertFalse(report["englishTitleMatchesNisekoi"])
+        self.assertFalse(client.feed_called)
+        self.assertIsNone(report["englishFeedEntries"])
 
     def test_incomplete_feed_is_not_reported_as_complete(self):
         report = audit(FakeClient(count=228))
