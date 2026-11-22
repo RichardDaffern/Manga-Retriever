@@ -261,3 +261,17 @@ The current repository workflow definitions were inspected for a lawful persiste
 - No Hugging Face token, private object-storage secret or other private destination is configured in these candidate workflows. No target-title batch was triggered.
 
 Decision: there is currently **no authorised private retention route** for any of the six target titles. A new batch must wait for (1) an authorised English export and (2) an owner-controlled private destination or self-hosted Windows runner. Do not repurpose public Actions artefacts for unlicensed manga.
+
+
+## Follow-up: K MANGA official Love Hina English route in India (22 November 2026)
+
+A new publisher-owned source was identified for the second-priority target:
+
+- Kodansha's [K MANGA Love Hina series page](https://kmanga.kodansha.com/title/10116/episode/329403) reports **120 chapters**, **3 free chapters**, and a completed charge state.
+- The official [Chapter 1 page](https://kmanga.kodansha.com/title/10116/episode/329314) is free and lists 74 pages. Its metadata credits the English translation and lettering team.
+- The official [K MANGA app listing in India's App Store](https://apps.apple.com/in/app/k-manga/id1637040002) identifies Kodansha as provider. K MANGA's [Help page](https://kmanga.kodansha.com/article/help) says titles/individual chapters are purchased with Points, purchased titles are readable through the K MANGA app/web account, and purchased manga cannot be shared. The service identifies itself as an authorised digital distribution service.
+
+This is a **current authorised English reading option in India**, not a verified file export. The public listing's 74-page figure is metadata only. No page images were retrieved, no page-integrity test was run, and no DRM-free CBZ/PDF/EPUB export or automated extraction permission was found. Do not implement a K MANGA image downloader or batch until Kodansha confirms a permitted export route.
+
+The historical Humble Bundle remains the only verified DRM-free portable-file route for Love Hina, conditional on an existing $20-tier purchase. The other five titles remain without a verified authorised English DRM-free export.
+
