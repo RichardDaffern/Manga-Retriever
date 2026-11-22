@@ -69,7 +69,7 @@ class NisekoiMangaDexAuditTests(unittest.TestCase):
     def test_incomplete_feed_is_not_reported_as_complete(self):
         report = audit(FakeClient(count=228))
         self.assertFalse(report["numberedMainCoverageComplete"])
-        self.assertEqual(report["numberedCoverage"]["missingPositiveNumbers"], [229])
+        self.assertEqual(report["numberedCoverage"]["highestNumberedChapter"], 228)
 
     def test_zero_original_paths_is_explicitly_cautioned(self):
         report = audit(FakeClient(original_paths=0))
