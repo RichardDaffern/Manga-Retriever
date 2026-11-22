@@ -217,3 +217,24 @@ The old Crunchyroll Manga service and the current Crunchyroll Manga product must
 Sources: [Crunchyroll Manga launch announcement (25 September 2025)](https://www.crunchyroll.com/news/announcements/2025/9/25/crunchyroll-manga-sets-october-9-launch-one-piece-jujutsu-kaisen-more), [international expansion announcement (7 October 2026)](https://www.crunchyroll.com/pl/news/announcements/2026/10/7/crunchyroll-manga-international-expansion), [official Manga catalogue guide](https://www.crunchyroll.com/id/news/guides/2025/10/9/crunchyroll-manga-full-list), [Crunchyroll Manga help and offline-reading information](https://help.crunchyroll.com/article/crunchyroll-manga-everything-you-need-to-know), and [the matching A Town Where You Live anime page](https://www.crunchyroll.com/id/series/G6X0QVDMY/a-town-where-you-live).
 
 Decision: this is a meaningful platform change worth recording, but it does **not** create an authorised, portable English acquisition source for any of the six targets. No app data, chapter images or access-controlled content was accessed.
+
+
+## Follow-up: current publisher export policy and MangaDex tooling check (22 November 2026)
+
+### Publisher and creator routes
+
+- Kodansha USA's [current Support Center](https://kodansha.us/support-center/) states that its digital content is accessible through the website and is not offered in downloadable formats. Its [Love Hina Omnibus catalogue](https://kodansha.us/series/love-hina-omnibus/) still lists all five English digital volumes, but the volume pages describe the digital edition as purchase-to-read-online. This is a licensed reading route, not a portable CBZ/PDF/EPUB export.
+- This does **not** cancel the separate historical [2020 Kodansha Humble Bundle](https://kodansha.us/2020/05/20/get-over-1500-worth-of-award-winning-manga-for-20-with-this-humble-manga-bundle-ends-69/). The [CBLDF campaign notice](https://cbldf.org/2020/05/support-cbldf-get-award-winning-manga-from-kodansha-in-new-humble-manga-bundle/) confirms that bundle files were DRM-free. All five English Omnibus volumes required the $20 tier and the sale ended 10 June 2020. This remains usable only if the owner already has that purchase entitlement.
+- Current [Kobo Love Hina Omnibus 1](https://www.kobo.com/ww/en/ebook/love-hina-omnibus-1-1) identifies EPUB3 with Adobe DRM. [Nisekoi volume 1](https://www.kobo.com/in/en/ebook/nisekoi-false-love-vol-1) and [volume 11](https://www.kobo.com/in/en/ebook/nisekoi-false-love-vol-11) likewise identify Adobe DRM. No DRM bypass is permitted.
+- [VIZ's Nisekoi chapter index](https://www.viz.com/shonenjump/chapters/nisekoi) and [final volume 25](https://www.viz.com/manga-books/manga/nisekoi-false-love-volume-25/product/5379) confirm the complete official English reading/volume route. They do not document a portable DRM-free archive export.
+- No new official English DRM-free export was found for Kimi no Iru Machi, Lovely Complex or Mado kara Madoka-chan. Mado remains a completed Japanese five-volume work in catalogue metadata, not a verified English edition. The Fairytale-like You remains subject to the creator's explicit restrictions already recorded above.
+
+### New MangaDex utility, not a new authorised source
+
+- [MangaShelf](https://addons.mozilla.org/en-US/firefox/addon/mangashelf/) / [its MIT-licensed source](https://github.com/EldinBegano/mangashelf) is a newly surfaced browser utility. Its README describes direct MangaDex API chapter access, original or data-saver quality selection, and folder/ZIP/CBZ output.
+- This is a **downloader utility, not a licence** for the manga images or scanlation translations hosted by MangaDex. It does not establish rights, English page text, complete chapter coverage or a permitted private export for any of the six targets. No MangaShelf download or image test was run.
+- Upstream [Manga Downloader](https://github.com/elboletaire/manga-downloader/releases) remains at v25.3.0 (584 supported sites); no newer release or relevant adapter change was found. The four ManhuaTop failures remain unchanged and were not repeated.
+
+### Decision
+
+No new source passed all required gates: authorised export, verified English pages, complete chapter coverage, original-page integrity and a lawful persistent destination. No source test, image download or batch was launched. Love Hina remains conditional on the owner's existing Humble entitlement; the other five remain blocked on a new authorised export or rights-holder permission.
