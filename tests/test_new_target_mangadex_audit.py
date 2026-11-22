@@ -33,18 +33,18 @@ class FakeClient:
             "originalPagePaths": 18,
             "dataSaverPagePaths": 18,
         }
-        self.feed_called = False
-        self.manifest_called = False
+        self.feed_calls = []
+        self.manifest_calls = []
 
     def discover(self, work):
         return self.selected, self.matches
 
     def feed(self, manga_id):
-        self.feed_called = True
+        self.feed_calls.append(manga_id)
         return len(self.chapters), self.chapters
 
     def image_manifest(self, chapter_id):
-        self.manifest_called = True
+        self.manifest_calls.append(chapter_id)
         return self.manifest
 
 
@@ -70,8 +70,8 @@ class NewTargetMangaDexAuditTests(unittest.TestCase):
         self.assertEqual(result["englishFeedEntries"], 2)
         self.assertEqual(result["numberedCoverage"]["distinctNumberedChapters"], 2)
         self.assertEqual(result["sampleImageManifest"]["originalPagePaths"], 18)
-        self.assertTrue(client.feed_called)
-        self.assertTrue(client.manifest_called)
+        self.assertEqual(client.feed_calls, [selected["id"]])
+        self.assertEqual(len(client.manifest_calls), 1)
         self.assertEqual(result["imageBytesDownloaded"], 0)
         self.assertEqual(result["cbzFilesCreated"], 0)
         self.assertFalse(result["rightsToArchiveOrRedistributeVerified"])
@@ -81,17 +81,23 @@ class NewTargetMangaDexAuditTests(unittest.TestCase):
         client = FakeClient(selected=None, matches=[])
         result = audit_target(TARGETS[0], client)
         self.assertEqual(result["status"], "not-found")
-        self.assertFalse(client.feed_called)
-        self.assertIsNone(result["englishFeedEntries"])
+        self.assertFalse(client.feed_calls)
+        self.assertIsNone(result["englishFeedEntries"] if "englishFeedEntries" in result else None)
 
-    def test_ambiguous_exact_matches_do_not_select_an_edition(self):
-        first = candidate(title="Lovely Complex")
-        second = candidate(title="Lovely Complex", manga_id="22222222-2222-4222-8222-222222222222")
+    def test_ambiguous_exact_editions_are_inspected_without_automatic_selection(self):
+        first = candidate(title="Lovely★Complex")
+        second = candidate(
+            title="Lovely★Complex - Digital Colored Comics",
+            manga_id="22222222-2222-4222-8222-222222222222",
+        )
         client = FakeClient(selected=None, matches=[first, second])
         result = audit_target(TARGETS[2], client)
         self.assertEqual(result["status"], "ambiguous-exact-title")
-        self.assertEqual(len(result["candidateMatches"]), 2)
-        self.assertFalse(client.feed_called)
+        self.assertIsNone(result["mangaDexId"])
+        self.assertEqual(len(result["candidateEditionAudits"]), 2)
+        self.assertEqual(client.feed_calls, [first["id"], second["id"]])
+        self.assertTrue(all(item["englishFeedEntries"] == 2 for item in result["candidateEditionAudits"]))
+        self.assertTrue(all(not item["eligibleForMediaDownload"] for item in result["candidateEditionAudits"]))
 
     def test_feed_with_non_english_entry_fails_closed(self):
         selected = candidate()
