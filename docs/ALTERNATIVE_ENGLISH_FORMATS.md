@@ -55,3 +55,18 @@ Next engineering options: ingest DRM-free English EPUBs and image ZIPs purchased
 - [GlobalComix](https://globalcomix.com/news/details/339/1) permits PDF purchases/downloads for selected releases. An official [Love Hina Omnibus catalogue](https://globalcomix.com/c/love-hina-omnibus/) exists, but **a downloadable PDF for these exact omnibuses remains unconfirmed**.
 - [Kodansha English Love Hina](https://kodansha.us/series/love-hina-omnibus/) offers digital volumes, but the Kodansha Reader Portal is not itself a portable-file downloader.
 - [VIZ Love★Com](https://www.viz.com/vizmanga/chapters/love-com) and [VIZ Nisekoi](https://www.viz.com/shonenjump/chapters/nisekoi) provide official English digital reading. Their app offline files are not established as exportable EPUBs or image ZIPs.
+
+
+## Publisher/export status refresh: 22 November 2026
+
+See [the title-by-title publisher export audit](NEW_MANGA_PUBLISHER_EXPORT_AUDIT_20261122.md) and [new MangaDex metadata audit](NEW_TARGET_MANGADEX_METADATA_AUDIT_20261122.md).
+
+- **Love Hina:** Kodansha's current Reader Portal FAQ explicitly says its digital content is website-only and is not offered in downloadable formats: https://kodansha.us/support-center/ . [MangaPlaza lists the English Love Hina Omnibus as a 124-chapter reading series](https://mangaplaza.com/title/0303002014/), and GlobalComix lists all five omnibuses. Neither public listing exposes a DRM-free PDF/CBZ export. GlobalComix's FAQ distinguishes DRM-free PDF sales from Collection Unlocks, which are read licences; do not infer a PDF export from a generic Buy/Gold reading option: https://globalcomix.com/support/faq .
+- **Historical Love Hina route:** Kodansha's 2020 Humble Bundle included all five English omnibuses in CBZ, PDF and EPUB formats at the $20 tier; the sale ended 10 June 2020. CBLDF described the downloads as DRM-free. The owner's purchase entitlement and possession of the files remain unverified. Do not access or assume an account entitlement.
+- **Lovely Complex / Love★Com:** VIZ lists the complete 17-volume English edition, including digital volumes, but no portable DRM-free export was verified. Its chapter reader currently reports regional unavailability for the user's location.
+- **Nisekoi:** VIZ lists the complete 25-volume English edition and digital purchases, but no portable DRM-free export was verified.
+- **Mado kara Madoka-chan:** Kodansha's official five-volume catalogue and retailer listings are Japanese-language editions; no official English edition/export was found.
+- **Kimi no Iru Machi:** no current authorised English edition/export was found; the former Crunchyroll Manga licence is historical.
+- **The Fairytale-like You Goes on the Assault:** third-party English uploads are not authorised exports. The creator's public profile asks that the work not be reposted and that translations not be published on overseas sites: https://twitter.com/teigi_3 .
+
+No new media was downloaded or retained from these publisher/reader listings.
