@@ -1,4 +1,4 @@
-"""Bounded MangaDex metadata-only audit for the exact Nisekoi title ID.
+"""Bounded MangaDex metadata-only audit for a newly surfaced Nisekoi title ID.
 
 This verifies the third-party tracker lead against MangaDex's own API.
 It reads title/feed metadata and one chapter's image manifest only. It never
@@ -24,16 +24,44 @@ def audit(client: MangaDexMetadata) -> dict:
     data = response.get("data")
     if (response.get("result") != "ok" or not isinstance(data, dict)
             or data.get("id") != MANGA_ID or data.get("type") != "manga"):
-        raise ValueError("MangaDex title response does not match the exact Nisekoi UUID")
+        raise ValueError("MangaDex title response does not match the supplied UUID")
 
     attrs = data.get("attributes")
     if not isinstance(attrs, dict):
         raise ValueError("Invalid MangaDex title attributes")
     titles = attrs.get("title")
     english_title = titles.get("en") if isinstance(titles, dict) else None
-    if (not isinstance(english_title, str)
-            or normalise(english_title) not in EXPECTED_ENGLISH_TITLES):
-        raise ValueError("MangaDex English title does not exactly identify Nisekoi")
+    title_match = (
+        isinstance(english_title, str)
+        and normalise(english_title) in EXPECTED_ENGLISH_TITLES
+    )
+    base = {
+        "schemaVersion": 1,
+        "source": "MangaDex",
+        "sourceMangaId": MANGA_ID,
+        "sourceUrl": MANGA_URL,
+        "canonicalEnglishTitle": english_title if isinstance(english_title, str) else None,
+        "allTitleVariants": titles if isinstance(titles, dict) else {},
+        "englishTitleMatchesNisekoi": title_match,
+        "originalLanguage": attrs.get("originalLanguage"),
+        "publicationStatus": attrs.get("status"),
+        "metadataOnly": True,
+        "chapterImageBytesDownloaded": 0,
+        "cbzFilesCreated": 0,
+        "pageTextManuallyReviewed": False,
+        "rightsToArchiveOrRedistributeVerified": False,
+        "eligibleForMediaDownload": False,
+        "auditedAtUtc": datetime.now(UTC).isoformat(),
+    }
+    if not title_match:
+        return {
+            **base,
+            "status": "title-id-mismatch",
+            "englishFeedEntries": None,
+            "numberedCoverage": None,
+            "sampleOriginalQualityManifest": None,
+            "note": "The supplied MangaDex UUID does not identify Nisekoi by its English title; no chapter feed was queried.",
+        }
 
     total, chapters = client.feed(MANGA_ID)
     if total != len(chapters) or total < 0:
@@ -68,13 +96,7 @@ def audit(client: MangaDexMetadata) -> dict:
         status = "english-feed-without-hosted-original-page-paths"
 
     return {
-        "schemaVersion": 1,
-        "source": "MangaDex",
-        "sourceMangaId": MANGA_ID,
-        "sourceUrl": MANGA_URL,
-        "canonicalEnglishTitle": english_title,
-        "originalLanguage": attrs.get("originalLanguage"),
-        "publicationStatus": attrs.get("status"),
+        **base,
         "englishFeedEntries": total,
         "numberedCoverage": coverage,
         "expectedMainNumberedChapters": EXPECTED_MAIN_CHAPTERS,
@@ -83,19 +105,12 @@ def audit(client: MangaDexMetadata) -> dict:
         "sampleOriginalQualityManifest": manifest,
         "sampleManifestError": manifest_error,
         "status": status,
-        "metadataOnly": True,
-        "chapterImageBytesDownloaded": 0,
-        "cbzFilesCreated": 0,
-        "pageTextManuallyReviewed": False,
-        "rightsToArchiveOrRedistributeVerified": False,
-        "eligibleForMediaDownload": False,
-        "auditedAtUtc": datetime.now(UTC).isoformat(),
     }
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Verify exact Nisekoi MangaDex metadata without retrieving images"
+        description="Verify a candidate MangaDex Nisekoi ID without retrieving images"
     )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
@@ -109,12 +124,14 @@ def main(argv: list[str] | None = None) -> int:
         encoding="utf-8",
     )
     print(json.dumps({
+        "status": result["status"],
         "title": result["canonicalEnglishTitle"],
-        "englishFeedEntries": result["englishFeedEntries"],
-        "distinctNumberedChapters": result["numberedCoverage"]["distinctNumberedChapters"],
-        "missingMainChapters": result["numberedCoverage"]["missingPositiveNumbers"],
+        "englishFeedEntries": result.get("englishFeedEntries"),
+        "distinctNumberedChapters": (
+            result.get("numberedCoverage") or {}
+        ).get("distinctNumberedChapters"),
         "sampleOriginalPagePaths": (
-            result["sampleOriginalQualityManifest"] or {}
+            result.get("sampleOriginalQualityManifest") or {}
         ).get("originalPagePaths"),
         "imageBytesDownloaded": 0,
         "rightsVerified": False,
