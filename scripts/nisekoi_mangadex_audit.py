@@ -15,7 +15,7 @@ from scripts.source_probe_eight import MangaDexMetadata, normalise, summarise
 
 MANGA_ID = "ce16b1c3-d6bb-41e0-8671-d8b065248ba2"
 MANGA_URL = f"https://mangadex.org/title/{MANGA_ID}"
-EXPECTED_ENGLISH_TITLES = {normalise("Nisekoi"), normalise("Nisekoi: False Love")}
+EXPECTED_TITLES = {normalise("Nisekoi"), normalise("Nisekoi: False Love")}
 EXPECTED_MAIN_CHAPTERS = 229
 
 
@@ -30,19 +30,29 @@ def audit(client: MangaDexMetadata) -> dict:
     if not isinstance(attrs, dict):
         raise ValueError("Invalid MangaDex title attributes")
     titles = attrs.get("title")
-    english_title = titles.get("en") if isinstance(titles, dict) else None
-    title_match = (
-        isinstance(english_title, str)
-        and normalise(english_title) in EXPECTED_ENGLISH_TITLES
+    title_variants = titles if isinstance(titles, dict) else {}
+    matched = next(
+        (
+            (language, value)
+            for language, value in title_variants.items()
+            if isinstance(value, str) and normalise(value) in EXPECTED_TITLES
+        ),
+        None,
     )
+    title_match = matched is not None
     base = {
         "schemaVersion": 1,
         "source": "MangaDex",
         "sourceMangaId": MANGA_ID,
         "sourceUrl": MANGA_URL,
-        "canonicalEnglishTitle": english_title if isinstance(english_title, str) else None,
-        "allTitleVariants": titles if isinstance(titles, dict) else {},
-        "englishTitleMatchesNisekoi": title_match,
+        "canonicalMatchedTitle": matched[1] if matched else None,
+        "titleMatchLanguage": matched[0] if matched else None,
+        "englishTitleMetadataPresent": (
+            isinstance(title_variants.get("en"), str)
+            and bool(title_variants.get("en", "").strip())
+        ),
+        "allTitleVariants": title_variants,
+        "titleMatchesNisekoi": title_match,
         "originalLanguage": attrs.get("originalLanguage"),
         "publicationStatus": attrs.get("status"),
         "metadataOnly": True,
@@ -60,7 +70,7 @@ def audit(client: MangaDexMetadata) -> dict:
             "englishFeedEntries": None,
             "numberedCoverage": None,
             "sampleOriginalQualityManifest": None,
-            "note": "The supplied MangaDex UUID does not identify Nisekoi by its English title; no chapter feed was queried.",
+            "note": "The supplied MangaDex UUID does not identify Nisekoi in any title field; no chapter feed was queried.",
         }
 
     total, chapters = client.feed(MANGA_ID)
@@ -125,7 +135,9 @@ def main(argv: list[str] | None = None) -> int:
     )
     print(json.dumps({
         "status": result["status"],
-        "title": result["canonicalEnglishTitle"],
+        "title": result["canonicalMatchedTitle"],
+        "titleMatchLanguage": result["titleMatchLanguage"],
+        "englishTitleMetadataPresent": result["englishTitleMetadataPresent"],
         "englishFeedEntries": result.get("englishFeedEntries"),
         "distinctNumberedChapters": (
             result.get("numberedCoverage") or {}
