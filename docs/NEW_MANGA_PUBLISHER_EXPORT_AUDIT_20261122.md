@@ -40,7 +40,7 @@ Sources:
 ## Current Love Hina reading listings are not verified exports
 
 - [Kodansha Reader Portal support](https://kodansha.us/support-center/) says its digital content is accessed through the website and is not offered in downloadable formats.
-- [MangaPlaza's Love Hina Omnibus listing](https://mangaplaza.com/title/0303000001/) presents a licensed English reading series. Its listing is not a portable CBZ/PDF/EPUB export.
+- [MangaPlaza's Love Hina Omnibus listing](https://mangaplaza.com/title/0303002014/) presents a licensed English 124-chapter reading series (one chapter free; chapters 2-109 included with Premium membership). Its listing is not a portable CBZ/PDF/EPUB export.
 - [GlobalComix lists Love Hina Omnibus 1-5](https://globalcomix.com/c/love-hina-omnibus/). Its [FAQ](https://globalcomix.com/support/faq) distinguishes DRM-free PDF sales from Collection Unlocks, which grant a licence to read. The public Love Hina release pages show generic Buy/Gold reading options, not an explicit PDF-download option. Treat them as reading access unless the release or publisher confirms a PDF sale.
 
 ## Publisher catalogue references
