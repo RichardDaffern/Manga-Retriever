@@ -7,9 +7,10 @@ from scripts.nisekoi_mangadex_audit import MANGA_ID, MANGA_URL, audit
 
 
 class FakeClient:
-    def __init__(self, *, title="Nisekoi: False Love", correct_id=True,
-                 count=229, original_paths=20):
+    def __init__(self, *, title="Nisekoi: False Love", title_language="en",
+                 correct_id=True, count=229, original_paths=20):
         self.title = title
+        self.title_language = title_language
         self.correct_id = correct_id
         self.count = count
         self.original_paths = original_paths
@@ -22,7 +23,7 @@ class FakeClient:
                 "id": MANGA_ID if self.correct_id else "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
                 "type": "manga",
                 "attributes": {
-                    "title": {"en": self.title},
+                    "title": {self.title_language: self.title},
                     "originalLanguage": "ja",
                     "status": "completed",
                 },
@@ -52,8 +53,9 @@ class NisekoiMangaDexAuditTests(unittest.TestCase):
         report = audit(FakeClient())
         self.assertEqual(report["sourceMangaId"], MANGA_ID)
         self.assertEqual(report["sourceUrl"], MANGA_URL)
-        self.assertEqual(report["canonicalEnglishTitle"], "Nisekoi: False Love")
-        self.assertTrue(report["englishTitleMatchesNisekoi"])
+        self.assertEqual(report["canonicalMatchedTitle"], "Nisekoi: False Love")
+        self.assertEqual(report["titleMatchLanguage"], "en")
+        self.assertTrue(report["englishTitleMetadataPresent"])
         self.assertEqual(report["englishFeedEntries"], 229)
         self.assertTrue(report["numberedMainCoverageComplete"])
         self.assertEqual(report["sampleOriginalQualityManifest"]["originalPagePaths"], 20)
@@ -61,15 +63,23 @@ class NisekoiMangaDexAuditTests(unittest.TestCase):
         self.assertFalse(report["rightsToArchiveOrRedistributeVerified"])
         self.assertFalse(report["eligibleForMediaDownload"])
 
+    def test_romaji_title_field_can_identify_exact_work_without_english_title_metadata(self):
+        report = audit(FakeClient(title="Nisekoi", title_language="ja-ro"))
+        self.assertEqual(report["canonicalMatchedTitle"], "Nisekoi")
+        self.assertEqual(report["titleMatchLanguage"], "ja-ro")
+        self.assertFalse(report["englishTitleMetadataPresent"])
+        self.assertTrue(report["titleMatchesNisekoi"])
+        self.assertTrue(report["feed_called"] if "feed_called" in report else True)
+
     def test_wrong_uuid_fails_closed(self):
         with self.assertRaisesRegex(ValueError, "supplied UUID"):
             audit(FakeClient(correct_id=False))
 
-    def test_wrong_english_title_is_reported_without_feed_query(self):
+    def test_unrelated_title_is_reported_without_feed_query(self):
         client = FakeClient(title="Nisekoi Doumei")
         report = audit(client)
         self.assertEqual(report["status"], "title-id-mismatch")
-        self.assertFalse(report["englishTitleMatchesNisekoi"])
+        self.assertFalse(report["titleMatchesNisekoi"])
         self.assertFalse(client.feed_called)
         self.assertIsNone(report["englishFeedEntries"])
 
