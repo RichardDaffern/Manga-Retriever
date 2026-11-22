@@ -63,13 +63,14 @@ class NisekoiMangaDexAuditTests(unittest.TestCase):
         self.assertFalse(report["rightsToArchiveOrRedistributeVerified"])
         self.assertFalse(report["eligibleForMediaDownload"])
 
-    def test_romaji_title_field_can_identify_exact_work_without_english_title_metadata(self):
-        report = audit(FakeClient(title="Nisekoi", title_language="ja-ro"))
+    def test_romaji_title_field_identifies_work_without_english_title_metadata(self):
+        client = FakeClient(title="Nisekoi", title_language="ja-ro")
+        report = audit(client)
         self.assertEqual(report["canonicalMatchedTitle"], "Nisekoi")
         self.assertEqual(report["titleMatchLanguage"], "ja-ro")
         self.assertFalse(report["englishTitleMetadataPresent"])
         self.assertTrue(report["titleMatchesNisekoi"])
-        self.assertTrue(report["feed_called"] if "feed_called" in report else True)
+        self.assertTrue(client.feed_called)
 
     def test_wrong_uuid_fails_closed(self):
         with self.assertRaisesRegex(ValueError, "supplied UUID"):
