@@ -238,3 +238,12 @@ Decision: this is a meaningful platform change worth recording, but it does **no
 ### Decision
 
 No new source passed all required gates: authorised export, verified English pages, complete chapter coverage, original-page integrity and a lawful persistent destination. No source test, image download or batch was launched. Love Hina remains conditional on the owner's existing Humble entitlement; the other five remain blocked on a new authorised export or rights-holder permission.
+
+
+## Follow-up: Lovely Complex official digital format check (22 November 2026)
+
+VIZ's [official Love★Com series page](https://www.viz.com/love-com) and [VIZ Manga chapter index](https://www.viz.com/vizmanga/chapters/love-com) confirm the official English edition. The VIZ reader page reports that the chapter content is unavailable in the current region, while the volume catalogue remains available for purchase.
+
+Kobo's English listings explicitly identify the VIZ volumes as **EPUB3 (Adobe DRM)**, including [volume 1](https://www.kobo.com/de/de/ebook/love-com-vol-1), [volume 10](https://www.kobo.com/de/de/ebook/love-com-vol-10), [volume 13](https://www.kobo.com/de/de/ebook/love-com-vol-13), [volume 17](https://tw.kobo.com/us/en/ebook/love-com-vol-17), and several intervening volumes. This confirms an official English digital-reading route but not a DRM-free file export. Do not attempt to remove or bypass the DRM.
+
+Decision: Lovely Complex remains a publisher-quality English purchase option, but it does not currently provide a verified portable archive for Manga Retriever. No ebook was purchased or downloaded.
