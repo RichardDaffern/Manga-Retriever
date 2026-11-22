@@ -150,3 +150,50 @@ The repository therefore has a bounded parallel batch mechanism for its one expl
 ## Decision
 
 No target has a verified route satisfying all four requirements: authorised export, English page text, complete chapter/volume coverage and a lawful persistent private destination. No new media batch was launched. No new title is claimed as downloaded or retained. The five MangaKatana pilots are technical evidence only; the Fairytale third-party English source is explicitly restricted by the creator.
+
+
+## 22 November 2026 automation refresh
+
+### Repository and latest CI
+
+- Main remains `840806bb99ba2625221e4124a45bdc78c80d6df5`.
+- [PR #47](https://github.com/RichardDaffern/Manga-Retriever/pull/47) is merged; no open PRs were found.
+- PR CI [44962156631](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44962156631) completed successfully: Windows, Linux and security passed; licensed-source and batch-recovery smoke jobs were skipped.
+- Post-merge main CI [44962224894](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44962224894) completed successfully: Windows, Linux and security passed; both media smoke jobs were skipped.
+- Both runs returned **zero artefacts**. No newer source or media workflow was dispatched.
+
+### Current retained report artefacts
+
+These are still JSON receipts/diagnostics only. The exact GitHub artifact IDs and expiry windows were rechecked through the Actions API:
+
+- First-chapter pilot run [44755633296](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44755633296): `14638010391`, `14636799475`, `14638046053`, `14639050165`, `14638515660`. All unexpired at this check; expiry 23 November 2026, 14:41:22–14:43:27 UTC. Sizes 618–668 bytes.
+- Early/middle/final coverage run [44783810968](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44783810968): `14654400804`, `14654255723`, `14654231139`, `14654045872`, `14653491084`, `14653381723`, `14653336170`, `14653227821`, `14653221916`, `14653018945`, `14652799592`, `14652709036`, `14651384279`, `14651294597`, `14650959950`. All unexpired; expiry 27 November 2026, 17:30:40–17:38:00 UTC. Sizes 700–773 bytes.
+- Fairytale run [44789220759](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44789220759): `14655881240`, 804 bytes, expires 27 November 2026 18:04:13 UTC.
+- ManhuaTop run [44803983855](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44803983855): `14662650937`, `14661628427`, `14660409466`, `14659944929`, sizes 490–566 bytes, expiring 27 November 2026 19:38:28–19:38:44 UTC. All four are failed diagnostics; do not repeat without a meaningful upstream change.
+
+### Re-downloaded and inspected receipts
+
+Four representative report ZIPs were downloaded by exact artifact ID and unpacked. The ZIP digests below are GitHub's artifact API SHA-256 values; the CBZ hashes are the temporary chapter archive hashes embedded in the JSON receipts.
+
+| Artifact ID | Receipt contents | GitHub artifact ZIP SHA-256 |
+|---|---|---|
+| `14638010391` | Kimi no Iru Machi Ch. 1, 43 pages, 15,251,042 bytes; English review required | `719edda87b64c1c22d6ea7a4e7d6bdf580c38a6542fd036744545bf406ae66ce` |
+| `14654400804` | Nisekoi Ch. 114–115, 40 pages total; English review required | `e1f15c9491425bd51ae92ec21f4cf6bf152c9c0db548dff0b2d5163e2ffdcd58` |
+| `14655881240` | Fairytale index: 42 integer chapters plus 29 fractional labels; separate result says 8 validated Chapter 1 pages, no retained file | `59f4f746d2577ea3c5645d23e6d495b754a8249a0b75edeb7dfcb6cd21e36961` |
+| `14662650937` | ManhuaTop Magic Emperor listing failed before catalogue retrieval; browser/Chromium/network error | `ef28f7b746db6b6d7562e4840fd6a2d9290640fd83b66bea223552c6bd244685` |
+
+Temporary CBZ hashes recorded inside the inspected reports:
+- Kimi no Iru Machi Ch. 1: `8fa37c938dda375c1582725be412ac156ee7b617693b879eec26102dcb907ef4`.
+- Nisekoi Ch. 114: `5551926382081bd2fa6ce3655a7613c0cb0326ae4d0d64070f1a75223cbd5078`.
+- Nisekoi Ch. 115: `49d5277049fc854542ac4fa8b4c4cfd1eedcab007487d6f0929bd819708f8a13`.
+
+These hashes identify files that existed only in ephemeral runners. The CBZs are not present in the downloaded JSON artefacts and are not retained locally by the owner.
+
+### Chapter coverage, destination and blockers
+
+- The five MangaKatana Chapter 1 pilots still total 246 pages: Kimi 43, Love Hina 81, Lovely Complex 53, Mado 14 and Nisekoi 55.
+- The 15 early/middle/final checks still total 30 temporary CBZs and 786 pages. They sampled chapters 2–3, selected mid-series pairs and final pairs only; all unsampled chapters remain unverified. Fairytale has only the eight-page Chapter 1 technical result and its 29 fractional chapter labels remain untested.
+- English page text remains unverified for MangaKatana because its chapter records do not carry explicit English labels. Source rights were not independently verified. The Fairytale creator restriction remains in force.
+- Destination: **none**. Public Actions retained only JSON reports; media files were deleted from ephemeral runners. No private self-hosted runner or target-title storage destination is configured. No Hugging Face upload occurred.
+- The connected Gmail entitlement search for the historical Love Hina Humble Bundle required interactive input and could not run in this non-interactive check. The owner's Windows machine is also inaccessible. No Love Hina purchase entitlement is claimed.
+- No new title, chapter or image is claimed as retained. Manga Storage Controller and Manga Library were not modified.
