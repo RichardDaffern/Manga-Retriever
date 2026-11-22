@@ -5,7 +5,7 @@
 
 ## Summary
 
-No new current publisher/creator-authorised DRM-free English export was verified. **Love Hina remains the only identified portable-file route**, and it is a historical offer whose purchase entitlement is unknown. A separate current official K MANGA route provides English chapter-by-chapter reading in India, but it is not a portable export. The other titles currently have no verified authorised DRM-free export route.
+No new current publisher/creator-authorised DRM-free English export was verified. **Love Hina remains the only identified portable-file route**, and it is a historical offer whose purchase entitlement is unknown. Current official reader routes are also confirmed for Love Hina through K MANGA and Nisekoi through VIZ Shonen Jump in India, but neither provides a portable export. The other titles currently have no verified authorised DRM-free export route.
 
 ## Title-by-title status
 
@@ -15,7 +15,7 @@ No new current publisher/creator-authorised DRM-free English export was verified
 | 2 | Love Hina | Kodansha English Omnibus 1-5; K MANGA lists 120 English chapters (3 free) and is available in India; MangaPlaza and GlobalComix also list licensed reading. | Historical Humble Bundle DRM-free files are confirmed, but ownership is unknown. K MANGA is a licensed reader, not a verified portable export. |
 | 3 | Lovely Complex / Love★Com | VIZ lists the complete 17-volume English edition, including digital volumes. The VIZ chapter reader currently reports regional unavailability. | No DRM-free CBZ/PDF/EPUB export verified. Kobo's English EPUB listing specifies Adobe DRM. |
 | 4 | Mado kara Madoka-chan | Kodansha Japan lists the completed five-volume Japanese edition. No official English edition was found. | Japanese digital books are not English acquisition candidates. |
-| 5 | Nisekoi: False Love | VIZ lists the complete 25-volume English edition and digital volumes. | No DRM-free CBZ/PDF/EPUB export verified. Kobo's English EPUB listing specifies Adobe DRM. |
+| 5 | Nisekoi: False Love | VIZ lists the complete 25-volume English edition and chapter index 1-229. Shonen Jump is available in India and its app supports offline reading. | No DRM-free CBZ/PDF/EPUB export verified. Offline downloads remain inside the official app; Kobo's English EPUB listing specifies Adobe DRM. |
 | 6 | The Fairytale-like You Goes on the Assault | No authorised English edition/export found. English third-party translation records exist, but creator restrictions apply. | Do not treat community uploads as authorised files. Obtain explicit rights-holder permission before any acquisition. |
 
 ## Love Hina: the one historical DRM-free route
@@ -50,6 +50,14 @@ The [K MANGA app is listed in India's App Store](https://apps.apple.com/in/app/k
 - [Kodansha Reader Portal support](https://kodansha.us/support-center/) says its digital content is accessed through the website and is not offered in downloadable formats.
 - [MangaPlaza's Love Hina Omnibus listing](https://mangaplaza.com/title/0303002014/) presents a licensed English 124-chapter reading series (one chapter free; chapters 2-109 included with Premium membership). Its listing is not a portable CBZ/PDF/EPUB export.
 - [GlobalComix lists Love Hina Omnibus 1-5](https://globalcomix.com/c/love-hina-omnibus/). Its [FAQ](https://globalcomix.com/support/faq) distinguishes DRM-free PDF sales from Collection Unlocks, which grant a licence to read. The public Love Hina release pages show generic Buy/Gold reading options, not an explicit PDF-download option. Treat them as reading access unless the release or publisher confirms a PDF sale.
+
+## Current official Nisekoi reader route: VIZ Shonen Jump (India)
+
+VIZ's [official Nisekoi chapter index](https://www.viz.com/shonenjump/chapters/nisekoi) lists chapters **1-229** and the completed 25-volume edition. The index marks chapters 1-3 free and later chapters as requiring Shonen Jump membership or a volume purchase.
+
+VIZ's [official FAQ](https://www.viz.com/company-faq) confirms Shonen Jump access in India. The [Shonen Jump app](https://www.viz.com/apps) advertises offline chapter downloads. This is a current authorised English reading option for Nisekoi, including app-managed offline reading.
+
+**Acquisition decision:** offline app downloads are not a portable CBZ/PDF/EPUB export. VIZ's digital purchase FAQ describes access through the VIZ library/app or the relevant retailer app; no DRM-free export permission is documented. No page images were retrieved, and no page-integrity or file-export test was run. Do not automate extraction from the VIZ reader or app.
 
 ## Publisher catalogue references
 

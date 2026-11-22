@@ -275,3 +275,17 @@ This is a **current authorised English reading option in India**, not a verified
 
 The historical Humble Bundle remains the only verified DRM-free portable-file route for Love Hina, conditional on an existing $20-tier purchase. The other five titles remain without a verified authorised English DRM-free export.
 
+
+
+## Follow-up: VIZ Shonen Jump official Nisekoi route in India (22 November 2026)
+
+A second current official English reading route was verified for Nisekoi:
+
+- VIZ's [official chapter index](https://www.viz.com/shonenjump/chapters/nisekoi) lists chapters **1-229** and the completed 25-volume edition. Chapters 1-3 are marked free; later chapters require Shonen Jump membership or a volume purchase.
+- VIZ's [official FAQ](https://www.viz.com/company-faq) confirms Shonen Jump access in India.
+- The [Shonen Jump app](https://www.viz.com/apps) supports offline downloads inside the app.
+
+This is an authorised English reading route with app-managed offline access, **not** a portable CBZ/PDF/EPUB export. No page images were retrieved, no app content was extracted, and no DRM-free export permission was found. Do not automate image extraction from the VIZ reader or app.
+
+The two newly confirmed current official reader routes are now Love Hina via K MANGA (120 chapters, three free) and Nisekoi via VIZ Shonen Jump (chapters 1-229). Neither creates an authorised persistent file-retention route for Manga Retriever. The historical Love Hina Humble Bundle remains the only verified DRM-free portable-file route, conditional on an existing purchase entitlement.
+
