@@ -44,3 +44,17 @@ For local Windows usage, title-specific flags, resume and status reports, see [L
 The public media allowlist remains `peppercarrot:26`; this is **different** from local fixed URL technical pilots and metadata research. If a future source is added, document its exact work/host allowlist, licence, page/volume/chapter coverage, rate limits, output contract, tests and rights status here.
 
 Additional context: [source research](SOURCE_RESEARCH.md), [remaining works feasibility](REMAINING_MANGA_FEASIBILITY.md), [download guide](DOWNLOAD_GUIDE.md), [architecture](ARCHITECTURE.md).
+
+
+## New-target MangaDex audit, 22 November 2026
+
+[Exact metadata-only audit](NEW_TARGET_MANGADEX_METADATA_AUDIT_20261122.md), workflow [44980421781](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44980421781):
+
+- Kimi no Iru Machi: exact title found, **0 English feed entries**.
+- Love Hina: 2 English feed entries, but the sampled first chapter exposes **0 original and 0 data-saver page paths**.
+- Lovely Complex: standard edition has 71 English feed entries (66 numbered chapters and 2 fractional extras), but **0 hosted page paths** in the sampled first chapter; its digital-coloured edition has 0 English entries.
+- Mado kara Madoka-chan: exact title found and English title metadata present, but **0 English feed entries**.
+- The Fairytale-like You Goes on the Assault: standard edition has 84 English feed entries (42 numbered chapters and 33 fractional extras), with 8 first-chapter manifest paths; fan-coloured edition has only chapter 30. Creator restrictions and third-party translation rights are unresolved, so neither is an acquisition source.
+- Nisekoi: see [exact-ID audit](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44975851598): five English feed entries, chapters 5-228 absent, and 0 sampled hosted page paths.
+
+This was metadata and image-manifest inspection only: **0 image bytes, 0 CBZs, 0 rights clearances**. Do not enable a MangaDex image downloader from these results.
