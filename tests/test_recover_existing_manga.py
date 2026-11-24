@@ -16,8 +16,8 @@ from scripts.recover_existing_manga import (
     RecoveryError,
     _audit_files,
     _safe_extract,
-    load_manifest,
     audit_availability,
+    load_manifest,
     recover_all,
     recover_one,
 )
