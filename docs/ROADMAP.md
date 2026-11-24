@@ -7,7 +7,8 @@
 | M4: page checkpoint and recovery | Implemented with synthetic and CI tests |
 | M5: approved bulk GitHub Actions + metadata-only receipts | Implemented with CI; real M5 smoke encountered upstream network failure |
 | M6: Windows retrieval, verified skip-existing, consolidated ZIP | Implemented with Python CLI and Windows CMD launchers; GitHub artefact live handoff is subject to availability |
-| M7: Controller + Reader live acceptance | Not implemented, candidate v1 generated |
+| M7a: independent Retriever to Controller candidate acceptance | Implemented as synthetic, token-free, pinned Controller CI contract test; confirm current PR/main check status before claiming a pass |
+| M7b: owner-approved private HF upload and Library read-back | Not verified for a newly acquired Retriever title; live write requires a separate Controller preview, approval, backup and revision guard |
 | M8: additional authorised manga sources | Officially distributed Japanese manga identified and supported via owner-declared **local PDF import**; direct remote adapter remains pending |
 | Five-title MangaKatana URL pilot | **Implemented for five exact local URLs**; one real image-containing CBZ for each Chapter 1 verified (246 pages combined); English page text, full-series coverage and source export permission unverified |
 | High-priority Acquainted: Encounter Spin-Off | MangaDex title verified; **0 chapters across all languages**; Tapas reader is not an authorised portable CBZ export |
