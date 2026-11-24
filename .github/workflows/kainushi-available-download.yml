@@ -16,6 +16,8 @@ concurrency:
 
 jobs:
   verified-partial-source-batches:
+    # Quarantined: do not publish or rerun historical public third-party media jobs.
+    if: ${{ false }}
     name: Kainushi available English labels batch ${{ matrix.batch }}
     runs-on: ubuntu-latest
     timeout-minutes: 90
