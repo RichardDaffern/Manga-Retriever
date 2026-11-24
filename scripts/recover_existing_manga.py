@@ -410,9 +410,9 @@ def main(argv: list[str] | None = None) -> int:
         if shutil.which("gh") is None:
             raise RecoveryError("GitHub CLI 'gh' not found; install gh and run 'gh auth login'")
         if args.audit_only:
-            print(json.dumps(audit_availability(titles, args.output_root, manifest=manifest),
-                             indent=2, ensure_ascii=False))
-            return 0
+            report = audit_availability(titles, args.output_root, manifest=manifest)
+            print(json.dumps(report, indent=2, ensure_ascii=False))
+            return 0 if report["status"] == "recoverable-or-retained" else 1
         if args.output_root is None:
             raise RecoveryError("--output-root is required for downloads")
         results = recover_all(titles, args.output_root, workers=args.workers,
