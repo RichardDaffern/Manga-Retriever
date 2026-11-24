@@ -15,3 +15,9 @@ Bulk jobs take only allowlisted `source:episode` IDs. They cannot request arbitr
 ## ReLIFE source-specific local-only workflow
 
 The opted-in ReLIFE wrapper invokes a pinned third-party client using `subprocess.run` with an argv list, no shell, no credentials or bypass flags, a fixed MangaDex title ID, English language, and full uploaded-quality CBZ images. It does not run in public CI or expose media through GitHub Actions. The offline CBZ scanner applies path traversal, ZIP encryption/special file, compression ratio, page type/dimensions, member count and byte budgets before recording per-page SHA-256 and a report that never claims series completeness. The third-party client, source availability and end-user local rights are separate trust boundaries; maintainers should review upstream source changes before recommending execution. The user must explicitly acknowledge source permission and must not publish third-party images or scanlations.
+
+## Historical public media workflow quarantine, 24 November 2026
+
+The previously used public GitHub Actions ReLIFE, Love So Life, Last Game/Maid-sama!, Onizuka and Kainushi download jobs uploaded CBZ/media artefacts without independently established redistribution permission. Their historical files may remain downloadable until expiry, but that does not make new public publication acceptable. Their media-producing jobs and related automatic retries are now **quarantined**, not deleted. See [the exact workflow/job register](LEGACY_MEDIA_WORKFLOW_QUARANTINE.md) and its offline regression test.
+
+The approved creator-licensed Pepper&Carrot Episode 26 workflow and JSON-only investigation workflows remain enabled. Recovery of existing eligible files belongs on a private owner-controlled disk; never use this public repository as a surrogate private manga store. Historical runs at older commits may still be rerunnable, so do not revive them as a workaround.
