@@ -16,6 +16,8 @@ concurrency:
 
 jobs:
   verified-chapter-batches:
+    # Quarantined: this legacy public job uploaded third-party manga media. Owner-private recovery only.
+    if: ${{ false }}
     name: Love So Life chapters ${{ matrix.start }}-${{ matrix.end }}
     runs-on: ubuntu-latest
     timeout-minutes: 90

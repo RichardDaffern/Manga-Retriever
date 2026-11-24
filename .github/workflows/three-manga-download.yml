@@ -17,6 +17,8 @@ concurrency:
 
 jobs:
   download-and-verify:
+    # Quarantined: this legacy public job uploaded third-party manga media. Owner-private recovery only.
+    if: ${{ false }}
     name: ${{ matrix.slug }} chapters ${{ matrix.start }}-${{ matrix.end }}
     runs-on: ubuntu-latest
     timeout-minutes: 90

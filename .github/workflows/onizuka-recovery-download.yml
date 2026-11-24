@@ -16,6 +16,8 @@ concurrency:
 
 jobs:
   download-onizuka:
+    # Quarantined: do not publish or rerun historical public third-party media jobs.
+    if: ${{ false }}
     name: Onizuka-chan chapters ${{ matrix.start }}-${{ matrix.end }}
     runs-on: ubuntu-latest
     timeout-minutes: 90
