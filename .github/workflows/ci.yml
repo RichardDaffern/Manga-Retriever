@@ -41,6 +41,25 @@ jobs:
       - name: Dependency audit
         run: python -m pip_audit
 
+  controller-candidate-contract:
+    # Public, token-free synthetic test against an immutable Controller commit.
+    # This is candidate acceptance only, never a private dataset write.
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install Retriever and pinned Controller
+        run: |
+          python -m pip install -e .
+          python -m pip install "git+https://github.com/AdityaSreevatsaK/Taiyou-Manga-Storage-Controller.git@f6bfc82b335c415dac55512c4dc4d640a5883392"
+      - name: Verify a synthetic Retriever export with the real Controller
+        run: python -m unittest tests.test_controller_acceptance -v
+
   licensed-source-smoke:
     # This one-off M3 PR gate contacts only the officially licensed Episode 26.
     # No media artefact is uploaded or retained after the job.

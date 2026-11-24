@@ -21,6 +21,18 @@ All **33 selected exact artifact IDs** and the particular latest Kainushi batch 
 
 **Evidence:** A real [Onizuka chapters 41-49 ZIP](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44675324997) was inspected; it included 13 chapter CBZ files, and the producer's quality report recorded 9 main chapters, three fractional extras, Chapter 0 and 47 image pages. Inspecting a producer report is useful but does not replace independent image and hash verification.
 
+## Read-only preflight before private recovery
+
+A 24 November 2026 [live metadata reconciliation](HISTORICAL_ARTIFACT_RECONCILIATION_20261124.md) found all 33 pinned artifacts still marked unexpired, totalling approximately 6.03 GiB of GitHub ZIP data. **No original media was downloaded by that metadata check.** Before starting a private recovery, optionally audit current expiry and any existing owner-local files, without downloading, uploading or writing anything:
+
+```powershell
+py -3.12 -m scripts.recover_existing_manga --titles all --audit-only --output-root "C:\\Manga\\Recovered"
+```
+
+Omit `--output-root` for GitHub availability metadata only, with no local-file inspection. The JSON report distinguishes `unexpired`, `expired`, `identity-mismatch`, `unavailable` and already `verified-local` copies. It exits nonzero when an artifact is neither locally verified nor currently recoverable, or when an existing local copy is invalid. It does not establish chapter completeness or legal export rights.
+
+**Important:** Existing media in the owner's private computer cannot be inferred from a GitHub Actions badge. The actual ZIP/CBZ recovery below must still run on the owner's machine for eligible titles before retention expiry.
+
 ## Windows, one command for six series
 
 Install [GitHub CLI](https://cli.github.com/) and Python 3.12. In your Manga Retriever checkout, run:

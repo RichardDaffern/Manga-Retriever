@@ -16,6 +16,7 @@ from scripts.recover_existing_manga import (
     RecoveryError,
     _audit_files,
     _safe_extract,
+    audit_availability,
     load_manifest,
     recover_all,
     recover_one,
@@ -148,6 +149,81 @@ class HistoricalArtifactRecoveryTests(unittest.TestCase):
             self.assertEqual(report["verifiedArtifacts"], 1)
             self.assertEqual(report["verifiedImages"], 39)
             self.assertTrue((Path(home) / "historical-recovery-status.json").exists())
+
+
+    def test_read_only_availability_preflight_never_fetches_zip(self):
+        item = load_manifest()["titles"]["onizuka-sawarida"]["items"][0]
+        manifest = {"titles": {"one": {"items": [item]}}}
+        called = []
+
+        def runner(argv, **kwargs):
+            called.append(argv[-1])
+            return subprocess.CompletedProcess(argv, 0, json.dumps({
+                "id": item["artifactId"],
+                "name": item["name"],
+                "expired": False,
+                "expires_at": "2026-11-27T04:39:35Z",
+                "size_in_bytes": 29052583,
+                "workflow_run": {"id": item["runId"]},
+            }), "")
+
+        with tempfile.TemporaryDirectory() as home:
+            report = audit_availability(["one"], Path(home), runner=runner, manifest=manifest)
+            self.assertEqual(report["status"], "recoverable-or-retained")
+            self.assertEqual(report["unexpired"], 1)
+            self.assertEqual(report["verifiedLocal"], 0)
+            self.assertEqual(report["results"][0]["localState"], "missing-local")
+            self.assertFalse(report["mediaDownloaded"])
+            self.assertEqual(len(called), 1)
+            self.assertNotIn("/zip", called[0])
+            self.assertEqual(list(Path(home).iterdir()), [])
+
+    def test_read_only_preflight_accepts_verified_local_copy_after_expiry(self):
+        item = load_manifest()["titles"]["onizuka-sawarida"]["items"][0]
+        manifest = {"titles": {"one": {"items": [item]}}}
+        data = _outer_artifact()
+
+        def runner(argv, **kwargs):
+            if argv[-1].endswith("/zip"):
+                kwargs["stdout"].write(data)
+                return subprocess.CompletedProcess(argv, 0, b"", b"")
+            return subprocess.CompletedProcess(argv, 0, json.dumps({
+                "id": item["artifactId"], "name": item["name"],
+                "expired": False, "size_in_bytes": len(data),
+                "workflow_run": {"id": item["runId"]},
+            }), "")
+
+        with tempfile.TemporaryDirectory() as home:
+            root = Path(home)
+            recover_one("one", item, root, runner=runner)
+
+            def expired_runner(argv, **kwargs):
+                return subprocess.CompletedProcess(argv, 0, json.dumps({
+                    "id": item["artifactId"], "name": item["name"],
+                    "expired": True,
+                    "workflow_run": {"id": item["runId"]},
+                }), "")
+
+            report = audit_availability(["one"], root, runner=expired_runner, manifest=manifest)
+            self.assertEqual(report["status"], "recoverable-or-retained")
+            self.assertEqual(report["verifiedLocal"], 1)
+            self.assertEqual(report["unexpired"], 0)
+            self.assertEqual(report["attentionRequired"], 0)
+
+    def test_read_only_preflight_flags_unverified_missing_archive(self):
+        item = load_manifest()["titles"]["relife"]["items"][0]
+        manifest = {"titles": {"one": {"items": [item]}}}
+
+        def expired_runner(argv, **kwargs):
+            return subprocess.CompletedProcess(argv, 0, json.dumps({
+                "id": item["artifactId"], "name": item["name"], "expired": True,
+                "workflow_run": {"id": item["runId"]},
+            }), "")
+
+        result = audit_availability(["one"], runner=expired_runner, manifest=manifest)
+        self.assertEqual(result["status"], "attention-required")
+        self.assertEqual(result["attentionRequired"], 1)
+        self.assertEqual(result["results"][0]["remoteState"], "expired")
 
 
 if __name__ == "__main__":
