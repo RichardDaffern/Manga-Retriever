@@ -22,6 +22,8 @@ Previously completed GitHub Actions batches have **33 currently unexpired CBZ ar
 
 Use [the verified private Windows recovery guide](docs/HISTORICAL_MANGA_ARTIFACT_RECOVERY.md) and launcher `Recover-Existing-Manga.cmd` to download by **exact GitHub artifact ID**, independently inspect actual CBZ images, skip valid existing batches and generate local integrity reports. No new copyright files are uploaded by the recovery utility.
 
+**Workflow safety update (24 November 2026):** Legacy public GitHub Actions jobs that uploaded third-party chapter files, together with their automatic retry jobs, have been [quarantined](docs/LEGACY_MEDIA_WORKFLOW_QUARANTINE.md). Existing historical artefact IDs and private owner-local recovery remain unchanged. The explicitly creator-licensed Pepper&Carrot workflows are unaffected.
+
 Fifteen additional [real original-image chapter checks](.github/workflows/fifteen-manga-image-coverage-checks.yml) are available for five other requested series, covering early, middle and final chapters. These are **ephemeral technical tests**, not retained full-series downloads.
 
 ## ManhuaTop: investigated, not yet a working download source
