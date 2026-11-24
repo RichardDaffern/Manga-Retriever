@@ -107,6 +107,34 @@ class ControllerCandidateAcceptanceTests(unittest.TestCase):
         with self.assertRaises(ControllerError):
             verify_bundle(candidate)
 
+
+    def test_revision_guarded_local_mock_write_and_readback(self) -> None:
+        """End-to-end simulation, explicitly isolated from all private HF datasets."""
+        from taiyou_manga.builder import verify_bundle
+        from taiyou_manga.domain import ControllerError
+        from taiyou_manga.storage import MockStorage, RevisionConflict
+
+        export = self._export()
+        candidate = export / "controller_candidate"
+        storage = MockStorage(self.root / "disposable-mock")
+        plan = storage.preview(candidate)
+        self.assertEqual(plan.status, "new")
+        self.assertEqual(plan.new_pages, 3)
+        self.assertIsNone(plan.revision)
+        with self.assertRaises(ControllerError):
+            storage.apply(candidate, expected_revision=plan.revision, approve=False)
+        revision = storage.apply(candidate, expected_revision=plan.revision, approve=True)
+        self.assertEqual(storage.health()["revision"], revision)
+        snapshot = storage.root / "snapshots" / revision
+        self.assertEqual(verify_bundle(snapshot)["pages"], 3)
+        self.assertEqual(
+            (candidate / "catalogue.json").read_bytes(),
+            (snapshot / "catalogue.json").read_bytes(),
+        )
+        self.assertEqual(storage.preview(candidate).status, "no-op")
+        with self.assertRaises(RevisionConflict):
+            storage.apply(candidate, expected_revision="0" * 64, approve=True)
+
     def test_rights_declaration_is_not_proof_of_redistribution_rights(self) -> None:
         from taiyou_manga.builder import verify_bundle
 
