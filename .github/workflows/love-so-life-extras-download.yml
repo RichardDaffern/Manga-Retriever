@@ -12,6 +12,8 @@ permissions:
 
 jobs:
   verify-five-extras:
+    # Quarantined: this legacy public job uploaded third-party manga media. Owner-private recovery only.
+    if: ${{ false }}
     name: Download and audit Love So Life 33.5, 33.6, 63.5, 75.5 and 99.5
     runs-on: ubuntu-latest
     timeout-minutes: 45
