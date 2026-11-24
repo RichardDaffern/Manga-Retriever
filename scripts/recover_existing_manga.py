@@ -210,6 +210,71 @@ def _verify_existing(directory: Path, item: dict) -> dict:
     return report
 
 
+
+def audit_availability(slugs: list[str], root: Path | None = None, *,
+                       runner=subprocess.run, manifest: dict | None = None) -> dict:
+    """Check GitHub expiry metadata and optional already-recovered private media only.
+
+    No downloads, storage writes or complete-English-edition claims are made.
+    """
+    document = manifest if manifest is not None else load_manifest()
+    if (not slugs or len(slugs) != len(set(slugs))
+            or any(slug not in document["titles"] for slug in slugs)):
+        raise RecoveryError("Unknown or duplicate manga title selection")
+    if root is not None:
+        _safe_folder(root)
+    results = []
+    for slug in slugs:
+        for item in document["titles"][slug]["items"]:
+            entry = {"slug": slug, "range": item["range"], "artifactId": item["artifactId"],
+                     "runId": item["runId"], "name": item["name"],
+                     "localState": "not-inspected", "remoteState": "unknown"}
+            if root is not None:
+                folder = root / slug / item["name"]
+                if folder.exists() or folder.is_symlink():
+                    try:
+                        local = _verify_existing(folder, item)
+                        entry["localState"] = "verified-local"
+                        entry["verifiedPages"] = local["verifiedPages"]
+                        entry["verifiedCBZ"] = local["verifiedCBZ"]
+                    except (RecoveryError, OSError, ValueError) as exc:
+                        entry["localState"] = "invalid-local"
+                        entry["localError"] = str(exc)[:240]
+                else:
+                    entry["localState"] = "missing-local"
+            try:
+                remote = _gh_json(f"repos/{REPOSITORY}/actions/artifacts/{item['artifactId']}",
+                                  runner=runner)
+                run = remote.get("workflow_run") or {}
+                if (remote.get("id") != item["artifactId"] or remote.get("name") != item["name"]
+                        or run.get("id") != item["runId"]):
+                    entry["remoteState"] = "identity-mismatch"
+                else:
+                    entry["remoteState"] = ("unexpired" if remote.get("expired") is False
+                                            else "expired" if remote.get("expired") is True
+                                            else "unknown")
+                    entry["expiresAtUtc"] = remote.get("expires_at")
+                    entry["archiveSizeBytes"] = remote.get("size_in_bytes")
+            except (RecoveryError, OSError, ValueError, subprocess.SubprocessError) as exc:
+                entry["remoteState"] = "unavailable"
+                entry["remoteError"] = str(exc)[:240]
+            results.append(entry)
+    attention = [x for x in results if x["localState"] == "invalid-local"
+                 or (x["localState"] != "verified-local" and x["remoteState"] != "unexpired")]
+    return {
+        "schemaVersion": 1,
+        "mode": "read-only-preflight",
+        "status": "attention-required" if attention else "recoverable-or-retained",
+        "selected": len(results),
+        "unexpired": sum(x["remoteState"] == "unexpired" for x in results),
+        "verifiedLocal": sum(x["localState"] == "verified-local" for x in results),
+        "attentionRequired": len(attention),
+        "mediaDownloaded": False,
+        "completeEnglishSeriesIndependentlyProven": False,
+        "results": results,
+    }
+
+
 def recover_one(slug: str, item: dict, root: Path, *, runner=subprocess.run) -> dict:
     folder = root / slug / item["name"]
     _safe_folder(folder)
@@ -333,8 +398,10 @@ def recover_all(slugs: list[str], root: Path, *, workers: int = 3,
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Privately recover existing, expiring manga Actions CBZ artifacts")
     parser.add_argument("--titles", default="all", help="Comma-separated slugs or 'all'")
-    parser.add_argument("--output-root", type=Path, required=True,
+    parser.add_argument("--output-root", type=Path,
                         help="Private output folder outside this public checkout")
+    parser.add_argument("--audit-only", action="store_true",
+                        help="Check GitHub expiry and optional existing private copies, without downloads")
     parser.add_argument("--workers", type=int, default=3)
     args = parser.parse_args(argv)
     try:
@@ -342,6 +409,12 @@ def main(argv: list[str] | None = None) -> int:
         titles = list(manifest["titles"]) if args.titles == "all" else args.titles.split(",")
         if shutil.which("gh") is None:
             raise RecoveryError("GitHub CLI 'gh' not found; install gh and run 'gh auth login'")
+        if args.audit_only:
+            print(json.dumps(audit_availability(titles, args.output_root, manifest=manifest),
+                             indent=2, ensure_ascii=False))
+            return 0
+        if args.output_root is None:
+            raise RecoveryError("--output-root is required for downloads")
         results = recover_all(titles, args.output_root, workers=args.workers,
                               manifest=manifest)
     except (OSError, RecoveryError, ValueError) as exc:
