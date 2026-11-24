@@ -17,6 +17,8 @@ concurrency:
 
 jobs:
   download:
+    # Quarantined: this legacy public job uploaded third-party manga media. Owner-private recovery only.
+    if: ${{ false }}
     name: ReLIFE English ${{ matrix.start }}-${{ matrix.end }} original quality
     runs-on: ubuntu-latest
     timeout-minutes: 60
