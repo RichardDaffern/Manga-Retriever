@@ -36,7 +36,7 @@ The Retriever rejects repeated identical pages in one chapter; the Controller ca
 
 ## Independent synthetic cross-repository acceptance
 
-`tests/test_controller_acceptance.py` exercises actual `manga_retriever.importer.import_local` output with the real Controller's `taiyou_manga.builder.verify_bundle`. It verifies two synthetic chapters, original-byte SHA-256 and deterministic page identities, stable reimport, corruption rejection, orphan rejection and the separate rights-declaration indicator. No real manga files or credentials are involved.
+`tests/test_controller_acceptance.py` exercises actual `manga_retriever.importer.import_local` output with the real Controller's `taiyou_manga.builder.verify_bundle`. It verifies two synthetic chapters, original-byte SHA-256 and deterministic page identities, stable reimport, corruption rejection, orphan rejection and the separate rights-declaration indicator. It also previews, explicitly approves and reads back a **disposable local MockStorage snapshot** with revision-conflict checks; this never calls HF or the Library. No real manga files or credentials are involved.
 
 The dedicated `controller-candidate-contract` job in [CI](../.github/workflows/ci.yml) installs the public Controller repository **at commit** `f6bfc82b335c415dac55512c4dc4d640a5883392` and runs the acceptance tests. Pin changes must be deliberately reviewed against the current Controller contract, not silently updated.
 
