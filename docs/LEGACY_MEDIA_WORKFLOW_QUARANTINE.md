@@ -29,7 +29,7 @@ An offline [regression test](../tests/test_workflow_quarantine.py) checks that t
 
 - For existing historical artifacts, run the [verified private owner-local recovery](HISTORICAL_MANGA_ARTIFACT_RECOVERY.md) on a private computer before their 26–27 November expiry. The new `--audit-only` mode checks metadata without downloading.
 - For additional acquisitions, prefer explicitly licensed/creator-provided assets and owner-provided DRM-free files, with per-work rights, actual English page review, original-byte validation, bounded private runs and secure storage.
-- The fixed `peppercarrot:26` licence-approved public workflow remains available. JSON-only metadata and ephemeral technical report workflows are not disabled by this change.
+- The fixed `peppercarrot:26` licence-approved public workflow definitions remain unchanged (manual-dispatch registration has not been independently confirmed). JSON-only metadata and ephemeral technical report workflows are not disabled by this change.
 - The Storage Controller alone may take validated, authorised private bundles through its separately approved revision-guarded upload and Library read-back process.
 
 **To lift a quarantine:** review the exact title, licence, who owns the translation, permitted redistribution audience, source URL, specific media outputs, workflow publication destination and rights evidence. Prefer a new private, owner-controlled acquisition mechanism rather than re-enabling a public CBZ uploader.
