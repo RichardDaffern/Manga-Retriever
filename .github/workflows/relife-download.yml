@@ -29,6 +29,8 @@ concurrency:
 
 jobs:
   download:
+    # Quarantined: this legacy public job uploaded third-party manga media. Owner-private recovery only.
+    if: ${{ false }}
     name: Download and verify full-quality English CBZ
     runs-on: ubuntu-latest
     timeout-minutes: 40
