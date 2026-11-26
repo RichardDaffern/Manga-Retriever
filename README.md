@@ -16,7 +16,12 @@ The user's [exact MangaDex title ID](https://mangadex.org/title/90f7c7a6-b759-4a
 
 Use `Download-New-Manga.cmd "C:\\Manga\\New" pilot` to download one real chapter from each of the six new titles and verify image integrity. After checking source permissions and that their page text is English, run `Download-New-Manga.cmd "C:\\Manga\\New" full` to start verified, resumable 20-chapter local batches. **These new-title downloads never recover previously downloaded ReLIFE, Love So Life, Maid-sama!, Last Game, Onizuka or Kainushi.** The sixth title is *The Fairytale-like You Goes on the Assault* (42 numbered chapters, plus unhandled fractional extras). [One-chapter live check](https://github.com/RichardDaffern/Manga-Retriever/actions/runs/44789220759) verified 8 actual image pages. No new series is yet proven to be wholly English or complete, and no copyrighted files are delivered through public GitHub Actions.
 
-## Recover 33 existing manga artifacts before 26-27 November 2026
+## Historical manga recovery, not a missing-title list
+
+**Reconciliation, 26 November 2026:** The Storage Controller's [protected read-only smoke on 20 November](https://github.com/AdityaSreevatsaK/Taiyou-Manga-Storage-Controller/actions/runs/44721448011) verified **five titles already in private canonical storage**: ReLIFE, Love So Life, Last Game, Kaichou wa Maid-sama! and Onizuka-chan and Sawarida-kun (587 chapters, 14,635 pages). Their **30 historical ZIP artefacts are not 30 missing uploads**. Kainushi wa Akuma accounts for the remaining **three selected, partial ZIP artefacts** and was not in that dated five-title snapshot. The private catalogue must be freshly rechecked before inferring any missing chapters. Download eligibility and rights are separate from technical availability.
+
+**Targeted Kainushi preflight (read-only, no media download):** `py -3.12 -m scripts.recover_existing_manga --titles kainushi-wa-akuma --audit-only`. Existing copies require independently checked owner-local retention rights. Explicit `--titles all` remains available for justified backups, but must not be used as a missing-title upload plan.
+
 
 Previously completed GitHub Actions batches have **33 currently unexpired CBZ artefacts across six requested manga**: ReLIFE, Love So Life (including five extras), Last Game, Kaichou wa Maid-sama!, Onizuka-chan and Sawarida-kun, and partially covered Kainushi wa Akuma. Do **not** repeat huge downloads before inspecting these existing media files; the public metadata registry is not their inventory.
 

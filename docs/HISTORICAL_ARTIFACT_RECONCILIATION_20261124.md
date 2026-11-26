@@ -17,6 +17,12 @@
 - Availability here is only GitHub's `expired: false` metadata at the check time, *not* a guarantee that a future download succeeds. The deadline is **26 November 2026** for most files and **27 November 2026** for Onizuka.
 - The source repository and artifacts are public. Public access does not grant rights to redistribute third-party artwork or to transfer it into an unrelated private dataset.
 
+## Existing canonical private dataset versus historical packages
+
+**Reconciliation, 26 November 2026:** The Storage Controller's [protected read-only smoke on 20 November](https://github.com/AdityaSreevatsaK/Taiyou-Manga-Storage-Controller/actions/runs/44721448011) verified **five titles already in private canonical storage**: ReLIFE, Love So Life, Last Game, Kaichou wa Maid-sama! and Onizuka-chan and Sawarida-kun (587 chapters, 14,635 pages). Their **30 historical ZIP artefacts are not 30 missing uploads**. Kainushi wa Akuma accounts for the remaining **three selected, partial ZIP artefacts** and was not in that dated five-title snapshot. The private catalogue must be freshly rechecked before inferring any missing chapters. Download eligibility and rights are separate from technical availability.
+
+**Targeted Kainushi preflight (read-only, no media download):** `py -3.12 -m scripts.recover_existing_manga --titles kainushi-wa-akuma --audit-only`. Existing copies require independently checked owner-local retention rights. Explicit `--titles all` remains available for justified backups, but must not be used as a missing-title upload plan.
+
 ## Required private recovery operation
 
 The owner must run an authenticated recovery on an **owner-controlled private Windows disk**, first checking existing private holdings and permissions for each title. The existing [recovery script and guide](HISTORICAL_MANGA_ARTIFACT_RECOVERY.md) pin all 33 IDs, verify ZIP/CBZ safety, decode pages, check hashes, retain good previously downloaded sets and avoid overwriting files. For a private owner-authorised inventory:

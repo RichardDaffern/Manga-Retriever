@@ -19,7 +19,7 @@ import tempfile
 import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import UTC, datetime
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 
 from manga_retriever.relife import ReLIFEError, _inspect_cbz
 
@@ -33,6 +33,10 @@ MAX_WORKERS = 3
 VALID_NAME = re.compile(r"[a-zA-Z0-9][a-zA-Z0-9._-]{0,130}\Z")
 
 
+WINDOWS_DEVICES = frozenset({"CON", "PRN", "AUX", "NUL"} |
+                            {f"{prefix}{n}" for prefix in ("COM", "LPT") for n in range(1, 10)})
+
+
 class RecoveryError(ValueError):
     """Cannot safely retrieve or validate this pre-existing artifact."""
 
@@ -42,6 +46,10 @@ def _safe_folder(folder: Path) -> None:
         raise RecoveryError("Output must be an ordinary directory")
     if any(parent.is_symlink() for parent in folder.parents):
         raise RecoveryError("Output cannot be below a symlink")
+    checkout = Path(__file__).resolve().parents[1]
+    resolved = folder.resolve(strict=False)
+    if resolved == checkout or checkout in resolved.parents:
+        raise RecoveryError("Private manga media cannot be stored inside the public checkout")
 
 
 def load_manifest(path: Path = MANIFEST) -> dict:
@@ -84,6 +92,24 @@ def _gh_json(endpoint: str, *, runner=subprocess.run) -> dict:
     return document
 
 
+def _artifact_remote_state(document: dict, *, now: datetime | None = None) -> str:
+    """Do not trust a stale unexpired flag after its published expiry time."""
+    if document.get("expired") is True:
+        return "expired"
+    if document.get("expired") is not False:
+        return "unknown"
+    expiry = document.get("expires_at")
+    if not isinstance(expiry, str):
+        return "unknown"
+    try:
+        deadline = datetime.fromisoformat(expiry.replace("Z", "+00:00"))
+    except ValueError:
+        return "unknown"
+    if deadline.tzinfo is None:
+        return "unknown"
+    return "expired" if (now or datetime.now(UTC)) >= deadline else "unexpired"
+
+
 def _download_archive(item: dict, destination_zip: Path, *, runner=subprocess.run) -> None:
     endpoint = f"repos/{REPOSITORY}/actions/artifacts/{item['artifactId']}/zip"
     with destination_zip.open("xb") as output:
@@ -96,25 +122,33 @@ def _download_archive(item: dict, destination_zip: Path, *, runner=subprocess.ru
 
 
 def _safe_extract(source: Path, destination: Path) -> None:
+    """Validate portable Windows paths and the entire ZIP before writing a byte."""
     with zipfile.ZipFile(source) as archive:
         infos = archive.infolist()
         if not 1 <= len(infos) <= MAX_OUTER_MEMBERS:
             raise RecoveryError("Unexpected artifact ZIP member count")
         total = 0
-        paths: set[str] = set()
+        paths: dict[str, bool] = {}
+        validated: list[tuple[zipfile.ZipInfo, tuple[str, ...]]] = []
         for entry in infos:
             name = entry.filename
-            if not name or "\\" in name or "\0" in name or name.startswith("/"):
+            if (not name or "\\" in name or "\0" in name or name.startswith("/")
+                    or len(name) > 400):
                 raise RecoveryError("Unsafe archive member name")
-            p = PurePosixPath(name)
-            if p.is_absolute() or not p.parts or any(x in ("..", ".", "") for x in p.parts):
-                raise RecoveryError("Archive path traversal")
-            if len(p.parts) > 12 or len(name) > 400:
-                raise RecoveryError("Excessive artifact path")
-            normalised = p.as_posix().casefold()
+            stripped = name[:-1] if entry.is_dir() else name
+            parts = tuple(stripped.split("/"))
+            if (len(parts) > 12 or any(
+                not part or part in (".", "..") or part.endswith((" ", "."))
+                or ":" in part or len(part) > 255
+                or any(ord(char) < 32 for char in part)
+                or part.split(".")[0].rstrip(" ").upper() in WINDOWS_DEVICES
+                for part in parts
+            )):
+                raise RecoveryError("Unsafe Windows archive member path or traversal")
+            normalised = "/".join(parts).casefold()
             if normalised in paths:
                 raise RecoveryError("Duplicate artifact member path")
-            paths.add(normalised)
+            paths[normalised] = entry.is_dir()
             kind = stat.S_IFMT(entry.external_attr >> 16)
             if kind not in (0, stat.S_IFREG, stat.S_IFDIR):
                 raise RecoveryError("Special or symlink artifact member")
@@ -125,15 +159,20 @@ def _safe_extract(source: Path, destination: Path) -> None:
             total += entry.file_size
             if total > MAX_OUTER_UNCOMPRESSED:
                 raise RecoveryError("Unpacked media exceeds safety budget")
-        for entry in infos:
-            path = destination.joinpath(*PurePosixPath(entry.filename).parts)
+            validated.append((entry, parts))
+        for normalised in paths:
+            components = normalised.split("/")
+            for depth in range(1, len(components)):
+                if paths.get("/".join(components[:depth])) is False:
+                    raise RecoveryError("Artifact file and directory paths collide")
+        for entry, parts in validated:
+            path = destination.joinpath(*parts)
             if entry.is_dir():
                 path.mkdir(parents=True, exist_ok=True)
             else:
                 path.parent.mkdir(parents=True, exist_ok=True)
                 with archive.open(entry) as src, path.open("xb") as dest:
                     shutil.copyfileobj(src, dest, length=1024 * 1024)
-
 
 def _audit_files(directory: Path) -> dict:
     if directory.is_symlink() or not directory.is_dir():
@@ -250,9 +289,7 @@ def audit_availability(slugs: list[str], root: Path | None = None, *,
                         or run.get("id") != item["runId"]):
                     entry["remoteState"] = "identity-mismatch"
                 else:
-                    entry["remoteState"] = ("unexpired" if remote.get("expired") is False
-                                            else "expired" if remote.get("expired") is True
-                                            else "unknown")
+                    entry["remoteState"] = _artifact_remote_state(remote)
                     entry["expiresAtUtc"] = remote.get("expires_at")
                     entry["archiveSizeBytes"] = remote.get("size_in_bytes")
             except (RecoveryError, OSError, ValueError, subprocess.SubprocessError) as exc:
@@ -285,7 +322,8 @@ def recover_one(slug: str, item: dict, root: Path, *, runner=subprocess.run) -> 
     remote = _gh_json(endpoint, runner=runner)
     remote_run = remote.get("workflow_run") or {}
     if (remote.get("id") != item["artifactId"] or remote.get("name") != item["name"]
-            or remote_run.get("id") != item["runId"] or remote.get("expired") is not False):
+            or remote_run.get("id") != item["runId"]
+            or _artifact_remote_state(remote) != "unexpired"):
         raise RecoveryError("GitHub artifact identity mismatch or expired artifact")
     with tempfile.TemporaryDirectory(prefix=".manga-recovery-", dir=folder.parent) as tmp:
         stage = Path(tmp)
