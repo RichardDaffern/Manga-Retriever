@@ -15,6 +15,7 @@ from PIL import Image
 from scripts.recover_existing_manga import (
     RecoveryError,
     _audit_files,
+    _safe_folder,
     _safe_extract,
     audit_availability,
     load_manifest,
@@ -66,6 +67,43 @@ class HistoricalArtifactRecoveryTests(unittest.TestCase):
             self.assertEqual(report["verifiedPages"], 1)
             self.assertEqual(len(report["archives"][0]["sha256"]), 64)
 
+    def test_windows_unsafe_and_ambiguous_zip_member_names_rejected(self):
+        names = ("C:/escape.cbz", "series/CON.jpg", "series/AUX.txt",
+                 "series/file.jpg:alternate", "series/page.jpg.",
+                 "series/./page.jpg", "series//page.jpg",
+                 "series/../page.jpg", "series/NUL.txt")
+        with tempfile.TemporaryDirectory() as home:
+            root = Path(home)
+            for index, name in enumerate(names):
+                with self.subTest(name=name):
+                    archive = root / f"unsafe-{index}.zip"
+                    with zipfile.ZipFile(archive, "w") as z:
+                        z.writestr(name, b"unsafe")
+                    output = root / f"out-{index}"
+                    output.mkdir()
+                    with self.assertRaisesRegex(RecoveryError, "Unsafe"):
+                        _safe_extract(archive, output)
+                    self.assertEqual(list(output.rglob("*")), [])
+
+    def test_case_collision_and_parent_file_collision_are_rejected(self):
+        for paths in (("series/A.jpg", "series/a.jpg"),
+                      ("series", "series/chapter.cbz")):
+            with self.subTest(paths=paths), tempfile.TemporaryDirectory() as home:
+                archive = Path(home) / "artifact.zip"
+                with zipfile.ZipFile(archive, "w") as z:
+                    for name in paths:
+                        z.writestr(name, b"unsafe")
+                output = Path(home) / "out"
+                output.mkdir()
+                with self.assertRaises(RecoveryError):
+                    _safe_extract(archive, output)
+                self.assertEqual(list(output.rglob("*")), [])
+
+    def test_recovery_output_must_not_be_inside_public_git_checkout(self):
+        checkout = Path(__file__).resolve().parents[1]
+        with self.assertRaisesRegex(RecoveryError, "public checkout"):
+            _safe_folder(checkout / "would-be-private-media")
+
     def test_zip_traversal_rejected(self):
         with tempfile.TemporaryDirectory() as home:
             archive = Path(home) / "unsafe.zip"
@@ -101,7 +139,7 @@ class HistoricalArtifactRecoveryTests(unittest.TestCase):
                 "id": item["artifactId"], "name": item["name"],
                 "expired": False, "size_in_bytes": len(bytes_),
                 "workflow_run": {"id": item["runId"]},
-                "expires_at": "2026-11-27T04:39:35Z",
+                "expires_at": "2099-11-27T04:39:35Z",
             }), "")
 
         with tempfile.TemporaryDirectory() as home:
@@ -151,6 +189,24 @@ class HistoricalArtifactRecoveryTests(unittest.TestCase):
             self.assertTrue((Path(home) / "historical-recovery-status.json").exists())
 
 
+    def test_expired_deadline_overrides_stale_unexpired_metadata(self):
+        item = load_manifest()["titles"]["onizuka-sawarida"]["items"][0]
+        manifest = {"titles": {"one": {"items": [item]}}}
+
+        def stale_runner(argv, **kwargs):
+            return subprocess.CompletedProcess(argv, 0, json.dumps({
+                "id": item["artifactId"], "name": item["name"],
+                "expired": False, "expires_at": "2020-01-01T00:00:00Z",
+                "workflow_run": {"id": item["runId"]},
+            }), "")
+
+        report = audit_availability(["one"], runner=stale_runner, manifest=manifest)
+        self.assertEqual(report["status"], "attention-required")
+        self.assertEqual(report["results"][0]["remoteState"], "expired")
+        with tempfile.TemporaryDirectory() as home:
+            with self.assertRaisesRegex(RecoveryError, "expired"):
+                recover_one("one", item, Path(home), runner=stale_runner)
+
     def test_read_only_availability_preflight_never_fetches_zip(self):
         item = load_manifest()["titles"]["onizuka-sawarida"]["items"][0]
         manifest = {"titles": {"one": {"items": [item]}}}
@@ -162,7 +218,7 @@ class HistoricalArtifactRecoveryTests(unittest.TestCase):
                 "id": item["artifactId"],
                 "name": item["name"],
                 "expired": False,
-                "expires_at": "2026-11-27T04:39:35Z",
+                "expires_at": "2099-11-27T04:39:35Z",
                 "size_in_bytes": 29052583,
                 "workflow_run": {"id": item["runId"]},
             }), "")
