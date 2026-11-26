@@ -15,6 +15,10 @@
 
 Artifact IDs, expiry and sizes were [rechecked live](HISTORICAL_ARTIFACT_RECONCILIATION_20261124.md). **These historical media bytes have not been independently recovered to the owner's private disk by this audit.** A completed Actions job is not a complete locally retained English edition. Do not repeat costly source acquisitions before checking existing eligible files.
 
+**Reconciliation, 26 November 2026:** The Storage Controller's [protected read-only smoke on 20 November](https://github.com/AdityaSreevatsaK/Taiyou-Manga-Storage-Controller/actions/runs/44721448011) verified **five titles already in private canonical storage**: ReLIFE, Love So Life, Last Game, Kaichou wa Maid-sama! and Onizuka-chan and Sawarida-kun (587 chapters, 14,635 pages). Their **30 historical ZIP artefacts are not 30 missing uploads**. Kainushi wa Akuma accounts for the remaining **three selected, partial ZIP artefacts** and was not in that dated five-title snapshot. The private catalogue must be freshly rechecked before inferring any missing chapters. Download eligibility and rights are separate from technical availability.
+
+**Targeted Kainushi preflight (read-only, no media download):** `py -3.12 -m scripts.recover_existing_manga --titles kainushi-wa-akuma --audit-only`. Existing copies require independently checked owner-local retention rights. Explicit `--titles all` remains available for justified backups, but must not be used as a missing-title upload plan.
+
 ## New titles and edition-specific source gaps
 
 | Requested work | Actual technical evidence | Current blocker / decision |

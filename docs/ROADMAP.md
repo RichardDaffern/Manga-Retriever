@@ -8,6 +8,7 @@
 | M5: approved bulk GitHub Actions + metadata-only receipts | Implemented with CI; real M5 smoke encountered upstream network failure |
 | M6: Windows retrieval, verified skip-existing, consolidated ZIP | Implemented with Python CLI and Windows CMD launchers; GitHub artefact live handoff is subject to availability |
 | M7a: independent Retriever to Controller candidate acceptance | Implemented as synthetic, token-free, pinned Controller CI contract test; confirm current PR/main check status before claiming a pass |
+| Dated five-title private catalogue | Controller smoke on 20 November 2026 verified five titles, 587 chapters and 14,635 pages. Thirty old Actions artefacts are not missing-title evidence; Kainushi's three selected packages are partial and separate |
 | M7b: owner-approved private HF upload and Library read-back | Not verified for a newly acquired Retriever title; live write requires a separate Controller preview, approval, backup and revision guard |
 | M8: additional authorised manga sources | Officially distributed Japanese manga identified and supported via owner-declared **local PDF import**; direct remote adapter remains pending |
 | Five-title MangaKatana URL pilot | **Implemented for five exact local URLs**; one real image-containing CBZ for each Chapter 1 verified (246 pages combined); English page text, full-series coverage and source export permission unverified |

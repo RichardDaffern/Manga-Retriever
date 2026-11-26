@@ -23,6 +23,12 @@ All **33 selected exact artifact IDs** and the particular latest Kainushi batch 
 
 ## Read-only preflight before private recovery
 
+**Reconciliation, 26 November 2026:** The Storage Controller's [protected read-only smoke on 20 November](https://github.com/AdityaSreevatsaK/Taiyou-Manga-Storage-Controller/actions/runs/44721448011) verified **five titles already in private canonical storage**: ReLIFE, Love So Life, Last Game, Kaichou wa Maid-sama! and Onizuka-chan and Sawarida-kun (587 chapters, 14,635 pages). Their **30 historical ZIP artefacts are not 30 missing uploads**. Kainushi wa Akuma accounts for the remaining **three selected, partial ZIP artefacts** and was not in that dated five-title snapshot. The private catalogue must be freshly rechecked before inferring any missing chapters. Download eligibility and rights are separate from technical availability.
+
+**Targeted Kainushi preflight (read-only, no media download):** `py -3.12 -m scripts.recover_existing_manga --titles kainushi-wa-akuma --audit-only`. Existing copies require independently checked owner-local retention rights. Explicit `--titles all` remains available for justified backups, but must not be used as a missing-title upload plan.
+
+**The six-series commands below are historical examples, not the recommended default.** For authorised partial Kainushi recovery use `Recover-Existing-Manga.cmd "C:\Manga\Recovered" kainushi-wa-akuma 3` on an owner-controlled PC.
+
 A 24 November 2026 [live metadata reconciliation](HISTORICAL_ARTIFACT_RECONCILIATION_20261124.md) found all 33 pinned artifacts still marked unexpired, totalling approximately 6.03 GiB of GitHub ZIP data. **No original media was downloaded by that metadata check.** Before starting a private recovery, optionally audit current expiry and any existing owner-local files, without downloading, uploading or writing anything:
 
 ```powershell
