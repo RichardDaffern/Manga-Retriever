@@ -37,7 +37,7 @@ def make_export(path: Path) -> str:
 
 
 def receipt(digest: str, *, run: int = 1234, artifact: int = 4567,
-            expires: str = "2026-11-26T00:00:00Z") -> dict:
+            expires: str = "2099-11-26T00:00:00Z") -> dict:
     return {
         "schemaVersion": 1, "key": "peppercarrot:26", "provider": "peppercarrot", "episode": 26,
         "title": "Pepper&Carrot Episode 26: Books Are Great", "licence": "CC BY 4.0",

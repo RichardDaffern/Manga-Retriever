@@ -15,8 +15,8 @@ from PIL import Image
 from scripts.recover_existing_manga import (
     RecoveryError,
     _audit_files,
-    _safe_folder,
     _safe_extract,
+    _safe_folder,
     audit_availability,
     load_manifest,
     recover_all,
@@ -246,6 +246,7 @@ class HistoricalArtifactRecoveryTests(unittest.TestCase):
             return subprocess.CompletedProcess(argv, 0, json.dumps({
                 "id": item["artifactId"], "name": item["name"],
                 "expired": False, "size_in_bytes": len(data),
+                "expires_at": "2099-11-27T04:39:35Z",
                 "workflow_run": {"id": item["runId"]},
             }), "")
 
