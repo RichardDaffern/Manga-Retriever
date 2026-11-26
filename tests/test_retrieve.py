@@ -9,7 +9,7 @@ import subprocess
 import tempfile
 import unittest
 import zipfile
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from manga_retriever.retrieve import (
@@ -20,7 +20,7 @@ from manga_retriever.retrieve import (
     retrieve_registered,
 )
 
-NOW = datetime(2026, 11, 19, tzinfo=UTC)
+NOW = datetime.now(UTC)
 
 
 def make_export(path: Path) -> str:
@@ -37,13 +37,14 @@ def make_export(path: Path) -> str:
 
 
 def receipt(digest: str, *, run: int = 1234, artifact: int = 4567,
-            expires: str = "2099-11-26T00:00:00Z") -> dict:
+            expires: str | None = None) -> dict:
     return {
         "schemaVersion": 1, "key": "peppercarrot:26", "provider": "peppercarrot", "episode": 26,
         "title": "Pepper&Carrot Episode 26: Books Are Great", "licence": "CC BY 4.0",
         "runId": run, "artifactId": artifact,
         "artifactUrl": f"https://github.com/RichardDaffern/Manga-Retriever/actions/runs/{run}/artifacts/{artifact}",
-        "completedAt": "2026-11-19T00:00:00Z", "expiresAt": expires,
+        "completedAt": (NOW - timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "expiresAt": expires or (NOW + timedelta(days=7)).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "chapters": 1, "pages": 6, "sha256": digest,
     }
 
